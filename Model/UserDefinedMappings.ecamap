@@ -1,0 +1,28 @@
+GPA In_Data In_Map {
+    In_Entry1: PMU_A:78 
+    In_Entry2: PMU_A:79 
+    In_Entry3: PMU_A:80 
+    In_Entry4: PMU_A:81 
+    In_Entry5: PMU_A:82 
+    In_Entry6: PMU_A:83 
+    In_Entry7: PMU_A:84 
+    In_Entry8: PMU_A:85 
+    In_Entry9: PMU_A:86 
+    In_Entry10: PMU_A:87 
+    In_Entry11: PMU_A:88 
+}
+
+GPA Out_Data Out_Map {
+    Out_Entry1: PMU_A:89 
+    Out_Entry2: PMU_A:90 
+    Out_Entry3: PMU_A:91 
+    Out_Entry4: PMU_A:92 
+    Out_Entry5: PMU_A:93 
+    Out_Entry6: PMU_A:94 
+    Out_Entry7: PMU_A:95 
+    Out_Entry8: PMU_A:96 
+    Out_Entry9: PMU_A:97 
+    Out_Entry10: PMU_A:98 
+    Out_Entry11: PMU_A:99 
+}
+

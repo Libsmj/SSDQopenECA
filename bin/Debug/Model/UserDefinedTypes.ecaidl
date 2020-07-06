@@ -1,0 +1,16 @@
+category GPA
+In_Data {
+    FloatingPoint Double In_Entry1
+    FloatingPoint Double In_Entry2
+    FloatingPoint Double In_Entry3
+    FloatingPoint Double In_Entry4
+}
+
+category GPA
+Out_Data {
+    FloatingPoint Double Out_Entry1
+    FloatingPoint Double Out_Entry2
+    FloatingPoint Double Out_Entry3
+    FloatingPoint Double Out_Entry4
+}
+

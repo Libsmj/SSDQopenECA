@@ -1,0 +1,14 @@
+GPA In_Data In_Map {
+    In_Entry1: SSDQ_PHASOR:55 
+    In_Entry2: SSDQ_PHASOR:57 
+    In_Entry3: SSDQ_PHASOR:59 
+    In_Entry4: SSDQ_PHASOR:61 
+}
+
+GPA Out_Data Out_Map {
+    Out_Entry1: SSDQ_PHASOR:99 
+    Out_Entry2: SSDQ_PHASOR:100 
+    Out_Entry3: SSDQ_PHASOR:101 
+    Out_Entry4: SSDQ_PHASOR:102 
+}
+
