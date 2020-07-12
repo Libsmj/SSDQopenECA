@@ -1296,7 +1296,7 @@ namespace SSDQopenECA
                 numberOfFrame = 0;
                 RunSSDQButton.BackColor = Color.LightGray;
                 StopSSDQbutton.BackColor = Color.Red;
-                MessageBox.Show("SSDQ method failed to converge. Try running SSDQ again.", "Error Information");
+                MessageBox.Show("SSDQ method failed to converge. Try running SSDQ again.", "Error Information : " + ex.Message);
                 //MessageBox.Show(ex.ToString());
             }
         }

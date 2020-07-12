@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.ParameterBox = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.ParamtextBox5 = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.Paramlabel2 = new System.Windows.Forms.Label();
@@ -44,16 +46,14 @@
             this.ParamtextBox3 = new System.Windows.Forms.TextBox();
             this.ParamtextBox2 = new System.Windows.Forms.TextBox();
             this.ParamtextBox1 = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.ParamtextBox5 = new System.Windows.Forms.TextBox();
             this.ParameterBox.SuspendLayout();
             this.BadDatabox.SuspendLayout();
             this.SuspendLayout();
             // 
             // ParameterBox
             // 
-            this.ParameterBox.Controls.Add(this.ParamtextBox5);
             this.ParameterBox.Controls.Add(this.label4);
+            this.ParameterBox.Controls.Add(this.ParamtextBox5);
             this.ParameterBox.Controls.Add(this.label2);
             this.ParameterBox.Controls.Add(this.label1);
             this.ParameterBox.Controls.Add(this.Paramlabel2);
@@ -67,16 +67,35 @@
             this.ParameterBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ParameterBox.Location = new System.Drawing.Point(12, 12);
             this.ParameterBox.Name = "ParameterBox";
-            this.ParameterBox.Size = new System.Drawing.Size(655, 383);
+            this.ParameterBox.Size = new System.Drawing.Size(655, 370);
             this.ParameterBox.TabIndex = 9;
             this.ParameterBox.TabStop = false;
             this.ParameterBox.Text = "Parameter Settings";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(18, 172);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(241, 16);
+            this.label4.TabIndex = 10;
+            this.label4.Text = "Period of periodic subspace estimation";
+            // 
+            // ParamtextBox5
+            // 
+            this.ParamtextBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ParamtextBox5.Location = new System.Drawing.Point(499, 172);
+            this.ParamtextBox5.Multiline = true;
+            this.ParamtextBox5.Name = "ParamtextBox5";
+            this.ParamtextBox5.Size = new System.Drawing.Size(84, 32);
+            this.ParamtextBox5.TabIndex = 9;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(18, 142);
+            this.label2.Location = new System.Drawing.Point(17, 134);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(421, 32);
             this.label2.TabIndex = 8;
@@ -87,7 +106,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(18, 106);
+            this.label1.Location = new System.Drawing.Point(18, 101);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(420, 16);
             this.label1.TabIndex = 7;
@@ -97,7 +116,7 @@
             // 
             this.Paramlabel2.AutoSize = true;
             this.Paramlabel2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Paramlabel2.Location = new System.Drawing.Point(18, 66);
+            this.Paramlabel2.Location = new System.Drawing.Point(18, 65);
             this.Paramlabel2.Name = "Paramlabel2";
             this.Paramlabel2.Size = new System.Drawing.Size(374, 32);
             this.Paramlabel2.TabIndex = 6;
@@ -108,7 +127,7 @@
             // 
             this.Paramlabel1.AutoSize = true;
             this.Paramlabel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Paramlabel1.Location = new System.Drawing.Point(18, 25);
+            this.Paramlabel1.Location = new System.Drawing.Point(18, 28);
             this.Paramlabel1.Name = "Paramlabel1";
             this.Paramlabel1.Size = new System.Drawing.Size(207, 16);
             this.Paramlabel1.TabIndex = 5;
@@ -119,7 +138,7 @@
             this.Parameters_Button.BackColor = System.Drawing.SystemColors.ControlLight;
             this.Parameters_Button.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.Parameters_Button.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Parameters_Button.Location = new System.Drawing.Point(287, 328);
+            this.Parameters_Button.Location = new System.Drawing.Point(256, 318);
             this.Parameters_Button.Name = "Parameters_Button";
             this.Parameters_Button.Size = new System.Drawing.Size(82, 35);
             this.Parameters_Button.TabIndex = 3;
@@ -135,7 +154,7 @@
             this.BadDatabox.Controls.Add(this.BadDatatextBox2);
             this.BadDatabox.Controls.Add(this.BadDatatextBox1);
             this.BadDatabox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BadDatabox.Location = new System.Drawing.Point(21, 218);
+            this.BadDatabox.Location = new System.Drawing.Point(21, 223);
             this.BadDatabox.Name = "BadDatabox";
             this.BadDatabox.Size = new System.Drawing.Size(567, 95);
             this.BadDatabox.TabIndex = 4;
@@ -193,7 +212,7 @@
             // ParamtextBox4
             // 
             this.ParamtextBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ParamtextBox4.Location = new System.Drawing.Point(499, 142);
+            this.ParamtextBox4.Location = new System.Drawing.Point(499, 134);
             this.ParamtextBox4.Multiline = true;
             this.ParamtextBox4.Name = "ParamtextBox4";
             this.ParamtextBox4.Size = new System.Drawing.Size(84, 32);
@@ -202,7 +221,7 @@
             // ParamtextBox3
             // 
             this.ParamtextBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ParamtextBox3.Location = new System.Drawing.Point(499, 106);
+            this.ParamtextBox3.Location = new System.Drawing.Point(499, 98);
             this.ParamtextBox3.Multiline = true;
             this.ParamtextBox3.Name = "ParamtextBox3";
             this.ParamtextBox3.Size = new System.Drawing.Size(84, 30);
@@ -212,7 +231,7 @@
             // ParamtextBox2
             // 
             this.ParamtextBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ParamtextBox2.Location = new System.Drawing.Point(499, 66);
+            this.ParamtextBox2.Location = new System.Drawing.Point(499, 62);
             this.ParamtextBox2.Multiline = true;
             this.ParamtextBox2.Name = "ParamtextBox2";
             this.ParamtextBox2.Size = new System.Drawing.Size(84, 30);
@@ -227,31 +246,12 @@
             this.ParamtextBox1.Size = new System.Drawing.Size(84, 31);
             this.ParamtextBox1.TabIndex = 0;
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(18, 180);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(241, 16);
-            this.label4.TabIndex = 9;
-            this.label4.Text = "Period of periodic subspace estimation";
-            // 
-            // ParamtextBox5
-            // 
-            this.ParamtextBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ParamtextBox5.Location = new System.Drawing.Point(499, 180);
-            this.ParamtextBox5.Multiline = true;
-            this.ParamtextBox5.Name = "ParamtextBox5";
-            this.ParamtextBox5.Size = new System.Drawing.Size(84, 32);
-            this.ParamtextBox5.TabIndex = 10;
-            // 
             // ParameterForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(674, 413);
+            this.ClientSize = new System.Drawing.Size(674, 400);
             this.Controls.Add(this.ParameterBox);
             this.Name = "ParameterForm";
             this.Text = "Parameter Settings";
@@ -282,7 +282,7 @@
         private System.Windows.Forms.TextBox ParamtextBox3;
         private System.Windows.Forms.TextBox ParamtextBox2;
         private System.Windows.Forms.TextBox ParamtextBox1;
-        private System.Windows.Forms.TextBox ParamtextBox5;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox ParamtextBox5;
     }
 }

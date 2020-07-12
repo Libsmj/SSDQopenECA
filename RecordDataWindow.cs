@@ -438,9 +438,7 @@ namespace SSDQopenECA
                             {
                                 Processed_matrix[i].Add(Convert.ToDouble(submatrix.At(Recordcheckedindexlist[j], i)));
                             }
-                           
                         }
-
                     }
                     
                     CSVdata.Add(Convert.ToString(Timestamp[0].TimeOfDay));

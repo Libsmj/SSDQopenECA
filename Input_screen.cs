@@ -38,7 +38,8 @@ namespace SSDQopenECA
         private int numberOfFrame;              //number of frames retrieved upon SSDQ execution
         private int count = 0;
         private List<int> MeasType = new List<int>();   //Int Values- Only to get the signaltypeID for checked Input channels from input channel list for assigning to output channels creation before framework creation
-        private List<int> Meas = new List<int>();       //Int Values- Only get the condensed form of types of SignalTypeID present in the framework after framework creation.
+        private List<int> Meas = new List<int>();       //INt Values- Only get the condensed form of types of SignalTypeID present in the framework after framework creation.
+        private int[] NumMeas = new int[6];
         private bool Frameworkcreatedonce = false;      //To check if the frameowrk is created once or not for enabling framework saving option        
         private List<string> CSVhead = new List<string>();  //Header of the saved openECA framework csv file
         private List<string> CSVdata = new List<string>();  //Each row of the saved openECA framework csv file
@@ -52,8 +53,11 @@ namespace SSDQopenECA
         private hankelRobustDataEstimation hankelVmag = new hankelRobustDataEstimation();   //object responsible for Voltage magnitude processing
         private hankelRobustDataEstimation hankelVang = new hankelRobustDataEstimation();   //object responsible for Voltage angle processing
         private hankelRobustDataEstimation hankelFreq = new hankelRobustDataEstimation();   //object responsible for Frequency processing
-        private hankelRobustDataEstimationComplex hankelCurent = new hankelRobustDataEstimationComplex();   //object responsible for Current magnitude processing
-        private hankelRobustDataEstimationComplex hankelVoltage = new hankelRobustDataEstimationComplex();   //object responsible for Voltage  processing
+
+        private int[] complexOperations = new int[2];
+        private hankelRobustDataEstimationComplex hankelCurrent = new hankelRobustDataEstimationComplex();   //object responsible for Current processing
+        private hankelRobustDataEstimationComplex hankelVoltage = new hankelRobustDataEstimationComplex();   //object responsible for Current processing
+
         private string Inputmeaslistmessage = "";
         private List<int> Eachtypechannelnum = new List<int>();     //Depicts the list of number of each type of measurement selected
         private bool Insufficientchannels = true;
@@ -62,8 +66,8 @@ namespace SSDQopenECA
         private bool Input_Output_mismatch = false;     //denotes mismatch between number and type of input and output measurement channels
         private int wdsize = 0;                         //window size for hankel process
         private List<double>[] Current_data_initial = new List<double>[5];  //array of 5 lists with each list corresponding to one type of measurment and array consists of the current frame of data of the selected measurement channels
-        private Vector<double> Current_data;            // Vector of Current data frame of any one type of measurement type
-        private Vector<double> Proc_data;               //Vector of Processed data of any one type of measurement type
+        private Vector<double> Current_data;            //Vector of Current data frame of any one type of measurement type
+        private Vector<double>[] Proc_data;               //Vector of Processed data of any one type of measurement type
         private List<string> IndataIDlist = new List<string>(); // Input measurement channels ID list as available in database used for openECA framework creation process
         private List<string> OutdataIDlist = new List<string>();// Output measurement channels ID list as available in database used for openECA framework creation process
         private List<Int32> OutDeviceIDlist = new List<Int32>();// List of the devices allocated as Output devices based on the user's selection
@@ -84,12 +88,16 @@ namespace SSDQopenECA
         public List<string>[] IPchannelnamelist_updated = new List<string>[5];  //Array of 5 lists containing the signal reference names of the Input channels selected for openECA framework creation separated as per measurement types        
         public bool SSDQ_started = false;      
         public Thread MainWindow_thread = new Thread(ThreadStart_for_main_window);
-        public  List<double> Proc_data_updated = new List<double>();            //List of Processed data for a particular frame in the same sequence of the output measurment channels
+        public List<double>   Proc_data_updated = new List<double>();           //List of Processed data for a particular frame in the same sequence of the output measurment channels
         public Matrix<double> submatrixImag;            
         public Matrix<double> submatrixIang;
         public Matrix<double> submatrixVmag;
         public Matrix<double> submatrixVang;
-        public Matrix<double> submatrixFreq;     
+        public Matrix<double> submatrixFreq;
+        Vector<double>[] currentMeasurments = new Vector<double>[2];
+        Vector<double>[] voltageMeasurments = new Vector<double>[2];
+        public Matrix<double>[] submatrixCurrent;
+        public Matrix<double>[] submatrixVoltage;
         public Matrix<double> submatrixStacked;                 // Submatrix of each selected measurment type stacked on top of each other
         public string Channelnameprefix;                        // prefix for Output measurment channels
        
@@ -990,38 +998,70 @@ namespace SSDQopenECA
                         InitializeLists();
                         SSDQ_started = true;
                         wdsize = ParameterForm.L;
+                        complexOperations[0] = 0;
+                        complexOperations[1] = 0;
                         // Create and Initialize objects of the appropriate types for individual Hankel process execution
                         for (int i = 0; i < Meas.Count; i++)
                         {
                             if (Meas[i] == 1)
                             {
+                                NumMeas[1] = i;
+                                complexOperations[0]++;
                                 hankelImag.Initialize(Meas[i] - 1);
                             }
                             if (Meas[i] == 2)
                             {
+                                NumMeas[2] = i;
+                                complexOperations[0]++;
                                 hankelIang.Initialize(Meas[i] - 1);
                             }
                             if (Meas[i] == 3)
                             {
+                                NumMeas[3] = i;
+                                complexOperations[1]++;
                                 hankelVmag.Initialize(Meas[i] - 1);
                             }
                             if (Meas[i] == 4)
                             {
+                                NumMeas[4] = i;
+                                complexOperations[1]++;
                                 hankelVang.Initialize(Meas[i] - 1);
                             }
                             if (Meas[i] == 5)
                             {
+                                NumMeas[5] = i;
                                 hankelFreq.Initialize(Meas[i] - 1);
                             }
-                            if (Meas[i] == 6)
+                        }
+
+                        if (complexOperations[0] == 2)
+                        {
+                            if (Meas[NumMeas[1]] != Meas[NumMeas[2]])
                             {
-                                hankelCurent.Initialize(Meas[i] - 1);
+                                complexOperations[0] = 0;
                             }
-                            if (Meas[i] == 7)
+                            else
                             {
-                                hankelVoltage.Initialize(Meas[i] - 1);
+                                hankelCurrent.Initialize(0);
+                                currentMeasurments[0] = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[NumMeas[1]] - 1]));
+                                currentMeasurments[1] = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[NumMeas[2]] - 1]));
                             }
                         }
+
+                        if (complexOperations[1] == 2)
+                        {
+                            if (Meas[NumMeas[3]] != Meas[NumMeas[4]])
+                            {
+                                complexOperations[1] = 0;
+                            }
+                            else
+                            {
+                                hankelVoltage.Initialize(2);
+                                voltageMeasurments[0] = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[NumMeas[3]] - 1]));
+                                voltageMeasurments[1] = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[NumMeas[4]] - 1]));
+                            }
+                        }
+
                         RunSSDQButton.BackColor = Color.Green;
                         StopSSDQbutton.BackColor = Color.LightGray;
                         MessageBox.Show("SSDQ Algorithm Running......", "Information");
@@ -1117,13 +1157,16 @@ namespace SSDQopenECA
                     }
                 }
                 Proc_data_updated.Clear();
-                submatrixStacked= Matrix<double>.Build.Dense(Convert.ToInt32(Inentrynamelist.Count), wdsize);
+                submatrixStacked = Matrix<double>.Build.Dense(Convert.ToInt32(Inentrynamelist.Count), wdsize);
                 count = 0;
+
+                Proc_data = new Vector<double>[5];
+                
+
                 for (int i = 0; i < Meas.Count; i++)
                 {
-
                     Current_data = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[i] - 1]));
-                    Proc_data = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[i] - 1]));
+                    Proc_data[i] = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[i] - 1]));
                     
 
                     for (int j = 0; j < Current_data_initial[Meas[i] - 1].Count; j++)
@@ -1131,72 +1174,100 @@ namespace SSDQopenECA
                         Current_data[j] = Current_data_initial[Meas[i] - 1][j];
 
                         //In case the measurements are voltage angles or current angles, they are modified into radians from degrees for proper conditioning by Hankel robust estimation
-                        if(Meas[i] == 2 || Meas[i] == 4)
+                        if(Meas[i]==2 | Meas[i] == 4)
                         {
                             if (Current_data[j] < 0)
                             {
                                 Current_data[j] = 360 + Current_data[j];
                             }
-                            Current_data[j] = Current_data[j] * (Math.PI) / 180;
+                            Current_data[j] = Current_data[j] * (2 * Math.PI) / 360;
                         }
                     }
 
                     if (Meas[i] == 1)
                     {
-                        submatrixImag = hankelImag.ProcessFrame(Current_data, numberOfFrame);// ProcessFrame method is invoked to carry out the SSDQ execution
-                        for(int j = 0; j < submatrixImag.RowCount; j++)
+                        if (complexOperations[0] != 2)
                         {
-                            submatrixStacked.SetRow(count,submatrixImag.Row(j));
-                            count++;
+                            submatrixImag = hankelImag.ProcessFrame(Current_data, numberOfFrame);// ProcessFrame method is invoked to carry out the SSDQ execution
+                            for (int j = 0; j < submatrixImag.RowCount; j++)
+                            {
+                                submatrixStacked.SetRow(count, submatrixImag.Row(j));
+                                count++;
+                            }
+                            Proc_data[i] = submatrixImag.Column(wdsize - 1);
                         }
-                        Proc_data = submatrixImag.Column(wdsize - 1);
+                        else
+                        {
+                            currentMeasurments[0] = Current_data.Clone();
+                        }
                     }
                     else if (Meas[i] == 2)
                     {
-                        submatrixIang = hankelIang.ProcessFrame(Current_data, numberOfFrame);
-                        for (int j = 0; j < submatrixIang.RowCount; j++)
+                        if (complexOperations[0] != 2)
                         {
-                            submatrixStacked.SetRow(count, submatrixIang.Row(j));
-                            count++;
-                        }
-                        Proc_data = submatrixIang.Column(wdsize - 1);
-                        //Convert back the measurements from radians to degrees 
-                        for (int k = 0; k < Proc_data.Count; k++)
-                        {
-                            Proc_data[k] = (Proc_data[k] * 360 / (2 * Math.PI)) % 360;
-                            if (Proc_data[k] > 180)
+                            submatrixIang = hankelIang.ProcessFrame(Current_data, numberOfFrame);
+                            for (int j = 0; j < submatrixIang.RowCount; j++)
                             {
-                                Proc_data[k] = Proc_data[k] - 360;
+                                submatrixStacked.SetRow(count, submatrixIang.Row(j));
+                                count++;
                             }
+                            Proc_data[i] = submatrixIang.Column(wdsize - 1);
+                            //Convert back the measurements from radians to degrees 
+                            for (int k = 0; k < Proc_data[i].Count; k++)
+                            {
+                                Proc_data[i][k] = (Proc_data[i][k] * 360 / (2 * Math.PI)) % 360;
+                                if (Proc_data[i][k] > 180)
+                                {
+                                    Proc_data[i][k] = Proc_data[i][k] - 360;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            currentMeasurments[1] = Current_data.Clone();
                         }
                     }
                     else if (Meas[i] == 3)
                     {
-                        submatrixVmag = hankelVmag.ProcessFrame(Current_data, numberOfFrame);
-                        for (int j = 0; j < submatrixVmag.RowCount; j++)
+                        if (complexOperations[1] != 2)
                         {
-                            submatrixStacked.SetRow(count, submatrixVmag.Row(j));
-                            count++;
+                            submatrixVmag = hankelVmag.ProcessFrame(Current_data, numberOfFrame);
+                            for (int j = 0; j < submatrixVmag.RowCount; j++)
+                            {
+                                submatrixStacked.SetRow(count, submatrixVmag.Row(j));
+                                count++;
+                            }
+                            Proc_data[i] = submatrixVmag.Column(wdsize - 1);
                         }
-                        Proc_data = submatrixVmag.Column(wdsize - 1);
+                        else
+                        {
+                            voltageMeasurments[0] = Current_data.Clone();
+                        }
                     }
                     else if (Meas[i] == 4)
-                    {            
-                        submatrixVang = hankelVang.ProcessFrame(Current_data, numberOfFrame);
-                        for (int j = 0; j < submatrixVang.RowCount; j++)
+                    {
+                        if (complexOperations[1] != 2)
                         {
-                            submatrixStacked.SetRow(count, submatrixVang.Row(j));
-                            count++;
-                        }
-
-                        Proc_data = submatrixVang.Column(wdsize - 1);
-                        for (int k = 0; k < Proc_data.Count; k++)
-                        {
-                            Proc_data[k] = (Proc_data[k] * 360 / (2 * Math.PI)) % 360;
-                            if (Proc_data[k] > 180)
+                            submatrixVang = hankelVang.ProcessFrame(Current_data, numberOfFrame);
+                            for (int j = 0; j < submatrixVang.RowCount; j++)
                             {
-                                Proc_data[k] = Proc_data[k] - 360;
+                                submatrixStacked.SetRow(count, submatrixVang.Row(j));
+                                count++;
                             }
+
+                            Proc_data[i] = submatrixVang.Column(wdsize - 1);
+                            for (int k = 0; k < Proc_data[i].Count; k++)
+                            {
+                                Proc_data[i][k] = (Proc_data[i][k] * 360 / (2 * Math.PI)) % 360;
+                                if (Proc_data[i][k] > 180)
+                                {
+                                    Proc_data[i][k] = Proc_data[i][k] - 360;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            voltageMeasurments[1] = Current_data.Clone();
                         }
                     }
                     else if (Meas[i] == 5)
@@ -1207,24 +1278,75 @@ namespace SSDQopenECA
                             submatrixStacked.SetRow(count, submatrixFreq.Row(j));
                             count++;
                         }
-                        Proc_data = submatrixFreq.Column(wdsize - 1);
-                    }
-                    else if (Meas[i] == 6)
+                        Proc_data[i] = submatrixFreq.Column(wdsize - 1);
+                    }                 
+                }
+
+                if (complexOperations[0] == 2)
+                {
+                    submatrixCurrent = hankelCurrent.ProcessFrame(currentMeasurments, numberOfFrame);// ProcessFrame method is invoked to carry out the SSDQ execution
+
+                    for (int j = 0; j < submatrixCurrent[0].RowCount; j++)
                     {
-                        submatrixFreq = hankelFreq.ProcessFrame(Current_data, numberOfFrame);
-                        for (int j = 0; j < submatrixFreq.RowCount; j++)
-                        {
-                            submatrixStacked.SetRow(count, submatrixFreq.Row(j));
-                            count++;
-                        }
-                        Proc_data = submatrixFreq.Column(wdsize - 1);
+                        submatrixStacked.SetRow(count, submatrixCurrent[0].Row(j));
+                        count++;
                     }
+                    Proc_data[NumMeas[1]] = submatrixCurrent[0].Column(wdsize - 1);
 
-                    for (int j = 0; j < Proc_data.Count; j++)
-                    {                       
-                        Proc_data_updated.Add(Proc_data[j]);                    //This is used as output data to openECA Manager
+                    for (int j = 0; j < submatrixCurrent[1].RowCount; j++)
+                    {
+                        submatrixStacked.SetRow(count, submatrixCurrent[1].Row(j));
+                        count++;
+                    }
+                    int i = NumMeas[2];
+                    Proc_data[i] = submatrixCurrent[1].Column(wdsize - 1);
+                    //Convert back the measurements from radians to degrees 
+                    for (int k = 0; k < Proc_data[i].Count; k++)
+                    {
+                        Proc_data[i][k] = (Proc_data[i][k] * 360 / (2 * Math.PI)) % 360;
+                        if (Proc_data[i][k] > 180)
+                        {
+                            Proc_data[i][k] = Proc_data[i][k] - 360;
+                        }
+                    }
+                }
 
-                    }                  
+                if (complexOperations[1] == 2)
+                {
+                    submatrixVoltage = hankelVoltage.ProcessFrame(voltageMeasurments, numberOfFrame);// ProcessFrame method is invoked to carry out the SSDQ execution
+                    submatrixVmag = submatrixVoltage[0];
+                    for (int j = 0; j < submatrixVoltage[0].RowCount; j++)
+                    {
+                        submatrixStacked.SetRow(count, submatrixVoltage[0].Row(j));
+                        count++;
+                    }
+                    Proc_data[NumMeas[3]] = submatrixVoltage[0].Column(wdsize - 1);
+
+                    submatrixVang = submatrixVoltage[1];
+                    for (int j = 0; j < submatrixVoltage[1].RowCount; j++)
+                    {
+                        submatrixStacked.SetRow(count, submatrixVoltage[1].Row(j));
+                        count++;
+                    }
+                    int i = NumMeas[4];
+                    Proc_data[i] = submatrixVoltage[1].Column(wdsize - 1);
+                    //Convert back the measurements from radians to degrees 
+                    for (int k = 0; k < Proc_data[i].Count; k++)
+                    {
+                        Proc_data[i][k] = (Proc_data[i][k] * 360 / (2 * Math.PI)) % 360;
+                        if (Proc_data[i][k] > 180)
+                        {
+                            Proc_data[i][k] = Proc_data[i][k] - 360;
+                        }
+                    }
+                }
+
+                for (int i = 0; i < Meas.Count; i++)
+                {
+                    for (int j = 0; j < Proc_data[i].Count; j++)
+                    {
+                        Proc_data_updated.Add(Proc_data[i][j]);                    //This is used as output data to openECA Manager
+                    }
                 }
             }
             catch (Exception ex)
@@ -1233,7 +1355,7 @@ namespace SSDQopenECA
                 numberOfFrame = 0;
                 RunSSDQButton.BackColor = Color.LightGray;
                 StopSSDQbutton.BackColor = Color.Red;
-                MessageBox.Show("SSDQ method failed to converge. Try running SSDQ again.", "Error Information");
+                MessageBox.Show("SSDQ method failed to converge. Try running SSDQ again.", "Error Information:" + ex.Message);
             }         
         }
 
@@ -1246,8 +1368,7 @@ namespace SSDQopenECA
                 RunSSDQButton.BackColor = Color.LightGray;
                 StopSSDQbutton.BackColor = Color.Red;
                 MessageBox.Show("SSDQ Algorithm execution terminated.", "Information");
-            }     
-
+            }
         }
 
         private void PlotButton_Click(object sender, EventArgs e)

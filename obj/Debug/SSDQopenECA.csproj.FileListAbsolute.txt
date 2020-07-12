@@ -322,7 +322,6 @@ C:\Users\ptba006\Box\Projects\SSDQ\GUI\Stage-15\Stage-15\SSDQopenECA\obj\Debug\S
 C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\bin\Debug\SSDQopenECA.exe.config
 C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\bin\Debug\SSDQopenECA.exe
 C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\bin\Debug\SSDQopenECA.pdb
-C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\obj\Debug\SSDQopenECA.csprojAssemblyReference.cache
 C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\obj\Debug\SSDQopenECA.AddDevices.resources
 C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\obj\Debug\SSDQopenECA.AddMeastypes.resources
 C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\obj\Debug\SSDQopenECA.FrameworkConfiguration.resources
@@ -339,4 +338,8 @@ C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\obj\Debu
 C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\obj\Debug\SSDQopenECA.csproj.CopyComplete
 C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\obj\Debug\SSDQopenECA.exe
 C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\obj\Debug\SSDQopenECA.pdb
+C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\bin\Debug\Antlr3.Runtime.dll
+C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\bin\Debug\ExpressionEvaluator.dll
 C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\bin\Debug\GSF.Communication.dll
+C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\bin\Debug\GSF.Security.dll
+C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\bin\Debug\GSF.ServiceProcess.dll

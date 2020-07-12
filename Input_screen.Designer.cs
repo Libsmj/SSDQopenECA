@@ -570,7 +570,7 @@
             this.Controls.Add(this.Heading);
             this.Name = "Input_screen";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "SSDQopeECA Configuration";
+            this.Text = "x`";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.InputScreen_FormClosing);
             this.Load += new System.EventHandler(this.Input_screen_Load);
             this.MeasurementBox.ResumeLayout(false);

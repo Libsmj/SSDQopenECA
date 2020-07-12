@@ -8,8 +8,8 @@
 //*************************************************************************************************************
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Numerics;
+using System.Threading;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 
@@ -17,6 +17,7 @@ namespace Error_Recovery
 {
     class Programe
     {
+
         public static Matrix<double> SAP(Matrix<double> x_p, int n1, int r_true, double eps)
         {
             int n_row = x_p.RowCount;       // get row 
@@ -338,7 +339,6 @@ namespace Error_Recovery
             return result;
         }
     }
-
     class MP_slice<T> where T : struct, IEquatable<T>, IFormattable
     {
 

@@ -24,7 +24,7 @@ namespace SSDQopenECA
         public static double n=1.2;
         public static double a=3;
         public static double b = 30;
-        public static int r = 2000; // Testing
+        public static int r = 2000;
         public static bool paramsavailable=false;
         public ParameterForm()
         {
@@ -38,7 +38,7 @@ namespace SSDQopenECA
             ParamtextBox2.Text = Convert.ToString(ea);
             ParamtextBox3.Text = Convert.ToString(k);
             ParamtextBox4.Text = Convert.ToString(n);
-            ParamtextBox5.Text = Convert.ToString(r); //Testing
+            ParamtextBox5.Text = Convert.ToString(r);
             BadDatatextBox1.Text = Convert.ToString(a);
             BadDatatextBox2.Text = Convert.ToString(b);
         }
@@ -50,8 +50,7 @@ namespace SSDQopenECA
                 ea = Convert.ToDouble(ParamtextBox2.Text);
                 k = Convert.ToInt32(ParamtextBox3.Text);
                 n = Convert.ToDouble(ParamtextBox4.Text);
-                r = Convert.ToInt32(ParamtextBox5.Text); //Testing
-
+                r = Convert.ToInt32(ParamtextBox5.Text);
                 a = Convert.ToDouble(BadDatatextBox1.Text);
                 b = Convert.ToDouble(BadDatatextBox2.Text);
                 paramsavailable = true;
