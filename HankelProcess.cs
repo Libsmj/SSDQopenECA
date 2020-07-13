@@ -12,12 +12,16 @@
 //Output:Processed and conditioned data
 //*************************************************************************************************************
 using System;
+using System.IO;
 using System.Linq;
 using System.ComponentModel;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 using SSDQopenECA;
 using Error_Recovery;
+
+using CsvHelper;
+using System.Text;
 
 namespace HankelRobustDataEstimation
 {
@@ -53,6 +57,8 @@ namespace HankelRobustDataEstimation
         private  bool Init_flag = false; //check whether correct first window data
 
         private  int num_channel;
+
+
 
         public hankelRobustDataEstimation()
         {
@@ -104,6 +110,15 @@ namespace HankelRobustDataEstimation
         //This change introduced for openECA implementation
         public Matrix<double> ProcessFrame(Vector <double> Current_data ,int numberOfFrame)
         {
+            //var csv = new StringBuilder();
+            //for (int i = 0; i < num_channel; i++)
+            //{
+            //    var newLine = string.Format("{0},", Current_data[i]);
+            //    csv.Append(newLine);
+            //}
+            //csv.AppendLine("");
+            //File.AppendAllText(@"C:\Users\Jacob\Desktop\1.csv", csv.ToString());
+
             Vector<double> ctvector = Vector<double>.Build.Dense(num_channel);
             Vector<double> flag_ctvector = Vector<double>.Build.Dense(num_channel);
             Vector<double> flag_observed_ctvector = Vector<double>.Build.Dense(num_channel);
@@ -385,7 +400,17 @@ namespace HankelRobustDataEstimation
                         submatrix_updated.SetColumn(j, corrected.Column(j));
                     }
                 }
-            }            
+            }
+
+            var csv = new StringBuilder();
+            for (int i = 0; i < num_channel; i++)
+            {
+                var newLine = string.Format("{0},", submatrix_updated.At(i, 0));
+                csv.Append(newLine);
+            }
+            csv.AppendLine("");
+            File.AppendAllText(@"C:\Users\Jacob\Desktop\1.csv", csv.ToString());
+
             return submatrix_updated;
         }
     }

@@ -1036,7 +1036,7 @@ namespace SSDQopenECA
 
                         if (complexOperations[0] == 2)
                         {
-                            if (Meas[NumMeas[1]] != Meas[NumMeas[2]])
+                            if (NumChannelList[Meas[NumMeas[1]] - 1] != NumChannelList[Meas[NumMeas[2]] - 1])
                             {
                                 complexOperations[0] = 0;
                             }
@@ -1050,7 +1050,7 @@ namespace SSDQopenECA
 
                         if (complexOperations[1] == 2)
                         {
-                            if (Meas[NumMeas[3]] != Meas[NumMeas[4]])
+                            if (NumChannelList[Meas[NumMeas[3]] - 1] != NumChannelList[Meas[NumMeas[4]] - 1])
                             {
                                 complexOperations[1] = 0;
                             }
@@ -1174,13 +1174,13 @@ namespace SSDQopenECA
                         Current_data[j] = Current_data_initial[Meas[i] - 1][j];
 
                         //In case the measurements are voltage angles or current angles, they are modified into radians from degrees for proper conditioning by Hankel robust estimation
-                        if(Meas[i]==2 | Meas[i] == 4)
+                        if(Meas[i] == 2 | Meas[i] == 4)
                         {
                             if (Current_data[j] < 0)
                             {
                                 Current_data[j] = 360 + Current_data[j];
                             }
-                            Current_data[j] = Current_data[j] * (2 * Math.PI) / 360;
+                            Current_data[j] *= Math.PI / 180;
                         }
                     }
 
@@ -1215,7 +1215,7 @@ namespace SSDQopenECA
                             //Convert back the measurements from radians to degrees 
                             for (int k = 0; k < Proc_data[i].Count; k++)
                             {
-                                Proc_data[i][k] = (Proc_data[i][k] * 360 / (2 * Math.PI)) % 360;
+                                Proc_data[i][k] = (Proc_data[i][k] * 180 / Math.PI) % 360;
                                 if (Proc_data[i][k] > 180)
                                 {
                                     Proc_data[i][k] = Proc_data[i][k] - 360;
@@ -1258,7 +1258,7 @@ namespace SSDQopenECA
                             Proc_data[i] = submatrixVang.Column(wdsize - 1);
                             for (int k = 0; k < Proc_data[i].Count; k++)
                             {
-                                Proc_data[i][k] = (Proc_data[i][k] * 360 / (2 * Math.PI)) % 360;
+                                Proc_data[i][k] = (Proc_data[i][k] * 180 / Math.PI) % 360;
                                 if (Proc_data[i][k] > 180)
                                 {
                                     Proc_data[i][k] = Proc_data[i][k] - 360;
@@ -1314,26 +1314,27 @@ namespace SSDQopenECA
                 if (complexOperations[1] == 2)
                 {
                     submatrixVoltage = hankelVoltage.ProcessFrame(voltageMeasurments, numberOfFrame);// ProcessFrame method is invoked to carry out the SSDQ execution
+
                     submatrixVmag = submatrixVoltage[0];
-                    for (int j = 0; j < submatrixVoltage[0].RowCount; j++)
+                    for (int j = 0; j < submatrixVmag.RowCount; j++)
                     {
-                        submatrixStacked.SetRow(count, submatrixVoltage[0].Row(j));
+                        submatrixStacked.SetRow(count, submatrixVmag.Row(j));
                         count++;
                     }
-                    Proc_data[NumMeas[3]] = submatrixVoltage[0].Column(wdsize - 1);
+                    Proc_data[NumMeas[3]] = submatrixVmag.Column(wdsize - 1);
 
                     submatrixVang = submatrixVoltage[1];
-                    for (int j = 0; j < submatrixVoltage[1].RowCount; j++)
+                    for (int j = 0; j < submatrixVang.RowCount; j++)
                     {
-                        submatrixStacked.SetRow(count, submatrixVoltage[1].Row(j));
+                        submatrixStacked.SetRow(count, submatrixVang.Row(j));
                         count++;
                     }
                     int i = NumMeas[4];
-                    Proc_data[i] = submatrixVoltage[1].Column(wdsize - 1);
+                    Proc_data[i] = submatrixVang.Column(wdsize - 1);
                     //Convert back the measurements from radians to degrees 
                     for (int k = 0; k < Proc_data[i].Count; k++)
                     {
-                        Proc_data[i][k] = (Proc_data[i][k] * 360 / (2 * Math.PI)) % 360;
+                        Proc_data[i][k] = (Proc_data[i][k] * 180 / Math.PI) % 360;
                         if (Proc_data[i][k] > 180)
                         {
                             Proc_data[i][k] = Proc_data[i][k] - 360;

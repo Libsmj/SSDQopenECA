@@ -37,7 +37,6 @@ namespace SSDQopenECA
         private string strSeperator = ",";
         private List<string> CSVhead = new List<string>();
         private List<string> CSVdata = new List<string>();
-        private bool Stopbuttonclicked = false;
         private bool Startbuttonclicked = false;
         private bool SSDQ_started;
         private bool progress = false;      
@@ -288,7 +287,6 @@ namespace SSDQopenECA
                         numFrames = 0;
                         Timestamp.Clear();
                         Startbuttonclicked = true;
-                        Stopbuttonclicked = false;
                         Record_option = true;
                         Record_channels = PlotChannelList.CheckedItems.Count;
                         A_data = Vector<double>.Build.Dense(Record_channels);
@@ -458,7 +456,6 @@ namespace SSDQopenECA
             {
                 if (Startbuttonclicked == true)
                 {
-                    Stopbuttonclicked = true;
                     Startbuttonclicked = false;
                     stream.WriteLine(sb.ToString());
                     stream.Close();
@@ -476,7 +473,6 @@ namespace SSDQopenECA
             //Only if the Record start option has been clicked
             if (Startbuttonclicked == true)
             {
-                Stopbuttonclicked = true;
                 Startbuttonclicked = false;
                 Record_option = false;
                 stream.WriteLine(sb.ToString());

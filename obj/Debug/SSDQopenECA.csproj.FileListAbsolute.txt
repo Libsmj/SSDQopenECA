@@ -343,3 +343,6 @@ C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\bin\Debu
 C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\bin\Debug\GSF.Communication.dll
 C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\bin\Debug\GSF.Security.dll
 C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\bin\Debug\GSF.ServiceProcess.dll
+C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\obj\Debug\SSDQopenECA.csprojAssemblyReference.cache
+C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\bin\Debug\CsvHelper.dll
+C:\Users\Jacob\Dropbox\SSDQ_OpenECA_SourceCode\C#_codes\GUI\SSDQopenECA\bin\Debug\CsvHelper.xml
