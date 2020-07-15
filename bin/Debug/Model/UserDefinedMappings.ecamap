@@ -6,9 +6,9 @@ GPA In_Data In_Map {
 }
 
 GPA Out_Data Out_Map {
-    Out_Entry1: SSDQ_PHASOR:129 
-    Out_Entry2: SSDQ_PHASOR:130 
-    Out_Entry3: SSDQ_PHASOR:131 
-    Out_Entry4: SSDQ_PHASOR:132 
+    Out_Entry1: SSDQ_PHASOR:121 
+    Out_Entry2: SSDQ_PHASOR:122 
+    Out_Entry3: SSDQ_PHASOR:123 
+    Out_Entry4: SSDQ_PHASOR:124 
 }
 
