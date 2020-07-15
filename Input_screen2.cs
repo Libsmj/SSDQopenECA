@@ -32,13 +32,16 @@ namespace SSDQopenECA
         //Private Fields
         private int InitialPIDCount;
         private int OriginalPIDCount;
-        private hankelRobustDataEstimation hankelImag = new hankelRobustDataEstimation();
-        private hankelRobustDataEstimation hankelIang = new hankelRobustDataEstimation();
-        private hankelRobustDataEstimation hankelVmag = new hankelRobustDataEstimation();
-        private hankelRobustDataEstimation hankelVang = new hankelRobustDataEstimation();
-        private hankelRobustDataEstimation hankelFreq = new hankelRobustDataEstimation();
+        private HankelProcess[] hankelProcess = new HankelProcess[5];
+
+        private int[] complexOperations = new int[2];
+        private HankelProcessComplex hankelCurrent; //object responsible for Current processing
+        private HankelProcessComplex hankelVoltage; //object responsible for Current processing
+
         private List<int> MeasType = new List<int>();
         private List<int> Meas = new List<int>();
+        private int[] MeasNum = new int[5];
+
         private string Framework_filename = "";
         private string Database_file = "";
         private string constring;
@@ -61,7 +64,7 @@ namespace SSDQopenECA
         private int count = 0;
         private List<double>[] Current_data_initial = new List<double>[5];
         private Vector<double> Current_data;
-        private Vector<double> Proc_data;
+        private Vector<double>[] Proc_data;
         private int wdsize = 0;
         private List<string> IndataIDlist = new List<string>();
         private List<string> OutdataIDlist = new List<string>();
@@ -90,7 +93,11 @@ namespace SSDQopenECA
         public Matrix<double> submatrixIang;
         public Matrix<double> submatrixVmag;
         public Matrix<double> submatrixVang;
-        public Matrix<double> submatrixFreq;      
+        public Matrix<double> submatrixFreq;
+        Vector<double>[] currentMeasurments = new Vector<double>[2];
+        Vector<double>[] voltageMeasurments = new Vector<double>[2];
+        public Matrix<double>[] submatrixCurrent;
+        public Matrix<double>[] submatrixVoltage;
         public Matrix<double> submatrixStacked;
         public string Channelnameprefix;
 
@@ -175,7 +182,6 @@ namespace SSDQopenECA
 
         }
        
-       
         private void SearchFrameworkbutton_Click(object sender, EventArgs e)
         {
             
@@ -226,6 +232,7 @@ namespace SSDQopenECA
                 MessageBox.Show("Wrong framework file selected. Choose the appropriate framework (.csv) file for proper execution. ", "Error Information");
             }
         }
+
         private void Populatedata()
         {
             DeviceCheckList.Items.Clear();
@@ -327,11 +334,13 @@ namespace SSDQopenECA
             }           
 
         }
+
         private static void ThreadStart_for_AddDevicesWindow()
         {
             AddDevices AddDevices = new AddDevices();
             Application.Run(AddDevices);
         }
+
         private void AllDevicesbutton_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < DeviceCheckList.Items.Count; i++)
@@ -412,6 +421,7 @@ namespace SSDQopenECA
             }
             
         }
+
         private static void ThreadStart_for_AddMeastypeWindow()
         {
             AddMeastypes AddMeastypes = new AddMeastypes();
@@ -434,15 +444,12 @@ namespace SSDQopenECA
             }
         }
         
-
         private void RefreshChannelsbutton_Click(object sender, EventArgs e)
         {
            
             InputChannelList.Items.Clear();
             FillInputCheckListBox();
         }
-
-
 
         private void FillInputCheckListBox()
         {
@@ -609,6 +616,7 @@ namespace SSDQopenECA
             
             FillOutputCheckListBox();
         }
+
         private void FillOutputCheckListBox()
         {
             Meas.Clear();
@@ -617,7 +625,7 @@ namespace SSDQopenECA
             OutputChannelList.Items.Clear();
             //IPchannelnamelist.Clear();
             OPchannelnamelist.Clear();
-            OutputDevice_combobox.BackColor = default(Color);
+            OutputDevice_combobox.BackColor = default;
 
 
             SQLiteConnection conDatabase = new SQLiteConnection(constring);
@@ -737,9 +745,9 @@ namespace SSDQopenECA
                     }
                     for (int i = 0; i < MeasType.Count; i++)
                     {
-                        if (!Meas.Contains(MeasType[i]))
+                        if (!Meas.Contains(MeasType[i] - 1))
                         {
-                            Meas.Add(MeasType[i]);
+                            Meas.Add(MeasType[i] - 1);
                         }
 
                     }
@@ -760,8 +768,8 @@ namespace SSDQopenECA
                                     num++;
                                 }
                             }
-                            Eachtypechannelnum[Meas[i] - 1] = num;
-                            if (Eachtypechannelnum[Meas[i] - 1] > 0 && Eachtypechannelnum[Meas[i] - 1] < 4)
+                            Eachtypechannelnum[Meas[i]] = num;
+                            if (Eachtypechannelnum[Meas[i]] > 0 && Eachtypechannelnum[Meas[i]] < 4)
                             {
                                 Insufficientchannels = true;
                                 break;
@@ -781,9 +789,11 @@ namespace SSDQopenECA
                             for (int i = 0; i < InputChannelList.CheckedItems.Count; i++)
                             {
                                 string query_insert = "INSERT INTO Measurement (PointID,DeviceID,PointTag,SignalTypeID,SignalReference,Description,Subscribed,Enabled) VALUES (@P_id,@Dev_id,@P_tag,@Sigtype_id,@Sig_ref,@Des,@Sub,@En)";
-                                SQLiteCommand cmd_insert = new SQLiteCommand();
-                                cmd_insert.CommandText = query_insert;
-                                cmd_insert.Connection = conDatabase;
+                                SQLiteCommand cmd_insert = new SQLiteCommand
+                                {
+                                    CommandText = query_insert,
+                                    Connection = conDatabase
+                                };
 
                                 cmd_insert.Parameters.Add(new SQLiteParameter("@P_id", Convert.ToString(InitialPIDCount + i + 1)));
                                 cmd_insert.Parameters.Add(new SQLiteParameter("@Dev_id", Convert.ToString(OutDeviceIDlist[i])));     //1 refers to Test Device ,7 refers to Proc_PMU added by me
@@ -839,6 +849,7 @@ namespace SSDQopenECA
         {
            CreateFramework();
         }
+
         private void CreateFramework()
         {
             if (MainWindow_thread.IsAlive)
@@ -953,12 +964,15 @@ namespace SSDQopenECA
                 }
             }
         }
+
         private void Makedatastructs()
         {
             // Create datastructs
-            UserDefinedType input_data = new UserDefinedType();
-            input_data.Category = "GPA";
-            input_data.Identifier = "In_Data";
+            UserDefinedType input_data = new UserDefinedType
+            {
+                Category = "GPA",
+                Identifier = "In_Data"
+            };
             for (int i = 0; i < Inentrynamelist.Count; i++)
             {
                 input_data.Fields.Add(new UDTField()
@@ -967,9 +981,11 @@ namespace SSDQopenECA
                     Identifier = Inentrynamelist[i]
                 });
             }
-            UserDefinedType output_data = new UserDefinedType();
-            output_data.Category = "GPA";
-            output_data.Identifier = "Out_Data";
+            UserDefinedType output_data = new UserDefinedType
+            {
+                Category = "GPA",
+                Identifier = "Out_Data"
+            };
             for (int i = 0; i < Outentrynamelist.Count; i++)
             {
                 output_data.Fields.Add(new UDTField()
@@ -999,12 +1015,13 @@ namespace SSDQopenECA
             Dictionary<string, UDTField> Out_DataFields = Out_Data.Fields.ToDictionary(field => field.Identifier);
 
             // Create mapping
-            TypeMapping input_map = new TypeMapping();
-            input_map.Type = In_Data;
-            input_map.Identifier = "In_Map";
+            TypeMapping input_map = new TypeMapping
+            {
+                Type = In_Data,
+                Identifier = "In_Map"
+            };
             for (int i = 0; i < Inentrynamelist.Count; i++)
             {
-
                 input_map.FieldMappings.Add(new FieldMapping()
                 {
                     Field = In_DataFields[Inentrynamelist[i]],
@@ -1012,9 +1029,11 @@ namespace SSDQopenECA
                 });
             }
 
-            TypeMapping output_map = new TypeMapping();
-            output_map.Type = Out_Data;
-            output_map.Identifier = "Out_Map";
+            TypeMapping output_map = new TypeMapping
+            {
+                Type = Out_Data,
+                Identifier = "Out_Map"
+            };
 
             for (int i = 0; i < Outentrynamelist.Count; i++)
             {
@@ -1038,8 +1057,10 @@ namespace SSDQopenECA
                 Algorithm.UpdateSystemSettings();
                 Framework framework = FrameworkFactory.Create();
                 Algorithm.API = new Hub(framework);
-                MainWindow mainWindow = new MainWindow(framework);
-                mainWindow.Text = "SSDQ openECA Analytic";
+                MainWindow mainWindow = new MainWindow(framework)
+                {
+                    Text = "SSDQ openECA Analytic"
+                };
                 Application.Run(mainWindow);
             }
             catch (Exception ex)
@@ -1054,6 +1075,7 @@ namespace SSDQopenECA
             Parameterwindow_thread.TrySetApartmentState(ApartmentState.STA);
             Parameterwindow_thread.Start();
         }
+
         private static void ThreadStart_for_Parameterwindow()
         {
             ParameterForm Parameterwindow = new ParameterForm();
@@ -1078,27 +1100,46 @@ namespace SSDQopenECA
                         //Create objects of the appropriate types for individual Hankel process
                         for (int i = 0; i < Meas.Count; i++)
                         {
-                            if (Meas[i] == 1)
+                            hankelProcess[Meas[i]] = new HankelProcess(Meas[i]);
+                            MeasNum[Meas[i]] = i;
+                            if (Meas[i] == 0 || Meas[i] == 1)
                             {
-                                hankelImag.Initialize(Meas[i] - 1);
+                                complexOperations[0]++;
                             }
-                            if (Meas[i] == 2)
+                            if (Meas[i] == 2 || Meas[i] == 3)
                             {
-                                hankelIang.Initialize(Meas[i] - 1);
-                            }
-                            if (Meas[i] == 3)
-                            {
-                                hankelVmag.Initialize(Meas[i] - 1);
-                            }
-                            if (Meas[i] == 4)
-                            {
-                                hankelVang.Initialize(Meas[i] - 1);
-                            }
-                            if (Meas[i] == 5)
-                            {
-                                hankelFreq.Initialize(Meas[i] - 1);
+                                complexOperations[1]++;
                             }
                         }
+
+                        if (complexOperations[0] == 2)
+                        {
+                            if (NumChannelList[Meas[MeasNum[0]]] != NumChannelList[Meas[MeasNum[1]]])
+                            {
+                                complexOperations[0] = 0;
+                            }
+                            else
+                            {
+                                hankelCurrent = new HankelProcessComplex(0);
+                                currentMeasurments[0] = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[MeasNum[0]]]));
+                                currentMeasurments[1] = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[MeasNum[1]]]));
+                            }
+                        }
+
+                        if (complexOperations[1] == 2)
+                        {
+                            if (NumChannelList[Meas[MeasNum[2]]] != NumChannelList[Meas[MeasNum[3]]])
+                            {
+                                complexOperations[1] = 0;
+                            }
+                            else
+                            {
+                                hankelVoltage = new HankelProcessComplex(2);
+                                voltageMeasurments[0] = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[MeasNum[2]]]));
+                                voltageMeasurments[1] = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[MeasNum[3]]]));
+                            }
+                        }
+
                         RunSSDQButton.BackColor = Color.Green;
                         StopSSDQbutton.BackColor = Color.LightGray;
                         MessageBox.Show("SSDQ Algorithm Running......", "Information");
@@ -1115,6 +1156,7 @@ namespace SSDQopenECA
             }
             
         }
+
         private void InitializeLists()
         {
             for (int i = 0; i < 5; i++)
@@ -1167,10 +1209,11 @@ namespace SSDQopenECA
 
         public void Update_Measurements()
         {
-            try
-            {
+            //try
+            //{
                 numberOfFrame++;
 
+                //For each frame Current data and Proc data is cleared and initialized/calculated here.
                 for (int j = 0; j < 5; j++)
                 {
                     Current_data_initial[j].Clear();
@@ -1195,110 +1238,207 @@ namespace SSDQopenECA
                 submatrixStacked = Matrix<double>.Build.Dense(Convert.ToInt32(Inentrynamelist.Count), wdsize);
                 count = 0;
 
+                Proc_data = new Vector<double>[5];
+
+
                 for (int i = 0; i < Meas.Count; i++)
                 {
+                    Current_data = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[i]]));
+                    Proc_data[i] = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[i]]));
 
-                    Current_data = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[i] - 1]));
-                    Proc_data = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[i] - 1]));
 
-                    for (int j = 0; j < Current_data_initial[Meas[i] - 1].Count; j++)
+                    for (int j = 0; j < Current_data_initial[Meas[i]].Count; j++)
                     {
-                        Current_data[j] = Current_data_initial[Meas[i] - 1][j];
+                        Current_data[j] = Current_data_initial[Meas[i]][j];
 
-                        if (Meas[i] == 2 | Meas[i] == 4)
+                        //In case the measurements are voltage angles or current angles, they are modified into radians from degrees for proper conditioning by Hankel robust estimation
+                        if (Meas[i] == 1 | Meas[i] == 3)
                         {
                             if (Current_data[j] < 0)
                             {
                                 Current_data[j] = 360 + Current_data[j];
                             }
-                            Current_data[j] = Current_data[j] * (2 * Math.PI) / 360;
+                            Current_data[j] *= Math.PI / 180;
                         }
-
                     }
 
-                    if (Meas[i] == 1)
+                    if (Meas[i] == 0)
                     {
-                        submatrixImag= hankelImag.ProcessFrame(Current_data, numberOfFrame);
-                        for (int j = 0; j < submatrixImag.RowCount; j++)
+                        if (complexOperations[0] != 2)
                         {
-                            submatrixStacked.SetRow(count, submatrixImag.Row(j));
-                            count++;
+                            submatrixImag = hankelProcess[0].ProcessFrame(Current_data, numberOfFrame);// ProcessFrame method is invoked to carry out the SSDQ execution
+                            for (int j = 0; j < submatrixImag.RowCount; j++)
+                            {
+                                submatrixStacked.SetRow(count, submatrixImag.Row(j));
+                                count++;
+                            }
+                            Proc_data[i] = submatrixImag.Column(wdsize - 1);
                         }
-                        Proc_data = submatrixImag.Column(wdsize - 1);
+                        else
+                        {
+                            currentMeasurments[0] = Current_data.Clone();
+                        }
+                    }
+                    else if (Meas[i] == 1)
+                    {
+                        if (complexOperations[0] != 2)
+                        {
+                            submatrixIang = hankelProcess[1].ProcessFrame(Current_data, numberOfFrame);
+                            for (int j = 0; j < submatrixIang.RowCount; j++)
+                            {
+                                submatrixStacked.SetRow(count, submatrixIang.Row(j));
+                                count++;
+                            }
+                            Proc_data[i] = submatrixIang.Column(wdsize - 1);
+                            //Convert back the measurements from radians to degrees 
+                            for (int k = 0; k < Proc_data[i].Count; k++)
+                            {
+                                Proc_data[i][k] = (Proc_data[i][k] * 180 / Math.PI) % 360;
+                                if (Proc_data[i][k] > 180)
+                                {
+                                    Proc_data[i][k] = Proc_data[i][k] - 360;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            currentMeasurments[1] = Current_data.Clone();
+                        }
                     }
                     else if (Meas[i] == 2)
                     {
-                        submatrixIang = hankelIang.ProcessFrame(Current_data, numberOfFrame);
-                        for (int j = 0; j < submatrixIang.RowCount; j++)
+                        if (complexOperations[1] != 2)
                         {
-                            submatrixStacked.SetRow(count, submatrixIang.Row(j));
-                            count++;
-                        }
-                        Proc_data = submatrixIang.Column(wdsize - 1);
-                        for (int k = 0; k < Proc_data.Count; k++)
-                        {
-                            Proc_data[k] = (Proc_data[k] * 360 / (2 * Math.PI)) % 360;
-                            if (Proc_data[k] > 180)
+                            submatrixVmag = hankelProcess[2].ProcessFrame(Current_data, numberOfFrame);
+                            for (int j = 0; j < submatrixVmag.RowCount; j++)
                             {
-                                Proc_data[k] = Proc_data[k] - 360;
+                                submatrixStacked.SetRow(count, submatrixVmag.Row(j));
+                                count++;
                             }
+                            Proc_data[i] = submatrixVmag.Column(wdsize - 1);
+                        }
+                        else
+                        {
+                            voltageMeasurments[0] = Current_data.Clone();
                         }
                     }
                     else if (Meas[i] == 3)
                     {
-                        submatrixVmag = hankelVmag.ProcessFrame(Current_data, numberOfFrame);
-                        for (int j = 0; j < submatrixVmag.RowCount; j++)
+                        if (complexOperations[1] != 2)
                         {
-                            submatrixStacked.SetRow(count, submatrixVmag.Row(j));
-                            count++;
+                            submatrixVang = hankelProcess[3].ProcessFrame(Current_data, numberOfFrame);
+                            for (int j = 0; j < submatrixVang.RowCount; j++)
+                            {
+                                submatrixStacked.SetRow(count, submatrixVang.Row(j));
+                                count++;
+                            }
+
+                            Proc_data[i] = submatrixVang.Column(wdsize - 1);
+                            for (int k = 0; k < Proc_data[i].Count; k++)
+                            {
+                                Proc_data[i][k] = (Proc_data[i][k] * 180 / Math.PI) % 360;
+                                if (Proc_data[i][k] > 180)
+                                {
+                                    Proc_data[i][k] = Proc_data[i][k] - 360;
+                                }
+                            }
                         }
-                        Proc_data = submatrixVmag.Column(wdsize - 1);
+                        else
+                        {
+                            voltageMeasurments[1] = Current_data.Clone();
+                        }
                     }
                     else if (Meas[i] == 4)
                     {
-                        submatrixVang = hankelVang.ProcessFrame(Current_data, numberOfFrame);
-                        for (int j = 0; j < submatrixVang.RowCount; j++)
-                        {
-                            submatrixStacked.SetRow(count, submatrixVang.Row(j));
-                            count++;
-                        }
-                        Proc_data = submatrixVang.Column(wdsize - 1);
-                        for (int k = 0; k < Proc_data.Count; k++)
-                        {
-                            Proc_data[k] = (Proc_data[k] * 360 / (2 * Math.PI)) % 360;
-                            if (Proc_data[k] > 180)
-                            {
-                                Proc_data[k] = Proc_data[k] - 360;
-                            }
-                        }
-
-                    }
-                    else if (Meas[i] == 5)
-                    {
-                        submatrixFreq = hankelFreq.ProcessFrame(Current_data, numberOfFrame);
+                        submatrixFreq = hankelProcess[4].ProcessFrame(Current_data, numberOfFrame);
                         for (int j = 0; j < submatrixFreq.RowCount; j++)
                         {
                             submatrixStacked.SetRow(count, submatrixFreq.Row(j));
                             count++;
                         }
-                        Proc_data = submatrixFreq.Column(wdsize - 1);
-                    }
-
-                    for (int j = 0; j < Proc_data.Count; j++)
-                    {
-                        Proc_data_updated.Add(Proc_data[j]);
+                        Proc_data[i] = submatrixFreq.Column(wdsize - 1);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                SSDQ_started = false;
-                numberOfFrame = 0;
-                RunSSDQButton.BackColor = Color.LightGray;
-                StopSSDQbutton.BackColor = Color.Red;
-                MessageBox.Show("SSDQ method failed to converge. Try running SSDQ again.", "Error Information : " + ex.Message);
-                //MessageBox.Show(ex.ToString());
-            }
+
+                if (complexOperations[0] == 2)
+                {
+                    submatrixCurrent = hankelCurrent.ProcessFrame(currentMeasurments, numberOfFrame);
+
+                    submatrixImag = submatrixCurrent[0];
+                    for (int j = 0; j < submatrixImag.RowCount; j++)
+                    {
+                        submatrixStacked.SetRow(count, submatrixImag.Row(j));
+                        count++;
+                    }
+                    Proc_data[MeasNum[0]] = submatrixImag.Column(wdsize - 1);
+
+                    submatrixIang = submatrixCurrent[1];
+                    for (int j = 0; j < submatrixIang.RowCount; j++)
+                    {
+                        submatrixStacked.SetRow(count, submatrixIang.Row(j));
+                        count++;
+                    }
+                    int i = MeasNum[1];
+                    Proc_data[i] = submatrixIang.Column(wdsize - 1);
+                    //Convert back the measurements from radians to degrees 
+                    for (int k = 0; k < Proc_data[i].Count; k++)
+                    {
+                        Proc_data[i][k] = (Proc_data[i][k] * 360 / (2 * Math.PI)) % 360;
+                        if (Proc_data[i][k] > 180)
+                        {
+                            Proc_data[i][k] = Proc_data[i][k] - 360;
+                        }
+                    }
+                }
+
+                if (complexOperations[1] == 2)
+                {
+                    submatrixVoltage = hankelVoltage.ProcessFrame(voltageMeasurments, numberOfFrame);
+
+                    submatrixVmag = submatrixVoltage[0];
+                    for (int j = 0; j < submatrixVmag.RowCount; j++)
+                    {
+                        submatrixStacked.SetRow(count, submatrixVmag.Row(j));
+                        count++;
+                    }
+                    Proc_data[MeasNum[2]] = submatrixVmag.Column(wdsize - 1);
+
+                    submatrixVang = submatrixVoltage[1];
+                    for (int j = 0; j < submatrixVang.RowCount; j++)
+                    {
+                        submatrixStacked.SetRow(count, submatrixVang.Row(j));
+                        count++;
+                    }
+                    int i = MeasNum[3];
+                    Proc_data[i] = submatrixVang.Column(wdsize - 1);
+                    //Convert back the measurements from radians to degrees 
+                    for (int k = 0; k < Proc_data[i].Count; k++)
+                    {
+                        Proc_data[i][k] = (Proc_data[i][k] * 180 / Math.PI) % 360;
+                        if (Proc_data[i][k] > 180)
+                        {
+                            Proc_data[i][k] = Proc_data[i][k] - 360;
+                        }
+                    }
+                }
+
+                for (int i = 0; i < Meas.Count; i++)
+                {
+                    for (int j = 0; j < Proc_data[i].Count; j++)
+                    {
+                        Proc_data_updated.Add(Proc_data[i][j]);                    //This is used as output data to openECA Manager
+                    }
+                }
+            //}
+            //catch (Exception ex)
+            //{
+            //    SSDQ_started = false;
+            //    numberOfFrame = 0;
+            //    RunSSDQButton.BackColor = Color.LightGray;
+            //    StopSSDQbutton.BackColor = Color.Red;
+            //    MessageBox.Show("SSDQ method failed to converge. Try running SSDQ again.", "Error Information : " + ex.Message);
+            //    //MessageBox.Show(ex.ToString());
+            //}
         }
 
         private void StopSSDQbutton_Click(object sender, EventArgs e)
@@ -1334,6 +1474,7 @@ namespace SSDQopenECA
                 MessageBox.Show(ex.ToString());
             }
         }
+
         private static void ThreadStart_for_PlotWindow()
         {
             Algorithm.Plotwindow = new Plot();
@@ -1361,6 +1502,7 @@ namespace SSDQopenECA
                 MessageBox.Show(ex.ToString());
             }
         }
+
         private static void ThreadStart_for_RecordDataWindow()
         {
             Algorithm.RecordDataWindow = new RecordDataWindow();

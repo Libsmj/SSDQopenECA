@@ -234,27 +234,25 @@ namespace SSDQopenECA
                     if (Meastype == "VPHM")
                     {
                         
-                        Meas = 3;
+                        Meas = 2;
                     }
                     else if (Meastype == "VPHA")
                     {
                         
-                        Meas = 4;
+                        Meas = 3;
                     }
                     else if (Meastype == "IPHM")
                     {
-                        
-                        Meas = 1;
+                        Meas = 0;
                     }
                     else if (Meastype == "IPHA")
                     {
                         
-                        Meas = 2;
+                        Meas = 1;
                     }
                     else if (Meastype == "FREQ")
                     {
-                        
-                        Meas = 5;
+                        Meas = 4;
                     }
 
                     Plot_started = true;
@@ -272,8 +270,8 @@ namespace SSDQopenECA
                             Plotcheckedactualnamelist.Add(PlotChannelList.Items[i].ToString());
                             Plotcheckedprocessednamelist.Add(Channelnameprefix + PlotChannelList.Items[i].ToString());
 
-                            Plotcheckedindexlist.Add(IPchannelnamelist_updated[Meas - 1].IndexOf(Convert.ToString(PlotChannelList.Items[i])));
-                            PlotInentrynamelist.Add(Inentrynamelist[Meas-1][IPchannelnamelist_updated[Meas - 1].IndexOf(Convert.ToString(PlotChannelList.Items[i]))]);
+                            Plotcheckedindexlist.Add(IPchannelnamelist_updated[Meas].IndexOf(Convert.ToString(PlotChannelList.Items[i])));
+                            PlotInentrynamelist.Add(Inentrynamelist[Meas][IPchannelnamelist_updated[Meas].IndexOf(Convert.ToString(PlotChannelList.Items[i]))]);
                         }
                     }
                     for (int i = 0; i < Plot_channels; i++)
@@ -286,52 +284,30 @@ namespace SSDQopenECA
                     //Retrieve the window size of data of all channels 
                     if (FrameworkConfiguration.newframework)
                     {
-
                         SSDQ_started = Algorithm.New_config.SSDQ_started;
-                        if (Meas == 1)
-                        {
-                            submatrix = Algorithm.New_config.submatrixImag;
-                        }
-                        if (Meas == 2)
-                        {
-                            submatrix = Algorithm.New_config.submatrixIang;
-                        }
-                        if (Meas == 3)
-                        {
-                            submatrix = Algorithm.New_config.submatrixVmag;
-                        }
-                        if (Meas == 4)
-                        {
-                            submatrix = Algorithm.New_config.submatrixVang;
-                        }
-                        if (Meas == 5)
-                        {
-                            submatrix = Algorithm.New_config.submatrixFreq;
-                        }
-
-
+                        submatrix = Algorithm.New_config.submatrixData[Meas];
                     }
                     else
                     {
 
                         SSDQ_started = Algorithm.Stored_config.SSDQ_started;
-                        if (Meas == 1)
+                        if (Meas == 0)
                         {
                             submatrix = Algorithm.Stored_config.submatrixImag;
                         }
-                        if (Meas == 2)
+                        if (Meas == 1)
                         {
                             submatrix = Algorithm.Stored_config.submatrixIang;
                         }
-                        if (Meas == 3)
+                        if (Meas == 2)
                         {
                             submatrix = Algorithm.Stored_config.submatrixVmag;
                         }
-                        if (Meas == 4)
+                        if (Meas == 3)
                         {
                             submatrix = Algorithm.Stored_config.submatrixVang;
                         }
-                        if (Meas == 5)
+                        if (Meas == 4)
                         {
                             submatrix = Algorithm.Stored_config.submatrixFreq;
                         }
@@ -362,7 +338,7 @@ namespace SSDQopenECA
                 if (!incomingDataStarted)
                 {
                     incomingDataStarted = true;
-                    startgraphs();
+                    StartGraphs();
                 }
                 //Update input and processed arrays for each frame
                 if (incomingDataStarted)
@@ -377,7 +353,7 @@ namespace SSDQopenECA
                         {
                             Processedarray[i][Processedarray[i].Length + j - wdsize] = Convert.ToDouble(submatrix.At(Plotcheckedindexlist[i], j));
                             //For angle measurements convert back to degrees from radians
-                            if (Meas == 2 || Meas == 4)
+                            if (Meas == 1 || Meas == 3)
                             {
                                 Processedarray[i][Processedarray[i].Length + j - wdsize] = (Processedarray[i][Processedarray[i].Length + j - wdsize] * 360 / (2 * Math.PI)) % 360;
                                 if (Processedarray[i][Processedarray[i].Length + j - wdsize] > 180)
@@ -434,7 +410,7 @@ namespace SSDQopenECA
         }
         private void DecidePlotproperties()
         {
-            if (Meas == 1 || Meas == 3)
+            if (Meas == 0 || Meas == 2)
             {
                 InputDataChart.ChartAreas[0].AxisY.Title = "Magnitude";
                 InputDataChart.ChartAreas[0].AxisY.Minimum = (Math.Floor(min_input * 10) / 10) * 0.95;// for limiting the number of decimal places for plot axes
@@ -444,7 +420,7 @@ namespace SSDQopenECA
                 ProcessedDataChart.ChartAreas[0].AxisY.Minimum = (Math.Floor(min_proc * 10) / 10) * 0.95;
                 ProcessedDataChart.ChartAreas[0].AxisY.Maximum = (Math.Ceiling(max_proc * 10) / 10) * 1.05;
             }
-            else if (Meas == 2 || Meas == 4)
+            else if (Meas == 1 || Meas == 3)
             {
                 InputDataChart.ChartAreas[0].AxisY.Title = "Angle (in degrees)";
                 InputDataChart.ChartAreas[0].AxisY.Minimum = -200;
@@ -454,7 +430,7 @@ namespace SSDQopenECA
                 ProcessedDataChart.ChartAreas[0].AxisY.Minimum = -200;
                 ProcessedDataChart.ChartAreas[0].AxisY.Maximum = 200;
             }
-            else if (Meas == 5)
+            else if (Meas == 4)
             {
                 InputDataChart.ChartAreas[0].AxisY.Title = "Frequency (in Hz)";
                 InputDataChart.ChartAreas[0].AxisY.Minimum = (Math.Floor(min_input * 10) / 10) * 0.95;
@@ -482,18 +458,22 @@ namespace SSDQopenECA
         }
 
 
-        private void startgraphs()
+        private void StartGraphs()
         {
             //Start the individual threads
-            InputmeasThread = new Thread(new ThreadStart(this.streamInputdata));
-            InputmeasThread.IsBackground = true;
+            InputmeasThread = new Thread(new ThreadStart(this.StreamInputdata))
+            {
+                IsBackground = true
+            };
             InputmeasThread.Start();
-            ProcmeasThread = new Thread(new ThreadStart(this.streamProcesseddata));
-            ProcmeasThread.IsBackground = true;
+            ProcmeasThread = new Thread(new ThreadStart(this.StreamProcesseddata))
+            {
+                IsBackground = true
+            };
             ProcmeasThread.Start();
         }
 
-        private void streamInputdata()
+        private void StreamInputdata()
         {
 
             while (incomingDataStarted)
@@ -528,7 +508,7 @@ namespace SSDQopenECA
             }
         }
 
-        private void streamProcesseddata()
+        private void StreamProcesseddata()
         {
             while (incomingDataStarted)
             {

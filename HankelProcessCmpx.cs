@@ -12,7 +12,6 @@
 //Output:Processed and conditioned data
 //*************************************************************************************************************
 using System;
-using System.IO;
 using System.ComponentModel;
 using System.Numerics;
 using System.Linq;
@@ -20,22 +19,21 @@ using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 using SSDQopenECA;
 using Error_Recovery;
-using System.Text;
 
 namespace HankelRobustDataEstimation
 {
     [Description("HankelRobustDataEstimation: robust data estimation with low-rank Hankel structure")]
-    public class hankelRobustDataEstimationComplex
+    public class HankelProcessComplex
     {
         //keep the past L estimated data and observed data
-        private Matrix<Complex> data_estimate;      // contain the past L estimations
-        private Matrix<Complex> data_observed;      // contains the past L raw observations        
-        private Matrix<double> flag_trusted;        // denote whether each entry is trusted
-        private Matrix<double> flag_observed;       // denote whether each entry is observed
-        private Vector<Complex> starting_vector;    // record the measurement at the first instant
-        private Matrix<Complex> data_updated;       // submatrix of last window size of data for all the channels(introduced for openECA implementation)
+        private Matrix<Complex>  data_estimate;         // contain the past L estimations
+        private Matrix<Complex>  data_observed;         // contains the past L raw observations        
+        private Matrix<double>   flag_trusted;          // denote whether each entry is trusted
+        private Matrix<double>   flag_observed;         // denote whether each entry is observed
+        private Matrix<Complex>  data_updated;          // data_estimate of last window size of data for all the channels(introduced for openECA implementation)
+        private Matrix<double>[] data_updated_real = new Matrix<double>[2];
 
-        private int windowSize;//= 10;
+        private int window_size;//= 10;
         private int Hankel_k;// = 6;
         private double ratio_approx_error;// = 1.2;
         private int tau_a;// = 3;
@@ -55,23 +53,17 @@ namespace HankelRobustDataEstimation
         private int recalculate_threshold;  //= 2000;
         private bool Init_flag = false;     //check whether correct first window data
 
-        private  int num_channel;
+        private int num_channel;
 
-        public hankelRobustDataEstimationComplex()
-        {
-            
-        }
-
-        //This change introduced for openECA implementation
-        public void Initialize(int Meas)
+        public HankelProcessComplex(int Meas)
         {
             //Initialize each object based upon the type of measurement to facilitate simultaneous execution of SSDQ algorithm.
-            windowSize = ParameterForm.L;
+            window_size = ParameterForm.L;
             Hankel_k = ParameterForm.k;
             if (Meas == 1 | Meas == 3)
             {
                 //For Angles the threshold is the mean difference of two consecutive frames in radians
-                ratio_approx_error = 1.5*ParameterForm.n;
+                ratio_approx_error = 1.5 * ParameterForm.n;
                 threshold = 0.0052;
             }
             else
@@ -90,36 +82,28 @@ namespace HankelRobustDataEstimation
             }
             else
             {
-                num_channel = Convert.ToInt32(Algorithm.Stored_config.NumChannelList[Meas]);       
+                num_channel = Convert.ToInt32(Algorithm.Stored_config.NumChannelList[Meas]);
             }
-            
-            data_estimate = Matrix<Complex>.Build.Dense(Convert.ToInt32(num_channel), windowSize + 1);
-            data_updated = Matrix<Complex>.Build.Dense(Convert.ToInt32(num_channel), windowSize);
-            data_observed = Matrix<Complex>.Build.Dense(Convert.ToInt32(num_channel), windowSize + 1);
-            flag_trusted = Matrix<double>.Build.Dense(Convert.ToInt32(num_channel), windowSize + 1);
-            flag_observed = Matrix<double>.Build.Dense(Convert.ToInt32(num_channel), windowSize + 1);
-            starting_vector = Vector<Complex>.Build.Dense(Convert.ToInt32(num_channel));
+
+            data_estimate = Matrix<Complex>.Build.Dense(Convert.ToInt32(num_channel), window_size + 1);
+            data_updated = Matrix<Complex>.Build.Dense(Convert.ToInt32(num_channel), window_size);
+            data_observed = Matrix<Complex>.Build.Dense(Convert.ToInt32(num_channel), window_size + 1);
+            flag_trusted = Matrix<double>.Build.Dense(Convert.ToInt32(num_channel), window_size + 1);
+            flag_observed = Matrix<double>.Build.Dense(Convert.ToInt32(num_channel), window_size + 1);
             Init_flag = false;
             instant = -300;
-            
+
+            data_updated_real[0] = Matrix<double>.Build.Dense(Convert.ToInt32(num_channel), window_size);
+            data_updated_real[1] = Matrix<double>.Build.Dense(Convert.ToInt32(num_channel), window_size);
         }
 
         //This change introduced for openECA implementation
         public Matrix<double>[] ProcessFrame(Vector<double>[] Current_data, int numberOfFrame)
         {
-            //var csv = new StringBuilder();
-            //for (int i = 0; i < num_channel; i++)
-            //{
-            //    var newLine = string.Format("{0},", Current_data[1][i]);
-            //    csv.Append(newLine);
-            //}
-            //csv.AppendLine("");
-            //File.AppendAllText(@"C:\Users\Jacob\Desktop\2.csv", csv.ToString());
-
             Vector<Complex> ctvector = Vector<Complex>.Build.Dense(num_channel);
             Vector<double> flag_ctvector = Vector<double>.Build.Dense(num_channel);
             Vector<double> flag_observed_ctvector = Vector<double>.Build.Dense(num_channel);
-            
+
             int num_untrusted = 0;
             double tau_t = Math.Max(tau_a, tau_b * Math.Exp(-(numberOfFrame - instant) / decaying_factor));
 
@@ -127,7 +111,6 @@ namespace HankelRobustDataEstimation
             for (int i = 0; i < num_channel; i++)
             {
                 ctvector[i] = Complex.FromPolarCoordinates(Current_data[0][i], Current_data[1][i]);
-
                 if (ctvector[i].Magnitude > double.Epsilon)
                 {
                     flag_observed_ctvector[i] = 1;
@@ -140,40 +123,36 @@ namespace HankelRobustDataEstimation
 
             recalculate_count++; //Add by Hongyun and Lin
 
-            if (numberOfFrame == 1)
-            {
-                starting_vector = ctvector.Clone();
-            }
-
-
             // Step 2: Construct Hankel matrix with past and current measurements
             // the last column is set as the current observations
-            data_estimate.SetColumn(windowSize, ctvector);              //add raw data vector to this although later this will be updated as submatrix gives estimated measurements at the end
-            data_observed.SetColumn(windowSize, ctvector);
-            flag_observed.SetColumn(windowSize, flag_observed_ctvector);
+            data_estimate.SetColumn(window_size, ctvector);              //add raw data vector to this although later this will be updated as data_estimate gives estimated measurements at the end
+            data_observed.SetColumn(window_size, ctvector);
+            flag_observed.SetColumn(window_size, flag_observed_ctvector);
 
             //Till the first window size (L) data is retrieved , the code will not enter the following subsections and will keep getting data
 
             // Add by Hongyun and Lin, Initialize the window
-            if (numberOfFrame >= windowSize && !Init_flag)
+            if (numberOfFrame >= window_size && !Init_flag)
             {
-                Matrix<Complex> corrected = Programe.SAP(data_observed.SubMatrix(0, num_channel, 0, windowSize), Hankel_k, 1, Math.Pow(10, -3)); // correct data
+                Matrix<Complex> corrected = Programe.SAP(data_estimate.SubMatrix(0, num_channel, 0, window_size), Hankel_k, 1, Math.Pow(10, -3)); //correct data is provided in form of a "corrected matrix"
+
                 data_estimate.SetSubMatrix(0, 0, corrected);
                 data_updated.SetSubMatrix(0, 0, corrected);
-                Init_flag = true;
+
+                Init_flag = true;           //Init_flag has been set to true here and hereafter won't enter this section of code           
             }
 
 
-            if (numberOfFrame >= windowSize && Init_flag)
+            if (numberOfFrame >= window_size && Init_flag)
             {
-                flag_trusted.SetColumn(windowSize, flag_ctvector);
+                flag_trusted.SetColumn(window_size, flag_ctvector);
 
                 // Hankel matrix of past L observations
-                Matrix<Complex> Hankel_matrix = ExtensionFunction.ExtensionFunction.Hankel(data_estimate.SubMatrix(0, num_channel, 0, windowSize), Hankel_k);
+                Matrix<Complex> Hankel_matrix = ExtensionFunction.ExtensionFunction.Hankel(data_estimate.SubMatrix(0, num_channel, 0, window_size), Hankel_k);
 
                 // the long vectors with past L-1 and current observations
-                Matrix<Complex> ct_kvectors = ExtensionFunction.ExtensionFunction.Hankel(data_estimate.SubMatrix(0, num_channel, windowSize - Hankel_k + 1, Hankel_k), Hankel_k);
-                double[] flag_ct_kvectors = (flag_trusted.SubMatrix(0, num_channel, windowSize - Hankel_k + 1, Hankel_k)).ToColumnMajorArray();
+                Matrix<Complex> ct_kvectors = ExtensionFunction.ExtensionFunction.Hankel(data_estimate.SubMatrix(0, num_channel, window_size - Hankel_k + 1, Hankel_k), Hankel_k);
+                double[] flag_ct_kvectors = (flag_trusted.SubMatrix(0, num_channel, window_size - Hankel_k + 1, Hankel_k)).ToColumnMajorArray();
 
                 // Step 3: conduct SVD, estimate the rank and underlying subspace
                 Matrix<Complex> Diag_kvectors = Matrix<double>.Build.DenseOfDiagonalArray(flag_ct_kvectors).ToComplex();
@@ -236,16 +215,16 @@ namespace HankelRobustDataEstimation
                         }
                     }
                 }
-                data_estimate.SetColumn(windowSize, ctvector);
-                flag_trusted.SetColumn(windowSize, flag_ctvector);
+                data_estimate.SetColumn(window_size, ctvector);
+                flag_trusted.SetColumn(window_size, flag_ctvector);
 
 
                 // Step 6: update the matrices         
-                // update the submatrix, data_observed, flag_submatrix
-                data_estimate.SetSubMatrix(0, 0, data_estimate.SubMatrix(0, num_channel, 1, windowSize));
-                data_observed.SetSubMatrix(0, 0, data_observed.SubMatrix(0, num_channel, 1, windowSize));
-                flag_trusted.SetSubMatrix(0, 0, flag_trusted.SubMatrix(0, num_channel, 1, windowSize));
-                flag_observed.SetSubMatrix(0, 0, flag_observed.SubMatrix(0, num_channel, 1, windowSize));
+                // update the data_estimate, data_observed, flag_trusted
+                data_estimate.SetSubMatrix(0, 0, data_estimate.SubMatrix(0, num_channel, 1, window_size));
+                data_observed.SetSubMatrix(0, 0, data_observed.SubMatrix(0, num_channel, 1, window_size));
+                flag_trusted.SetSubMatrix(0, 0, flag_trusted.SubMatrix(0, num_channel, 1, window_size));
+                flag_observed.SetSubMatrix(0, 0, flag_observed.SubMatrix(0, num_channel, 1, window_size));
 
 
 
@@ -254,8 +233,8 @@ namespace HankelRobustDataEstimation
                 {
                     if (num_untrusted >= num_channel * channel_threshold)
                     {
-                        Vector<double> consecutive_untrusted = bad_data_duration - (flag_trusted.SubMatrix(0, num_channel, windowSize - bad_data_duration, bad_data_duration)).RowSums();
-                        Vector<double> consecutive_observed = flag_observed.SubMatrix(0, num_channel, windowSize - bad_data_duration, bad_data_duration).RowSums();
+                        Vector<double> consecutive_untrusted = bad_data_duration - (flag_trusted.SubMatrix(0, num_channel, window_size - bad_data_duration, bad_data_duration)).RowSums();
+                        Vector<double> consecutive_observed = flag_observed.SubMatrix(0, num_channel, window_size - bad_data_duration, bad_data_duration).RowSums();
 
                         int sum_channel = 0;
                         for (int i = 0; i < num_channel; i++)
@@ -271,7 +250,7 @@ namespace HankelRobustDataEstimation
                         if (sum_channel >= num_channel * channel_threshold)
                         {
                             int starting_index = 0;
-                            Vector<double> column_sum = (flag_trusted.SubMatrix(0, num_channel, windowSize - bad_data_duration, bad_data_duration)).ColumnSums();
+                            Vector<double> column_sum = (flag_trusted.SubMatrix(0, num_channel, window_size - bad_data_duration, bad_data_duration)).ColumnSums();
 
                             for (starting_index = 0; starting_index < bad_data_duration; starting_index++)
                             {
@@ -281,7 +260,7 @@ namespace HankelRobustDataEstimation
                                 }
                             }
 
-                            flag_event = windowSize - bad_data_duration + starting_index;
+                            flag_event = window_size - bad_data_duration + starting_index;
                             event_instant = numberOfFrame - bad_data_duration + starting_index + 1;
                         }
                     }
@@ -293,17 +272,17 @@ namespace HankelRobustDataEstimation
                 else
                 {
                     flag_event--;
-                    Matrix<Complex> window_data = data_observed.SubMatrix(0, num_channel, 0, windowSize);
+                    Matrix<Complex> window_data = data_observed.SubMatrix(0, num_channel, 0, window_size);
                     Hankel_matrix = ExtensionFunction.ExtensionFunction.Hankel(window_data, Hankel_k);
                     double approx_error = Math.Sqrt(1 - Math.Pow(Hankel_matrix.L2Norm(), 2) / Math.Pow(Hankel_matrix.FrobeniusNorm(), 2));
                     double rand_approx_error = 0;
                     for (int i = 1; i <= 500; i++)
                     {
-                        int[] random_index = Enumerable.Range(0, windowSize).ToArray();
+                        int[] random_index = Enumerable.Range(0, window_size).ToArray();
                         var random = new Random();
                         random_index = random_index.OrderBy(x => random.Next()).ToArray();
                         Matrix<Complex> permute_matrix = window_data.Clone();
-                        for (int j = 0; j < windowSize; j++)
+                        for (int j = 0; j < window_size; j++)
                         {
                             permute_matrix.SetColumn(j, window_data.Column(random_index[j]));
                         }
@@ -314,11 +293,11 @@ namespace HankelRobustDataEstimation
 
                     if (rand_approx_error / approx_error >= ratio_approx_error)
                     {
-                        Matrix<Complex> corrected = Programe.SAP(data_observed.SubMatrix(0, num_channel, 0, windowSize), Hankel_k, 3, Math.Pow(10, -3)); // correct data
+                        Matrix<Complex> corrected = Programe.SAP(data_observed.SubMatrix(0, num_channel, 0, window_size), Hankel_k, 3, Math.Pow(10, -3)); // correct data
                         data_estimate.SetSubMatrix(0, 0, corrected);
                         data_observed.SetSubMatrix(0, 0, corrected);
 
-                        instant = event_instant + windowSize - 1;
+                        instant = event_instant + window_size - 1;
                         flag_trusted = flag_observed.Clone();
                         flag_output = 1;
                     }
@@ -327,60 +306,50 @@ namespace HankelRobustDataEstimation
             else
             {
                 flag_ctvector = (Vector<double>.Build.Dense(num_channel)).Add(1);
-                flag_trusted.SetColumn(windowSize, flag_ctvector);
+                flag_trusted.SetColumn(window_size, flag_ctvector);
 
-                data_estimate.SetSubMatrix(0, 0, data_estimate.SubMatrix(0, num_channel, 1, windowSize));
-                data_observed.SetSubMatrix(0, 0, data_observed.SubMatrix(0, num_channel, 1, windowSize));
-                flag_trusted.SetSubMatrix(0, 0, flag_trusted.SubMatrix(0, num_channel, 1, windowSize));
-                flag_observed.SetSubMatrix(0, 0, flag_observed.SubMatrix(0, num_channel, 1, windowSize));
+                data_estimate.SetSubMatrix(0, 0, data_estimate.SubMatrix(0, num_channel, 1, window_size));
+                data_observed.SetSubMatrix(0, 0, data_observed.SubMatrix(0, num_channel, 1, window_size));
+                flag_trusted.SetSubMatrix(0, 0, flag_trusted.SubMatrix(0, num_channel, 1, window_size));
+                flag_observed.SetSubMatrix(0, 0, flag_observed.SubMatrix(0, num_channel, 1, window_size));
             }
 
             // Add by Hongyun and Lin, SAP for cumulative problem 
             if (recalculate_count == recalculate_threshold)
             {
-                Matrix<Complex> corrected = Programe.SAP(data_estimate.SubMatrix(0, num_channel, 0, windowSize), Hankel_k, 1, Math.Pow(10, -3)); //correct data
+                Matrix<Complex> corrected = Programe.SAP(data_estimate.SubMatrix(0, num_channel, 0, window_size), Hankel_k, 1, Math.Pow(10, -3)); //correct data
+
                 data_estimate.SetSubMatrix(0, 0, corrected);
+
                 recalculate_count = 0;
             }
 
-            
+
             if (Init_flag) //this line add by Hongyun and Lin, make sure does not oupt anything before correct the first window data
             {
                 if (flag_output == 0)
                 {
                     //Introduced for openECA implementation
-                    data_updated.SetSubMatrix(0, 0, data_updated.SubMatrix(0, num_channel, 1, windowSize - 1));
-
-                    data_updated.SetColumn(windowSize - 1, ctvector);
+                    data_updated.SetSubMatrix(0, 0, data_updated.SubMatrix(0, num_channel, 1, window_size - 1));
+                    data_updated.SetColumn(window_size - 1, ctvector);
                 }
                 else
                 {
                     flag_output = 0;
                     // Add by Hongyun and Lin, when event founded, correct the event data
-                    Matrix<Complex> corrected = Programe.SAP(data_observed.SubMatrix(0, num_channel, 0, windowSize), Hankel_k, 3, Math.Pow(10, -3)); // correct data
+                    Matrix<Complex> corrected = Programe.SAP(data_observed.SubMatrix(0, num_channel, 0, window_size), Hankel_k, 3, Math.Pow(10, -3)); // correct data
                     data_estimate.SetSubMatrix(0, 0, corrected);
+                    //Introduced for openECA implementation
                     data_updated.SetSubMatrix(0, 0, corrected);
                 }
             }
 
-            var csv = new StringBuilder();
-            for (int i = 0; i < num_channel; i++)
-            {
-                var newLine = string.Format("{0},", data_updated.At(i, 0).Magnitude);
-                csv.Append(newLine);
-            }
-            csv.AppendLine("");
-            File.AppendAllText(@"C:\Users\Jacob\Desktop\2.csv", csv.ToString());
-
-            Matrix<double>[] data_updated_real = new Matrix<double>[2];
-            data_updated_real[0] = Matrix<double>.Build.Dense(data_updated.RowCount, data_updated.ColumnCount);
-            data_updated_real[1] = Matrix<double>.Build.Dense(data_updated.RowCount, data_updated.ColumnCount);
             for (int i = 0; i < data_updated.RowCount; i++)
             {
                 for (int j = 0; j < data_updated.ColumnCount; j++)
                 {
-                    data_updated_real[0][i, j] = data_estimate.At(i, j).Magnitude;
-                    data_updated_real[1][i, j] = data_estimate.At(i, j).Phase;
+                    data_updated_real[0][i, j] = data_updated.At(i, j).Magnitude;
+                    data_updated_real[1][i, j] = data_updated.At(i, j).Phase;
                 }
             }
 

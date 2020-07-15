@@ -25,7 +25,7 @@ namespace SSDQopenECA
         private List<string> Indatadevicelist = new List<string>();
         private List<string> Indatatypelist = new List<string>();
         private List<string> IPchannelnamelist = new List<string>();
-        private List<string>[] IPchannelnamelist_updated = new List<string>[5];
+        //private List<string>[] IPchannelnamelist_updated = new List<string>[5];
         private List<string> Recordcheckedactualnamelist = new List<string>();
         private List<string> Recordcheckedprocessednamelist = new List<string>();
         private List<Int32> Recordcheckedindexlist = new List<Int32>();
@@ -65,7 +65,7 @@ namespace SSDQopenECA
                 Inentrynamelist = Algorithm.New_config.Inentrynamelist;
                 Indatadevicelist = Algorithm.New_config.Indatadevicelist;
                 Indatatypelist = Algorithm.New_config.Indatatypelist;
-                IPchannelnamelist_updated = Algorithm.New_config.IPchannelnamelist_updated;
+                //IPchannelnamelist_updated = Algorithm.New_config.IPchannelnamelist_updated;
                 Channelnameprefix = Algorithm.New_config.Channelnameprefix;
             }
             else
@@ -74,7 +74,7 @@ namespace SSDQopenECA
                 Inentrynamelist = Algorithm.Stored_config.Inentrynamelist;              
                 Indatadevicelist = Algorithm.Stored_config.Indatadevicelist;
                 Indatatypelist = Algorithm.Stored_config.Indatatypelist;
-                IPchannelnamelist_updated = Algorithm.Stored_config.IPchannelnamelist_updated;
+                //IPchannelnamelist_updated = Algorithm.Stored_config.IPchannelnamelist_updated;
                 Channelnameprefix = Algorithm.Stored_config.Channelnameprefix;
             }
 
@@ -273,7 +273,7 @@ namespace SSDQopenECA
             {
                 if (progress == false)
                 {
-                    CSVLocation.BackColor = default(Color);
+                    CSVLocation.BackColor = default;
                     if (string.IsNullOrWhiteSpace(CSVLocation.Text))
                     {
                         //CSVLocation.Focus();

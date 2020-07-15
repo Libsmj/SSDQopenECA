@@ -20,7 +20,7 @@ namespace SSDQopenECA
         private static List<string> Devicenamelist = new List<string>();
         private static string Database_file;
         private static string constring;
-        private static List<string> MeasTypelist = new List<string>();
+        private readonly static List<string> MeasTypelist = new List<string>();
 
         public static List<string> SignalTypelist = new List<string>();
         public static List<string> AddedMeastypes = new List<string>();       
