@@ -35,7 +35,7 @@ namespace SSDQopenECA
         private int OriginalPIDCount;           //maximum PID number of the measurement channels available in openECA database at the beginning
         private int InitialPIDCount;            //maximum PID number of the measurement channels available in openECA database before output channel creation
         private int num;                        //number of I/P channels of each type selected by the user
-        private int numberOfFrame;              //number of frames retrieved upon SSDQ execution
+        public int numberOfFrame;              //number of frames retrieved upon SSDQ execution
         private int count = 0;
 
         private List<int> MeasType = new List<int>();   //Int Values - Only to get the signaltypeID for checked Input channels from input channel list for assigning to output channels creation before framework creation
@@ -495,7 +495,6 @@ namespace SSDQopenECA
 
         private void UpdateOPChannels_Click(object sender, EventArgs e)
         {
-           
             FillOutputCheckListBox();            
         }
 
@@ -609,16 +608,16 @@ namespace SSDQopenECA
                         {
                             if (Convert.ToString(InputChannelList.CheckedItems[i]) == reader.GetString(1))
                             {
-                                MeasType.Add(reader.GetInt32(0));
+                                MeasType.Add(reader.GetInt32(0) - 1);
                             }
                         }
                         reader.Close();
                     }
                     for (int i = 0; i < MeasType.Count; i++)
                     {
-                        if (!Meas.Contains(MeasType[i] - 1))
+                        if (!Meas.Contains(MeasType[i]))
                         {
-                            Meas.Add(MeasType[i] - 1);
+                            Meas.Add(MeasType[i]);
                         }
                     }
                     if (InputChannelList.CheckedItems.Count != 0)
@@ -669,7 +668,7 @@ namespace SSDQopenECA
                                 cmd_insert.Parameters.Add(new SQLiteParameter("@P_id", Convert.ToString(InitialPIDCount + i + 1)));
                                 cmd_insert.Parameters.Add(new SQLiteParameter("@Dev_id", Convert.ToString(OutDeviceIDlist[i])));     
                                 cmd_insert.Parameters.Add(new SQLiteParameter("@P_tag", Channelnameprefix + InputChannelList.CheckedItems[i]));
-                                cmd_insert.Parameters.Add(new SQLiteParameter("@Sigtype_id", Convert.ToString(MeasType[i])));
+                                cmd_insert.Parameters.Add(new SQLiteParameter("@Sigtype_id", Convert.ToString(MeasType[i] + 1)));
                                 cmd_insert.Parameters.Add(new SQLiteParameter("@Sig_ref", Channelnameprefix + InputChannelList.CheckedItems[i]));
                                 cmd_insert.Parameters.Add(new SQLiteParameter("@Des", "Processed Measurement Channel for " + InputChannelList.CheckedItems[i]));
                                 cmd_insert.Parameters.Add(new SQLiteParameter("@Sub", "1"));
@@ -1141,6 +1140,16 @@ namespace SSDQopenECA
                                 if (Inentrynamelist[i] == Inentrynamelist_updated[j][k])
                                 {
                                     data_observed_initial[j][k] = Convert.ToDouble(propertyvalue1);
+
+                                    //In case the measurements are voltage angles or current angles, they are modified into radians from degrees for proper conditioning by Hankel robust estimation
+                                    if (j == 1 || j == 3)
+                                    {
+                                        if (data_observed_initial[j][k] < 0)
+                                        {
+                                            data_observed_initial[j][k] = 360 + data_observed_initial[j][k];
+                                        }
+                                        data_observed_initial[j][k] *= Math.PI / 180;
+                                    }
                                 }
                             }
                         }
@@ -1150,18 +1159,6 @@ namespace SSDQopenECA
                 // Performs real-valued calculations
                 for (int i = 0; i < Meas.Count; i++)
                 {
-                    //In case the measurements are voltage angles or current angles, they are modified into radians from degrees for proper conditioning by Hankel robust estimation
-                    if (Meas[i] == 1 || Meas[i] == 3)
-                    {
-                        for (int k = 0; k < data_observed_initial[Meas[i]].Count; k++)
-                        {
-                            if (data_observed_initial[Meas[i]][k] < 0)
-                            {
-                                data_observed_initial[Meas[i]][k] = 360 + data_observed_initial[Meas[i]][k];
-                            }
-                            data_observed_initial[Meas[i]][k] *= Math.PI / 180;
-                        }
-                    }
                     Proc_data[i] = Vector<double>.Build.Dense(NumChannelList[Meas[i]]);
 
                     if (!complexOperations[Meas[i] / 2])
@@ -1176,6 +1173,7 @@ namespace SSDQopenECA
                     }
                     else
                     {
+                        // Remove this statement
                         complexMeasurments[Meas[i] / 2][i % 2] = data_observed_initial[Meas[i]].Clone();
                     }
                 }

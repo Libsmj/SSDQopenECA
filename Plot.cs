@@ -60,7 +60,6 @@ namespace SSDQopenECA
             InitializeComponent();
         }
 
-
         public void Plot_Load(object sender, EventArgs e)
         {
             wdsize = ParameterForm.L;
@@ -86,6 +85,7 @@ namespace SSDQopenECA
             }
             FillDevices();
         }
+
         private void FillDevices()
         {
             DevicecheckedListBox.Items.Clear();
@@ -113,6 +113,7 @@ namespace SSDQopenECA
                 DevicecheckedListBox.SetItemChecked(i, false);
             }
         }
+
         private void AvailableMeastypebutton_Click(object sender, EventArgs e)
         {
             //Populate measurement types in the combo box based on the devices selected.
@@ -223,8 +224,7 @@ namespace SSDQopenECA
         private void PlotButton_Click(object sender, EventArgs e)
         {
             try
-            {            
-               
+            {       
                 if (PlotChannelList.CheckedItems.Count == 0)
                 {
                     MessageBox.Show("Select Measurement Channels for Plotting", "Error Information");
@@ -233,12 +233,10 @@ namespace SSDQopenECA
                 {
                     if (Meastype == "VPHM")
                     {
-                        
                         Meas = 2;
                     }
                     else if (Meastype == "VPHA")
                     {
-                        
                         Meas = 3;
                     }
                     else if (Meastype == "IPHM")
@@ -266,7 +264,6 @@ namespace SSDQopenECA
                     {
                         if (PlotChannelList.CheckedItems.Contains(PlotChannelList.Items[i]))
                         {
-                            
                             Plotcheckedactualnamelist.Add(PlotChannelList.Items[i].ToString());
                             Plotcheckedprocessednamelist.Add(Channelnameprefix + PlotChannelList.Items[i].ToString());
 
@@ -274,6 +271,7 @@ namespace SSDQopenECA
                             PlotInentrynamelist.Add(Inentrynamelist[Meas][IPchannelnamelist_updated[Meas].IndexOf(Convert.ToString(PlotChannelList.Items[i]))]);
                         }
                     }
+
                     for (int i = 0; i < Plot_channels; i++)
                     {
                         Inputarray[i] = new double[graph_length];
@@ -281,6 +279,7 @@ namespace SSDQopenECA
                     }                 
                     A_data = Vector<double>.Build.Dense(Plot_channels);
                     P_data = Vector<double>.Build.Dense(Plot_channels);
+
                     //Retrieve the window size of data of all channels 
                     if (FrameworkConfiguration.newframework)
                     {
@@ -289,7 +288,6 @@ namespace SSDQopenECA
                     }
                     else
                     {
-
                         SSDQ_started = Algorithm.Stored_config.SSDQ_started;
                         if (Meas == 0)
                         {
@@ -312,8 +310,6 @@ namespace SSDQopenECA
                             submatrix = Algorithm.Stored_config.submatrixFreq;
                         }
                     }
-
-
                 }             
             }
             catch (Exception ex)
@@ -322,17 +318,25 @@ namespace SSDQopenECA
             }
         }
   
- 
         public void Update_Measurements()
         {
             if (SSDQ_started == true)
             {
-                for (int i = 0; i < Plot_channels; i++)
+                try
                 {
-                    var propertyvalue2 = Algorithm.InData.GetType().GetProperty(PlotInentrynamelist[i]).GetValue(Algorithm.InData, null);
-                    A_data[i] = Convert.ToDouble(propertyvalue2);
-                    P_data[i] = Convert.ToDouble(submatrix.At(Plotcheckedindexlist[i], wdsize - 1)) ;
+                    for (int i = 0; i < Plot_channels; i++)
+                    {
+                        var propertyvalue2 = Algorithm.InData.GetType().GetProperty(PlotInentrynamelist[i]).GetValue(Algorithm.InData, null);
+                        A_data[i] = Convert.ToDouble(propertyvalue2);
+                        P_data[i] = Convert.ToDouble(submatrix.At(Plotcheckedindexlist[i], wdsize - 1));
+                    }
                 }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Could not record data: " + ex.Message);
+                    return;
+                }
+
                 AxisMaxMinCalc();
                 DecidePlotproperties();
                 if (!incomingDataStarted)
@@ -370,12 +374,10 @@ namespace SSDQopenECA
             {
                 this.Close();
             }
-                
-             
         }
+
         private void AxisMaxMinCalc()
         {
-
             for (int i = 0; i < Plot_channels; i++)
             {
                 double max_input_temp = Inputarray[i].Max();
@@ -408,6 +410,7 @@ namespace SSDQopenECA
                 }
             }
         }
+
         private void DecidePlotproperties()
         {
             if (Meas == 0 || Meas == 2)
@@ -456,7 +459,6 @@ namespace SSDQopenECA
             ProcessedDataChart.ChartAreas[0].AxisX.TitleFont = new Font("Arial", 12, FontStyle.Bold);
             ProcessedDataChart.ChartAreas[0].AxisY.TitleFont = new Font("Arial", 12, FontStyle.Bold);
         }
-
 
         private void StartGraphs()
         {
@@ -540,6 +542,10 @@ namespace SSDQopenECA
                     ProcessedDataChart.Series[Plotcheckedprocessednamelist[i]].Points.AddY(Processedarray[i][j]);
                 }
             }
+            //if (Algorithm.New_config.numberOfFrame >= 590 && Algorithm.New_config.numberOfFrame <= 610)
+            //{
+            //    ProcessedDataChart.SaveImage("C:\\Users\\Jacob\\Desktop\\1.png", System.Windows.Forms.DataVisualization.Charting.ChartImageFormat.Png);
+            //}
         }
 
         private void Plot_FormClosing(object sender, FormClosingEventArgs e)
@@ -553,6 +559,5 @@ namespace SSDQopenECA
                 ProcmeasThread.Abort();
             }
         }
-
     }
 }

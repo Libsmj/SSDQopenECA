@@ -731,7 +731,7 @@ namespace SSDQopenECA
                         {
                             if (Convert.ToString(InputChannelList.CheckedItems[i]) == reader.GetString(1))
                             {
-                                MeasType.Add(reader.GetInt32(0));
+                                MeasType.Add(reader.GetInt32(0) - 1);
                             }
                         }
                         reader.Close();
@@ -761,8 +761,8 @@ namespace SSDQopenECA
                                     num++;
                                 }
                             }
-                            Eachtypechannelnum[Meas[i] - 1] = num;
-                            if (Eachtypechannelnum[Meas[i] - 1] > 0 && Eachtypechannelnum[Meas[i] - 1] < 4)
+                            Eachtypechannelnum[Meas[i]] = num;
+                            if (Eachtypechannelnum[Meas[i]] > 0 && Eachtypechannelnum[Meas[i]] < 4)
                             {
                                 Insufficientchannels = true;
                                 break;
@@ -789,7 +789,7 @@ namespace SSDQopenECA
                                 cmd_insert.Parameters.Add(new SQLiteParameter("@P_id", Convert.ToString(InitialPIDCount + i + 1)));
                                 cmd_insert.Parameters.Add(new SQLiteParameter("@Dev_id", Convert.ToString(OutDeviceIDlist[i])));     //1 refers to Test Device ,7 refers to Proc_PMU added by me
                                 cmd_insert.Parameters.Add(new SQLiteParameter("@P_tag", Channelnameprefix + InputChannelList.CheckedItems[i]));
-                                cmd_insert.Parameters.Add(new SQLiteParameter("@Sigtype_id", Convert.ToString(MeasType[i])));
+                                cmd_insert.Parameters.Add(new SQLiteParameter("@Sigtype_id", Convert.ToString(MeasType[i] + 1)));
                                 cmd_insert.Parameters.Add(new SQLiteParameter("@Sig_ref", Channelnameprefix + InputChannelList.CheckedItems[i]));
                                 cmd_insert.Parameters.Add(new SQLiteParameter("@Des", "Processed Measurement Channel for " + InputChannelList.CheckedItems[i]));
                                 cmd_insert.Parameters.Add(new SQLiteParameter("@Sub", "1"));
@@ -1082,23 +1082,23 @@ namespace SSDQopenECA
                         //Create objects of the appropriate types for individual Hankel process
                         for (int i = 0; i < Meas.Count; i++)
                         {
-                            if (Meas[i] == 1)
+                            if (Meas[i] == 0)
                             {
                                 hankelImag = new HankelProcess(0);
                             }
-                            if (Meas[i] == 2)
+                            if (Meas[i] == 1)
                             {
                                 hankelIang = new HankelProcess(1);
                             }
-                            if (Meas[i] == 3)
+                            if (Meas[i] == 2)
                             {
                                 hankelVmag = new HankelProcess(2);
                             }
-                            if (Meas[i] == 4)
+                            if (Meas[i] == 3)
                             {
                                 hankelVang = new HankelProcess(3);
                             }
-                            if (Meas[i] == 5)
+                            if (Meas[i] == 4)
                             {
                                 hankelFreq = new HankelProcess(4);
                             }
@@ -1203,14 +1203,14 @@ namespace SSDQopenECA
                 for (int i = 0; i < Meas.Count; i++)
                 {
 
-                    Current_data = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[i] - 1]));
-                    Proc_data = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[i] - 1]));
+                    Current_data = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[i]]));
+                    Proc_data = Vector<double>.Build.Dense(Convert.ToInt32(NumChannelList[Meas[i]]));
 
-                    for (int j = 0; j < Current_data_initial[Meas[i] - 1].Count; j++)
+                    for (int j = 0; j < Current_data_initial[Meas[i]].Count; j++)
                     {
-                        Current_data[j] = Current_data_initial[Meas[i] - 1][j];
+                        Current_data[j] = Current_data_initial[Meas[i]][j];
 
-                        if (Meas[i] == 2 | Meas[i] == 4)
+                        if (Meas[i] == 1 | Meas[i] == 3)
                         {
                             if (Current_data[j] < 0)
                             {
@@ -1221,7 +1221,7 @@ namespace SSDQopenECA
 
                     }
 
-                    if (Meas[i] == 1)
+                    if (Meas[i] == 0)
                     {
                         submatrixImag = hankelImag.ProcessFrame(Current_data, numberOfFrame);
                         for (int j = 0; j < submatrixImag.RowCount; j++)
@@ -1231,7 +1231,7 @@ namespace SSDQopenECA
                         }
                         Proc_data = submatrixImag.Column(wdsize - 1);
                     }
-                    else if (Meas[i] == 2)
+                    else if (Meas[i] == 1)
                     {
                         submatrixIang = hankelIang.ProcessFrame(Current_data, numberOfFrame);
                         for (int j = 0; j < submatrixIang.RowCount; j++)
@@ -1249,7 +1249,7 @@ namespace SSDQopenECA
                             }
                         }
                     }
-                    else if (Meas[i] == 3)
+                    else if (Meas[i] == 2)
                     {
                         submatrixVmag = hankelVmag.ProcessFrame(Current_data, numberOfFrame);
                         for (int j = 0; j < submatrixVmag.RowCount; j++)
@@ -1259,7 +1259,7 @@ namespace SSDQopenECA
                         }
                         Proc_data = submatrixVmag.Column(wdsize - 1);
                     }
-                    else if (Meas[i] == 4)
+                    else if (Meas[i] == 3)
                     {
                         submatrixVang = hankelVang.ProcessFrame(Current_data, numberOfFrame);
                         for (int j = 0; j < submatrixVang.RowCount; j++)
@@ -1278,7 +1278,7 @@ namespace SSDQopenECA
                         }
 
                     }
-                    else if (Meas[i] == 5)
+                    else if (Meas[i] == 4)
                     {
                         submatrixFreq = hankelFreq.ProcessFrame(Current_data, numberOfFrame);
                         for (int j = 0; j < submatrixFreq.RowCount; j++)
