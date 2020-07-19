@@ -1,15 +1,26 @@
 GPA In_Data In_Map {
-    In_Entry1: SSDQ_PHASOR:56 
-    In_Entry2: SSDQ_PHASOR:58 
-    In_Entry3: SSDQ_PHASOR:60 
-    In_Entry4: SSDQ_PHASOR:62 
-    In_Entry5: SSDQ_PHASOR:64 
-    In_Entry6: SSDQ_PHASOR:66 
-    In_Entry7: SSDQ_PHASOR:68 
-    In_Entry8: SSDQ_PHASOR:70 
-    In_Entry9: SSDQ_PHASOR:72 
-    In_Entry10: SSDQ_PHASOR:74 
-    In_Entry11: SSDQ_PHASOR:76 
+    In_Entry1: SSDQ_PHASOR:55 
+    In_Entry2: SSDQ_PHASOR:57 
+    In_Entry3: SSDQ_PHASOR:59 
+    In_Entry4: SSDQ_PHASOR:61 
+    In_Entry5: SSDQ_PHASOR:63 
+    In_Entry6: SSDQ_PHASOR:65 
+    In_Entry7: SSDQ_PHASOR:67 
+    In_Entry8: SSDQ_PHASOR:69 
+    In_Entry9: SSDQ_PHASOR:71 
+    In_Entry10: SSDQ_PHASOR:73 
+    In_Entry11: SSDQ_PHASOR:75 
+    In_Entry12: SSDQ_PHASOR:56 
+    In_Entry13: SSDQ_PHASOR:58 
+    In_Entry14: SSDQ_PHASOR:60 
+    In_Entry15: SSDQ_PHASOR:62 
+    In_Entry16: SSDQ_PHASOR:64 
+    In_Entry17: SSDQ_PHASOR:66 
+    In_Entry18: SSDQ_PHASOR:68 
+    In_Entry19: SSDQ_PHASOR:70 
+    In_Entry20: SSDQ_PHASOR:72 
+    In_Entry21: SSDQ_PHASOR:74 
+    In_Entry22: SSDQ_PHASOR:76 
 }
 
 GPA Out_Data Out_Map {
@@ -24,5 +35,16 @@ GPA Out_Data Out_Map {
     Out_Entry9: SSDQ_PHASOR:107 
     Out_Entry10: SSDQ_PHASOR:108 
     Out_Entry11: SSDQ_PHASOR:109 
+    Out_Entry12: SSDQ_PHASOR:110 
+    Out_Entry13: SSDQ_PHASOR:111 
+    Out_Entry14: SSDQ_PHASOR:112 
+    Out_Entry15: SSDQ_PHASOR:113 
+    Out_Entry16: SSDQ_PHASOR:114 
+    Out_Entry17: SSDQ_PHASOR:115 
+    Out_Entry18: SSDQ_PHASOR:116 
+    Out_Entry19: SSDQ_PHASOR:117 
+    Out_Entry20: SSDQ_PHASOR:118 
+    Out_Entry21: SSDQ_PHASOR:119 
+    Out_Entry22: SSDQ_PHASOR:120 
 }
 

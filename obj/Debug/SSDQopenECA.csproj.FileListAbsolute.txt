@@ -364,3 +364,12 @@ C:\Users\Jacob\Desktop\SSDQopenECA\obj\Debug\SSDQopenECA.csproj.CoreCompileInput
 C:\Users\Jacob\Desktop\SSDQopenECA\obj\Debug\SSDQopenECA.csproj.CopyComplete
 C:\Users\Jacob\Desktop\SSDQopenECA\obj\Debug\SSDQopenECA.exe
 C:\Users\Jacob\Desktop\SSDQopenECA\obj\Debug\SSDQopenECA.pdb
+C:\Users\Jacob\Desktop\SSDQopenECA\bin\Debug\EntityFramework.dll
+C:\Users\Jacob\Desktop\SSDQopenECA\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\Jacob\Desktop\SSDQopenECA\bin\Debug\System.Data.SQLite.dll
+C:\Users\Jacob\Desktop\SSDQopenECA\bin\Debug\System.Data.SQLite.EF6.dll
+C:\Users\Jacob\Desktop\SSDQopenECA\bin\Debug\System.Data.SQLite.Linq.dll
+C:\Users\Jacob\Desktop\SSDQopenECA\bin\Debug\EntityFramework.xml
+C:\Users\Jacob\Desktop\SSDQopenECA\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\Jacob\Desktop\SSDQopenECA\bin\Debug\System.Data.SQLite.xml
+C:\Users\Jacob\Desktop\SSDQopenECA\bin\Debug\System.Data.SQLite.dll.config

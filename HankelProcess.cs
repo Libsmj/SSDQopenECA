@@ -141,7 +141,7 @@ namespace HankelRobustDataEstimation
             // Add by Hongyun and Lin, Initialize the window
             if (numberOfFrame >= window_size && !Init_flag)
             {
-                Matrix<double> corrected = Programe.SAP(data_estimate.SubMatrix(0, num_channel, 0, window_size), window_size / 2, 1, Math.Pow(10, -3)); //correct data is provided in form of a "corrected matrix"
+                Matrix<double> corrected = Programe.SAP(data_estimate.SubMatrix(0, num_channel, 0, window_size), Hankel_k, 1, Math.Pow(10, -3)); //correct data is provided in form of a "corrected matrix"
 
                 for (int i = 0; i < window_size; i++)
                 {
@@ -335,7 +335,7 @@ namespace HankelRobustDataEstimation
             // Add by Hongyun and Lin, SAP for cumulative problem 
             if (recalculate_count == recalculate_threshold)
             {
-                Matrix<double> corrected = Programe.SAP(data_estimate.SubMatrix(0, num_channel, 0, window_size), window_size / 2, 1, Math.Pow(10, -3)); //correct data
+                Matrix<double> corrected = Programe.SAP(data_estimate.SubMatrix(0, num_channel, 0, window_size), Hankel_k, 1, Math.Pow(10, -3)); //correct data
 
                 for (int i = 0; i < window_size; i++)
                 {
@@ -361,7 +361,7 @@ namespace HankelRobustDataEstimation
                     
                     flag_output = 0;
                     // Add by Hongyun and Lin, when event founded, correct the event data
-                    Matrix<double> corrected = Programe.SAP(data_observed.SubMatrix(0, num_channel, 0, window_size), window_size / 2, 3, Math.Pow(10, -3)); // correct data
+                    Matrix<double> corrected = Programe.SAP(data_observed.SubMatrix(0, num_channel, 0, window_size), Hankel_k, 3, Math.Pow(10, -3)); // correct data
 
                     for (int i = 0; i < window_size; i++)
                     {

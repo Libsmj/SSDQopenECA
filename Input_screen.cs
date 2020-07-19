@@ -1171,10 +1171,10 @@ namespace SSDQopenECA
                             count++;
                         }
                         Proc_data[i] = submatrixData[Meas[i]].Column(wdsize - 1);
+                        
                     }
                     else
                     {
-                        // Remove this statement
                         complexMeasurments[Meas[i] / 2][i % 2] = data_observed_initial[Meas[i]].Clone();
                     }
                 }

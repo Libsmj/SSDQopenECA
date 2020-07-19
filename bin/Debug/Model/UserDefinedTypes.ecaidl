@@ -11,6 +11,17 @@ In_Data {
     FloatingPoint Double In_Entry9
     FloatingPoint Double In_Entry10
     FloatingPoint Double In_Entry11
+    FloatingPoint Double In_Entry12
+    FloatingPoint Double In_Entry13
+    FloatingPoint Double In_Entry14
+    FloatingPoint Double In_Entry15
+    FloatingPoint Double In_Entry16
+    FloatingPoint Double In_Entry17
+    FloatingPoint Double In_Entry18
+    FloatingPoint Double In_Entry19
+    FloatingPoint Double In_Entry20
+    FloatingPoint Double In_Entry21
+    FloatingPoint Double In_Entry22
 }
 
 category GPA
@@ -26,5 +37,16 @@ Out_Data {
     FloatingPoint Double Out_Entry9
     FloatingPoint Double Out_Entry10
     FloatingPoint Double Out_Entry11
+    FloatingPoint Double Out_Entry12
+    FloatingPoint Double Out_Entry13
+    FloatingPoint Double Out_Entry14
+    FloatingPoint Double Out_Entry15
+    FloatingPoint Double Out_Entry16
+    FloatingPoint Double Out_Entry17
+    FloatingPoint Double Out_Entry18
+    FloatingPoint Double Out_Entry19
+    FloatingPoint Double Out_Entry20
+    FloatingPoint Double Out_Entry21
+    FloatingPoint Double Out_Entry22
 }
 
