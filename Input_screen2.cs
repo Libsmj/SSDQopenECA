@@ -618,7 +618,7 @@ namespace SSDQopenECA
             OutputChannelList.Items.Clear();
             //IPchannelnamelist.Clear();
             OPchannelnamelist.Clear();
-            OutputDevice_combobox.BackColor = default(Color);
+            OutputDevice_combobox.BackColor = default;
 
 
             SQLiteConnection conDatabase = new SQLiteConnection(constring);

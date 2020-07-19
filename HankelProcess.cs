@@ -12,8 +12,9 @@
 //Output:Processed and conditioned data
 //*************************************************************************************************************
 using System;
-using System.Linq;
 using System.ComponentModel;
+using System.Numerics;
+using System.Linq;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 using SSDQopenECA;
@@ -92,6 +93,11 @@ namespace HankelRobustDataEstimation
             flag_observed = Matrix<double>.Build.Dense(Convert.ToInt32(num_channel), window_size + 1);
 
             Init_flag = false;
+        }
+
+        public Matrix<double> Initialize()
+        {
+            return data_updated;
         }
 
         //This change introduced for openECA implementation

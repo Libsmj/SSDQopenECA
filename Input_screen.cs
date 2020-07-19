@@ -1016,6 +1016,7 @@ namespace SSDQopenECA
                         for (int i = 0; i < Meas.Count; i++)
                         {
                             hankelProcess[Meas[i]] = new HankelProcess(Meas[i]);
+                            submatrixData[Meas[i]] = hankelProcess[Meas[i]].Initialize();
                             MeasNum[Meas[i]] = i;
                         }
 

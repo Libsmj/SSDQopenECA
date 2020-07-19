@@ -244,8 +244,7 @@ namespace SSDQopenECA
                         Meas = 0;
                     }
                     else if (Meastype == "IPHA")
-                    {
-                        
+                    {    
                         Meas = 1;
                     }
                     else if (Meastype == "FREQ")
@@ -542,10 +541,10 @@ namespace SSDQopenECA
                     ProcessedDataChart.Series[Plotcheckedprocessednamelist[i]].Points.AddY(Processedarray[i][j]);
                 }
             }
-            //if (Algorithm.New_config.numberOfFrame >= 590 && Algorithm.New_config.numberOfFrame <= 610)
-            //{
-            //    ProcessedDataChart.SaveImage("C:\\Users\\Jacob\\Desktop\\1.png", System.Windows.Forms.DataVisualization.Charting.ChartImageFormat.Png);
-            //}
+            if (Algorithm.New_config.numberOfFrame >= 790 && Algorithm.New_config.numberOfFrame <= 810)
+            {
+                ProcessedDataChart.SaveImage("C:\\Users\\Jacob\\Desktop\\1.png", System.Windows.Forms.DataVisualization.Charting.ChartImageFormat.Png);
+            }
         }
 
         private void Plot_FormClosing(object sender, FormClosingEventArgs e)
