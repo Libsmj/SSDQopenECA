@@ -357,14 +357,14 @@ namespace SSDQopenECA
                     }
                     else
                     {
-
                         Inputmeaslistmessage = "";
                         if (Curr_MagButton.Checked)
                         {
                             for (int i = 0; i < DeviceCheckList.CheckedItems.Count; i++)
                             {
                                 //Retrieve all the Channel names (which is same as the Signal Reference names) of the selected devices
-                                string query_Imag = "SELECT SignalReference FROM ActiveMeasurement WHERE SignalType='IPHM' AND Device=" + "'" + Convert.ToString(DeviceCheckList.CheckedItems[i]) + "' AND PointTag ; ";
+                                //string query_Imag = "SELECT SignalReference FROM ActiveMeasurement WHERE SignalType='IPHM' AND Device=" + "'" + Convert.ToString(DeviceCheckList.CheckedItems[i]) + "' AND PointTag ; ";
+                                string query_Imag = "SELECT SignalReference FROM ActiveMeasurement WHERE SignalType='IPHM' AND Device=" + "'" + Convert.ToString(DeviceCheckList.CheckedItems[i]) + "' ; ";
                                 SQLiteCommand cmd_Imag = new SQLiteCommand(query_Imag, conDatabase);
                                 reader = cmd_Imag.ExecuteReader();
                                 while (reader.Read())

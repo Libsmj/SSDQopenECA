@@ -178,7 +178,7 @@ namespace SSDQopenECA
                 {
                     Meastype = "IPHM";
                 }
-                else if (MeasComboBox.Text == "Voltage Angle")
+                else if (MeasComboBox.Text == "Current Angle")
                 {
                     Meastype = "IPHA";
                 }
