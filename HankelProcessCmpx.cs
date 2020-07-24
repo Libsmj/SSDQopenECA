@@ -20,6 +20,9 @@ using MathNet.Numerics.LinearAlgebra.Factorization;
 using SSDQopenECA;
 using Error_Recovery;
 
+using System.IO;
+using System.Text;
+
 namespace HankelRobustDataEstimation
 {
     [Description("HankelRobustDataEstimation: robust data estimation with low-rank Hankel structure")]
@@ -225,8 +228,6 @@ namespace HankelRobustDataEstimation
                 data_observed.SetSubMatrix(0, 0, data_observed.SubMatrix(0, num_channel, 1, window_size));
                 flag_trusted.SetSubMatrix(0, 0, flag_trusted.SubMatrix(0, num_channel, 1, window_size));
                 flag_observed.SetSubMatrix(0, 0, flag_observed.SubMatrix(0, num_channel, 1, window_size));
-
-
 
                 // Step 7: differentiate the event data from bad data
                 if (flag_event == 0)

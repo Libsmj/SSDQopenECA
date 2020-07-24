@@ -104,7 +104,7 @@ namespace SSDQopenECA
             try
             {
                 MainWindow.WriteMessage("opeECA Framework created....SSDQ Analytic receiving data");
-               
+
                 //Check if New openECA framework creation is selected
                 if (New_config.SSDQ_started == true)
                 {

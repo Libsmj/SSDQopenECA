@@ -35,7 +35,7 @@ namespace SSDQopenECA
         private int OriginalPIDCount;           //maximum PID number of the measurement channels available in openECA database at the beginning
         private int InitialPIDCount;            //maximum PID number of the measurement channels available in openECA database before output channel creation
         private int num;                        //number of I/P channels of each type selected by the user
-        public int numberOfFrame;              //number of frames retrieved upon SSDQ execution
+        private int numberOfFrame;              //number of frames retrieved upon SSDQ execution
         private int count = 0;
 
         private List<int> MeasType = new List<int>();   //Int Values - Only to get the signaltypeID for checked Input channels from input channel list for assigning to output channels creation before framework creation
@@ -58,7 +58,7 @@ namespace SSDQopenECA
         private bool[] complexOperations = new bool[3];
 
         public Matrix<double>[] submatrixData = new Matrix<double>[5];
-        public Matrix<double>[][] submatrixDataComplex = new Matrix<double>[2][];
+        private Matrix<double>[][] submatrixDataComplex = new Matrix<double>[2][];
         private Vector<double>[][] complexMeasurments = new Vector<double>[2][];
 
         private string Inputmeaslistmessage = "";
@@ -89,7 +89,7 @@ namespace SSDQopenECA
         public List<string>[] IPchannelnamelist_updated = new List<string>[5];  //Array of 5 lists containing the signal reference names of the Input channels selected for openECA framework creation separated as per measurement types        
         public bool SSDQ_started = false;      
         public Thread MainWindow_thread = new Thread(ThreadStart_for_main_window);
-        public List<double>   Proc_data_updated = new List<double>();           //List of Processed data for a particular frame in the same sequence of the output measurment channels
+        public List<double> Proc_data_updated = new List<double>();           //List of Processed data for a particular frame in the same sequence of the output measurment channels
         public Matrix<double> submatrixStacked;                 // Submatrix of each selected measurment type stacked on top of each other
         public string Channelnameprefix;                        // prefix for Output measurment channels
 
@@ -814,7 +814,6 @@ namespace SSDQopenECA
                                     }
                                 }
                                 reader.Close();
-
                             }
                             conDatabase.Close();
                             Num_channels = InputChannelList.CheckedItems.Count;     //Total number  of selected channels
@@ -1171,11 +1170,10 @@ namespace SSDQopenECA
                             count++;
                         }
                         Proc_data[i] = submatrixData[Meas[i]].Column(wdsize - 1);
-                        
                     }
                     else
                     {
-                        complexMeasurments[Meas[i] / 2][i % 2] = data_observed_initial[Meas[i]].Clone();
+                        complexMeasurments[Meas[i] / 2][Meas[i] % 2] = data_observed_initial[Meas[i]].Clone();
                     }
                 }
 

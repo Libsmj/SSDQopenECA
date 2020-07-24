@@ -26,7 +26,7 @@ namespace SSDQopenECA
         private bool incomingDataStarted = false;//variable to check whether data from openECA has started streaming in     
         private Thread InputmeasThread;         //Thread for plotting Input measurements
         private Thread ProcmeasThread;          //Thread for plotting Processed measurements
-        private int graph_length =200;          //Number of Frames plotted in GUI
+        private int graph_length = 200;          //Number of Frames plotted in GUI
         private Vector<double> A_data;          //Actual data
         private Vector<double> P_data;          //Processed data
         private double[][] Inputarray = new double[1000][];         //Array representing data of Input number of channels(1000 max)
@@ -54,6 +54,8 @@ namespace SSDQopenECA
         private double max_input = 0;// max value of input measurements in the array
         private double min_proc = 0;// min value of processed measurements in the array
         private double min_input = 0;// min value of input measurements in the array
+
+        private String temp = "1";
 
         public Plot()
         {
@@ -288,26 +290,7 @@ namespace SSDQopenECA
                     else
                     {
                         SSDQ_started = Algorithm.Stored_config.SSDQ_started;
-                        if (Meas == 0)
-                        {
-                            submatrix = Algorithm.Stored_config.submatrixImag;
-                        }
-                        if (Meas == 1)
-                        {
-                            submatrix = Algorithm.Stored_config.submatrixIang;
-                        }
-                        if (Meas == 2)
-                        {
-                            submatrix = Algorithm.Stored_config.submatrixVmag;
-                        }
-                        if (Meas == 3)
-                        {
-                            submatrix = Algorithm.Stored_config.submatrixVang;
-                        }
-                        if (Meas == 4)
-                        {
-                            submatrix = Algorithm.Stored_config.submatrixFreq;
-                        }
+                        submatrix = Algorithm.Stored_config.submatrixData[Meas];
                     }
                 }             
             }
@@ -507,6 +490,11 @@ namespace SSDQopenECA
                     InputDataChart.Series[Plotcheckedactualnamelist[i]].Points.AddY(Inputarray[i][j]);
                 }
             }
+            //if (Algorithm.Stored_config.numberOfFrame >= 330)
+            //{
+            //    InputDataChart.SaveImage("C:\\Users\\Jacob\\Desktop\\temp\\" + temp + ".png", System.Windows.Forms.DataVisualization.Charting.ChartImageFormat.Png);
+            //    temp = (Int32.Parse(temp) + 1).ToString();
+            //}
         }
 
         private void StreamProcesseddata()
@@ -541,10 +529,11 @@ namespace SSDQopenECA
                     ProcessedDataChart.Series[Plotcheckedprocessednamelist[i]].Points.AddY(Processedarray[i][j]);
                 }
             }
-            if (Algorithm.New_config.numberOfFrame >= 790 && Algorithm.New_config.numberOfFrame <= 810)
-            {
-                ProcessedDataChart.SaveImage("C:\\Users\\Jacob\\Desktop\\1.png", System.Windows.Forms.DataVisualization.Charting.ChartImageFormat.Png);
-            }
+            //if (Algorithm.Stored_config.numberOfFrame >= 330)
+            //{
+            //    ProcessedDataChart.SaveImage("C:\\Users\\Jacob\\Desktop\\temp\\" + temp + ".png", System.Windows.Forms.DataVisualization.Charting.ChartImageFormat.Png);
+            //    temp = (Int32.Parse(temp) + 1).ToString();
+            //}
         }
 
         private void Plot_FormClosing(object sender, FormClosingEventArgs e)
