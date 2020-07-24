@@ -1243,7 +1243,7 @@ namespace SSDQopenECA
                     }
                     else
                     {
-                        complexMeasurments[Meas[i] / 2][i % 2] = data_observed_initial[Meas[i]].Clone();
+                        complexMeasurments[Meas[i] / 2][Meas[i] % 2] = data_observed_initial[Meas[i]].Clone();
                     }
                 }
 
