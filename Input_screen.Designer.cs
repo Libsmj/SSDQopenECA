@@ -570,7 +570,7 @@
             this.Controls.Add(this.Heading);
             this.Name = "Input_screen";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "x`";
+            this.Text = "SSDQ openECA Configuration";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.InputScreen_FormClosing);
             this.Load += new System.EventHandler(this.Input_screen_Load);
             this.MeasurementBox.ResumeLayout(false);

@@ -20,6 +20,9 @@ using MathNet.Numerics.LinearAlgebra.Factorization;
 using SSDQopenECA;
 using Error_Recovery;
 
+using System.IO;
+using System.Text;
+
 namespace HankelRobustDataEstimation
 {
     [Description("HankelRobustDataEstimation: robust data estimation with low-rank Hankel structure")]
@@ -103,6 +106,8 @@ namespace HankelRobustDataEstimation
         //This change introduced for openECA implementation
         public Matrix<double> ProcessFrame(Vector <double> Current_data, int numberOfFrame)
         {
+            var csv1 = new StringBuilder();
+
             Vector<double> ctvector = Vector<double>.Build.Dense(num_channel);
             Vector<double> flag_ctvector = Vector<double>.Build.Dense(num_channel);
             Vector<double> flag_observed_ctvector = Vector<double>.Build.Dense(num_channel);
@@ -126,6 +131,18 @@ namespace HankelRobustDataEstimation
                     ctvector[i] = 0;
                 }
             }
+
+            for (int i = 0; i < num_channel; i++)
+            {
+                double test = ctvector.At(i) * 180 / Math.PI;
+                if (test >= 180)
+                {
+                    test -= 360;
+                }
+                var newLine = string.Format("{0},", test);
+                csv1.Append(newLine);
+            }
+            csv1.Append(",");
 
             recalculate_count++; //Add by Hongyun and Lin
 
@@ -374,6 +391,19 @@ namespace HankelRobustDataEstimation
                     }
                 }
             }
+
+            for (int i = 0; i < num_channel; i++)
+            {
+                double test = data_updated[i, 0] * 180 / Math.PI;
+                if (test >= 180)
+                {
+                    test -= 360;
+                }
+                var newLine = string.Format("{0},", test);
+                csv1.Append(newLine);
+            }
+            csv1.AppendLine("");
+            File.AppendAllText(@"C:\Users\Jacob\Desktop\Angle.csv", csv1.ToString());
 
             return data_updated;
         }

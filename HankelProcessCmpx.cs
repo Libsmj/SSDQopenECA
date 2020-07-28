@@ -42,7 +42,7 @@ namespace HankelRobustDataEstimation
         private int tau_a;// = 3;
         private int tau_b;// = 30;
 
-        private double threshold = 0.0015;    
+        private double threshold = 0.0025;    
         private double decaying_factor = 50;
         private int instant = -300;
         private int event_instant = 0;
@@ -63,18 +63,8 @@ namespace HankelRobustDataEstimation
             //Initialize each object based upon the type of measurement to facilitate simultaneous execution of SSDQ algorithm.
             window_size = ParameterForm.L;
             Hankel_k = ParameterForm.k;
-            if (Meas == 1 | Meas == 3)
-            {
-                //For Angles the threshold is the mean difference of two consecutive frames in radians
-                ratio_approx_error = 1.5 * ParameterForm.n;
-                threshold = 0.0052;
-            }
-            else
-            {
-                //For Magnitudes the threshold is the standard deviation of two consecutive frames .
-                ratio_approx_error = ParameterForm.n;
-                threshold = 0.0015;
-            }
+            threshold = 0.0021;
+            ratio_approx_error = ParameterForm.n;
             recalculate_threshold = ParameterForm.r;
 
             tau_a = Convert.ToInt32(ParameterForm.a);
@@ -103,6 +93,8 @@ namespace HankelRobustDataEstimation
         //This change introduced for openECA implementation
         public Matrix<double>[] ProcessFrame(Vector<double>[] Current_data, int numberOfFrame)
         {
+            var csv1 = new StringBuilder();
+
             Vector<Complex> ctvector = Vector<Complex>.Build.Dense(num_channel);
             Vector<double> flag_ctvector = Vector<double>.Build.Dense(num_channel);
             Vector<double> flag_observed_ctvector = Vector<double>.Build.Dense(num_channel);
@@ -123,6 +115,12 @@ namespace HankelRobustDataEstimation
                     ctvector[i] = Complex.Zero;
                 }
             }
+            //for (int i = 0; i < num_channel; i++)
+            //{
+            //    var newLine = string.Format("{0},{1},", ctvector.At(i).Magnitude, ctvector.At(i).Phase * 180.0 / Math.PI);
+            //    csv1.Append(newLine);
+            //}
+            //csv1.Append(",");
 
             recalculate_count++; //Add by Hongyun and Lin
 
@@ -294,9 +292,9 @@ namespace HankelRobustDataEstimation
 
                     if (rand_approx_error / approx_error >= ratio_approx_error)
                     {
-                        Matrix<Complex> corrected = Programe.SAP(data_observed.SubMatrix(0, num_channel, 0, window_size), Hankel_k, 3, Math.Pow(10, -3)); // correct data
-                        data_estimate.SetSubMatrix(0, 0, corrected);
-                        data_observed.SetSubMatrix(0, 0, corrected);
+                        //Matrix<Complex> corrected = Programe.SAP(data_observed.SubMatrix(0, num_channel, 0, window_size), Hankel_k, 3, Math.Pow(10, -3)); // correct data
+                        //data_estimate.SetSubMatrix(0, 0, corrected);
+                        //data_observed.SetSubMatrix(0, 0, corrected);
 
                         instant = event_instant + window_size - 1;
                         flag_trusted = flag_observed.Clone();
@@ -353,6 +351,13 @@ namespace HankelRobustDataEstimation
                     data_updated_real[1][i, j] = data_updated.At(i, j).Phase;
                 }
             }
+            //for (int i = 0; i < num_channel; i++)
+            //{
+            //    var newLine = string.Format("{0},{1},", data_updated_real[0][i, 0], data_updated_real[1][i, 0] * 180.0 / Math.PI);
+            //    csv1.Append(newLine);
+            //}
+            //csv1.AppendLine("");
+            //File.AppendAllText(@"C:\Users\Jacob\Desktop\1.csv", csv1.ToString());
 
             return data_updated_real;
         }

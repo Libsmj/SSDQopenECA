@@ -35,7 +35,7 @@ namespace SSDQopenECA
         private int OriginalPIDCount;           //maximum PID number of the measurement channels available in openECA database at the beginning
         private int InitialPIDCount;            //maximum PID number of the measurement channels available in openECA database before output channel creation
         private int num;                        //number of I/P channels of each type selected by the user
-        private int numberOfFrame;              //number of frames retrieved upon SSDQ execution
+        public int numberOfFrame;              //number of frames retrieved upon SSDQ execution
         private int count = 0;
 
         private List<int> MeasType = new List<int>();   //Int Values - Only to get the signaltypeID for checked Input channels from input channel list for assigning to output channels creation before framework creation

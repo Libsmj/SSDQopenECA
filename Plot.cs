@@ -55,7 +55,8 @@ namespace SSDQopenECA
         private double min_proc = 0;// min value of processed measurements in the array
         private double min_input = 0;// min value of input measurements in the array
 
-        private String temp = "1";
+        private String temp1 = "1";
+        private String temp2 = "1";
 
         public Plot()
         {
@@ -490,10 +491,10 @@ namespace SSDQopenECA
                     InputDataChart.Series[Plotcheckedactualnamelist[i]].Points.AddY(Inputarray[i][j]);
                 }
             }
-            //if (Algorithm.Stored_config.numberOfFrame >= 330)
+            //if (Algorithm.New_config.numberOfFrame >= 330)
             //{
-            //    InputDataChart.SaveImage("C:\\Users\\Jacob\\Desktop\\temp\\" + temp + ".png", System.Windows.Forms.DataVisualization.Charting.ChartImageFormat.Png);
-            //    temp = (Int32.Parse(temp) + 1).ToString();
+            //    InputDataChart.SaveImage("C:\\Users\\Jacob\\Desktop\\temp\\i" + temp1 + ".png", System.Windows.Forms.DataVisualization.Charting.ChartImageFormat.Png);
+            //    temp1 = (Int32.Parse(temp1) + 1).ToString();
             //}
         }
 
@@ -529,10 +530,10 @@ namespace SSDQopenECA
                     ProcessedDataChart.Series[Plotcheckedprocessednamelist[i]].Points.AddY(Processedarray[i][j]);
                 }
             }
-            //if (Algorithm.Stored_config.numberOfFrame >= 330)
+            //if (Algorithm.New_config.numberOfFrame >= 330)
             //{
-            //    ProcessedDataChart.SaveImage("C:\\Users\\Jacob\\Desktop\\temp\\" + temp + ".png", System.Windows.Forms.DataVisualization.Charting.ChartImageFormat.Png);
-            //    temp = (Int32.Parse(temp) + 1).ToString();
+            //    ProcessedDataChart.SaveImage("C:\\Users\\Jacob\\Desktop\\temp\\o" + temp2 + ".png", System.Windows.Forms.DataVisualization.Charting.ChartImageFormat.Png);
+            //    temp2 = (Int32.Parse(temp2) + 1).ToString();
             //}
         }
 
