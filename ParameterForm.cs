@@ -12,20 +12,23 @@
 //*************************************************************************************************************
 using System;
 using System.Windows.Forms;
+using ECAClientFramework;
 
 namespace SSDQopenECA
 {
     public partial class ParameterForm : Form
     {
         //Refer HankelProcess.cs for individual variable description
-        public static int L=10;
-        public static double ea=2;
-        public static int k=6;
-        public static double n=1.2;
-        public static double a=3;
-        public static double b = 30;
-        public static int r = 2000;
-        public static bool paramsavailable=false;
+        public static int       L = 10;
+        public static double    ea = 2;
+        public static int       k = 6;
+        public static double    n = 1.2;
+        public static double    a = 3;
+        public static double    b = 30;
+        public static int       r = 2000 / SystemSettings.FramesPerSecond;
+
+        public static bool paramsavailable = false;
+
         public ParameterForm()
         {
             InitializeComponent();
@@ -50,7 +53,7 @@ namespace SSDQopenECA
                 ea = Convert.ToDouble(ParamtextBox2.Text);
                 k = Convert.ToInt32(ParamtextBox3.Text);
                 n = Convert.ToDouble(ParamtextBox4.Text);
-                r = Convert.ToInt32(ParamtextBox5.Text);
+                r = Convert.ToInt32(ParamtextBox5.Text) * SystemSettings.FramesPerSecond;
                 a = Convert.ToDouble(BadDatatextBox1.Text);
                 b = Convert.ToDouble(BadDatatextBox2.Text);
                 paramsavailable = true;

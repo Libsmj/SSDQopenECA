@@ -32,7 +32,7 @@ namespace SSDQopenECA
         private double[][] Inputarray = new double[1000][];         //Array representing data of Input number of channels(1000 max)
         private double[][] Processedarray = new double[1000][];     //Array representing data of Output number of channels(1000 max)
         private int Plot_channels;
-        private List<string>[] Inentrynamelist = new List<string>[5];   
+        private List<string>[] Inentrynamelist = new List<string>[5];
         private List<string> PlotInentrynamelist = new List<string>();      //Input entries required for plotting
         private List<string> Plotcheckedactualnamelist = new List<string>();// Name of Input channels selected for plotting
         private List<string> Plotcheckedprocessednamelist = new List<string>();//Name of Output channels for plotting

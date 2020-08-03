@@ -76,11 +76,11 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(18, 172);
+            this.label4.Location = new System.Drawing.Point(18, 175);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(241, 16);
+            this.label4.Size = new System.Drawing.Size(309, 16);
             this.label4.TabIndex = 10;
-            this.label4.Text = "Period of periodic subspace estimation";
+            this.label4.Text = "Period of periodic subspace estimation in seconds";
             // 
             // ParamtextBox5
             // 
@@ -95,7 +95,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(17, 134);
+            this.label2.Location = new System.Drawing.Point(18, 134);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(421, 32);
             this.label2.TabIndex = 8;
@@ -116,7 +116,7 @@
             // 
             this.Paramlabel2.AutoSize = true;
             this.Paramlabel2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Paramlabel2.Location = new System.Drawing.Point(18, 65);
+            this.Paramlabel2.Location = new System.Drawing.Point(18, 60);
             this.Paramlabel2.Name = "Paramlabel2";
             this.Paramlabel2.Size = new System.Drawing.Size(374, 32);
             this.Paramlabel2.TabIndex = 6;

@@ -132,17 +132,17 @@ namespace HankelRobustDataEstimation
                 }
             }
 
-            for (int i = 0; i < num_channel; i++)
-            {
-                double test = ctvector.At(i) * 180 / Math.PI;
-                if (test >= 180)
-                {
-                    test -= 360;
-                }
-                var newLine = string.Format("{0},", test);
-                csv1.Append(newLine);
-            }
-            csv1.Append(",");
+            //for (int i = 0; i < num_channel; i++)
+            //{
+            //    double test = ctvector.At(i) * 180 / Math.PI;
+            //    if (test >= 180)
+            //    {
+            //        test -= 360;
+            //    }
+            //    var newLine = string.Format("{0},", test);
+            //    csv1.Append(newLine);
+            //}
+            //csv1.Append(",");
 
             recalculate_count++; //Add by Hongyun and Lin
 
@@ -392,18 +392,18 @@ namespace HankelRobustDataEstimation
                 }
             }
 
-            for (int i = 0; i < num_channel; i++)
-            {
-                double test = data_updated[i, 0] * 180 / Math.PI;
-                if (test >= 180)
-                {
-                    test -= 360;
-                }
-                var newLine = string.Format("{0},", test);
-                csv1.Append(newLine);
-            }
-            csv1.AppendLine("");
-            File.AppendAllText(@"C:\Users\Jacob\Desktop\Angle.csv", csv1.ToString());
+            //for (int i = 0; i < num_channel; i++)
+            //{
+            //    double test = data_updated[i, 0] * 180 / Math.PI;
+            //    if (test >= 180)
+            //    {
+            //        test -= 360;
+            //    }
+            //    var newLine = string.Format("{0},", test);
+            //    csv1.Append(newLine);
+            //}
+            //csv1.AppendLine("");
+            //File.AppendAllText(@"C:\Users\Jacob\Desktop\Angle.csv", csv1.ToString());
 
             return data_updated;
         }
