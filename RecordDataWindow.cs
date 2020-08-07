@@ -177,28 +177,23 @@ namespace SSDQopenECA
                 for (int i = 0; i < MeasTypechecklist.CheckedItems.Count; i++)
                 {
                     if(Convert.ToString(MeasTypechecklist.CheckedItems[i])=="Voltage Magnitude")
-                    {
-                                       
+                    {            
                         MeasTypelist.Add("VPHM");
                     }
                     if (Convert.ToString(MeasTypechecklist.CheckedItems[i]) == "Voltage Angle")
                     {
-                       
                         MeasTypelist.Add("VPHA");
                     }
                     if (Convert.ToString(MeasTypechecklist.CheckedItems[i]) == "Current Magnitude")
                     {
-                        
                         MeasTypelist.Add("IPHM");
                     }
                     if (Convert.ToString(MeasTypechecklist.CheckedItems[i]) == "Current Angle")
                     {
-                       
                         MeasTypelist.Add("IPHA");
                     }
                     if (Convert.ToString(MeasTypechecklist.CheckedItems[i]) == "Frequency")
                     {
-                        
                         MeasTypelist.Add("FREQ");
                     }
                 }           
@@ -417,16 +412,16 @@ namespace SSDQopenECA
                         }    
                     }
 
-                    for(int i = 0; i < wdsize; i++)
+                    for (int i = 0; i < wdsize; i++)
                     {
                         Processed_matrix[i].Clear();
                         
-                        for(int j = 0; j < Record_channels; j++)
+                        for (int j = 0; j < Record_channels; j++)
                         {
                             //For angles convert back to degrees
-                           if(Indatatypelist[Recordcheckedindexlist[j]]=="IPHA" | Indatatypelist[Recordcheckedindexlist[j]] == "VPHA")
+                            if (Indatatypelist[Recordcheckedindexlist[j]] == "IPHA" || Indatatypelist[Recordcheckedindexlist[j]] == "VPHA")
                             {
-                                Processed_matrix[i].Add((Convert.ToDouble(submatrix.At(Recordcheckedindexlist[j], i))* 360/ (2 * Math.PI)) % 360);
+                                Processed_matrix[i].Add((Convert.ToDouble(submatrix.At(Recordcheckedindexlist[j], i))* 360 / (2 * Math.PI)) % 360);
                                 if (Processed_matrix[i][j] > 180)
                                 {
                                     Processed_matrix[i][j] = Processed_matrix[i][j] - 360;
