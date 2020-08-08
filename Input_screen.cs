@@ -719,7 +719,11 @@ namespace SSDQopenECA
 
         private void Create_Framework_button_Click(object sender, EventArgs e)
         {
-            CreateFramework();                           
+            CreateFramework();
+            if (SSDQ_started == false)
+            {
+                ParameterSettingsButton.Enabled = true;
+            }
         }
 
         private void CreateFramework()
@@ -1045,6 +1049,7 @@ namespace SSDQopenECA
 
                         RunSSDQButton.BackColor = Color.Green;
                         StopSSDQbutton.BackColor = Color.LightGray;
+                        ParameterSettingsButton.Enabled = false;
                         MessageBox.Show("SSDQ Algorithm Running......", "Information");
                     }
                 }
@@ -1122,6 +1127,8 @@ namespace SSDQopenECA
             {
                 numberOfFrame++;
 
+                Thread[] t = new Thread[5];
+
                 Proc_data_updated.Clear();
                 Proc_data = new Vector<double>[5];
                 submatrixStacked = Matrix<double>.Build.Dense(Inentrynamelist.Count, wdsize);
@@ -1135,21 +1142,19 @@ namespace SSDQopenECA
                     {
                         if (NumChannelList[j] > 0)
                         {
-                            for (int k = 0; k < NumChannelList[j]; k++)
+                            int k = Inentrynamelist_updated[j].IndexOf(Inentrynamelist[i]);
+                            if (k != -1)
                             {
-                                if (Inentrynamelist[i] == Inentrynamelist_updated[j][k])
-                                {
-                                    data_observed_initial[j][k] = Convert.ToDouble(propertyvalue1);
+                                data_observed_initial[j][k] = Convert.ToDouble(propertyvalue1);
 
-                                    //In case the measurements are voltage angles or current angles, they are modified into radians from degrees for proper conditioning by Hankel robust estimation
-                                    if (j == 1 || j == 3)
+                                //In case the measurements are voltage angles or current angles, they are modified into radians from degrees for proper conditioning by Hankel robust estimation
+                                if (j == 1 || j == 3)
+                                {
+                                    if (data_observed_initial[j][k] < 0)
                                     {
-                                        if (data_observed_initial[j][k] < 0)
-                                        {
-                                            data_observed_initial[j][k] = 360 + data_observed_initial[j][k];
-                                        }
-                                        data_observed_initial[j][k] *= Math.PI / 180;
+                                        data_observed_initial[j][k] += 360;
                                     }
+                                    data_observed_initial[j][k] *= Math.PI / 180;
                                 }
                             }
                         }
@@ -1159,42 +1164,23 @@ namespace SSDQopenECA
                 // Performs real-valued calculations
                 for (int i = 0; i < Meas.Count; i++)
                 {
-                    Proc_data[i] = Vector<double>.Build.Dense(NumChannelList[Meas[i]]);
-
-                    if (!complexOperations[Meas[i] / 2])
-                    {
-                        submatrixData[Meas[i]] = hankelProcess[Meas[i]].ProcessFrame(data_observed_initial[Meas[i]], numberOfFrame);
-                        for (int j = 0; j < submatrixData[Meas[i]].RowCount; j++)
-                        {
-                            submatrixStacked.SetRow(count, submatrixData[Meas[i]].Row(j));
-                            count++;
-                        }
-                        Proc_data[i] = submatrixData[Meas[i]].Column(wdsize - 1);
-                    }
-                    else
-                    {
-                        complexMeasurments[Meas[i] / 2][Meas[i] % 2] = data_observed_initial[Meas[i]].Clone();
-                    }
+                    t[i] = new Thread(RealOperations);
+                    t[i].Start(i);
+                }
+                for (int i = 0; i < Meas.Count; i++)
+                {
+                    t[i].Join();
                 }
 
                 // Perform complex-valued calculations
                 for (int c = 0; c < 2; c++)
                 {
-                    if (complexOperations[c])
-                    {
-                        submatrixDataComplex[c] = hankelProcessComplex[c].ProcessFrame(complexMeasurments[c], numberOfFrame);
-
-                        for (int i = 0; i < 2; i++)
-                        {
-                            submatrixData[2 * c + i] = submatrixDataComplex[c][i];
-                            for (int j = 0; j < submatrixData[2 * c + i].RowCount; j++)
-                            {
-                                submatrixStacked.SetRow(count, submatrixData[2 * c + i].Row(j));
-                                count++;
-                            }
-                            Proc_data[MeasNum[2 * c + i]] = submatrixData[2 * c + i].Column(wdsize - 1);
-                        }
-                    }
+                    t[c] = new Thread(ComplexOperations);
+                    t[c].Start(c);
+                }
+                for (int c = 0; c < 2; c++)
+                {
+                    t[c].Join();
                 }
 
                 for (int i = 0; i < Meas.Count; i++)
@@ -1223,9 +1209,74 @@ namespace SSDQopenECA
                 numberOfFrame = 0;
                 RunSSDQButton.BackColor = Color.LightGray;
                 StopSSDQbutton.BackColor = Color.Red;
+                ParameterSettingsButton.Enabled = true;
                 MessageBox.Show("SSDQ method failed to converge. Try running SSDQ again.", "Error Information: " + ex.Message);
             }
         }
+
+        public void RealOperations(Object obj)
+        {
+            try
+            {
+                int i = (int)obj;
+                Proc_data[i] = Vector<double>.Build.Dense(NumChannelList[Meas[i]]);
+
+                if (!complexOperations[Meas[i] / 2])
+                {
+                    submatrixData[Meas[i]] = hankelProcess[Meas[i]].ProcessFrame(data_observed_initial[Meas[i]], numberOfFrame);
+                    for (int j = 0; j < submatrixData[Meas[i]].RowCount; j++)
+                    {
+                        submatrixStacked.SetRow(count, submatrixData[Meas[i]].Row(j));
+                        count++;
+                    }
+                    Proc_data[i] = submatrixData[Meas[i]].Column(wdsize - 1);
+                }
+                else
+                {
+                    complexMeasurments[Meas[i] / 2][Meas[i] % 2] = data_observed_initial[Meas[i]].Clone();
+                }
+            }
+            catch (Exception ex)
+            {
+                SSDQ_started = false;
+                numberOfFrame = 0;
+                RunSSDQButton.BackColor = Color.LightGray;
+                StopSSDQbutton.BackColor = Color.Red;
+                MessageBox.Show("SSDQ method failed to converge. Try running SSDQ again.", "Error Information: " + ex.Message);
+            }
+        }
+
+        public void ComplexOperations(Object obj)
+        {
+            try
+            {
+                int c = (int)obj;
+                if (complexOperations[c])
+                {
+                    submatrixDataComplex[c] = hankelProcessComplex[c].ProcessFrame(complexMeasurments[c], numberOfFrame);
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        submatrixData[2 * c + i] = submatrixDataComplex[c][i];
+                        for (int j = 0; j < submatrixData[2 * c + i].RowCount; j++)
+                        {
+                            submatrixStacked.SetRow(count, submatrixData[2 * c + i].Row(j));
+                            count++;
+                        }
+                        Proc_data[MeasNum[2 * c + i]] = submatrixData[2 * c + i].Column(wdsize - 1);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                SSDQ_started = false;
+                numberOfFrame = 0;
+                RunSSDQButton.BackColor = Color.LightGray;
+                StopSSDQbutton.BackColor = Color.Red;
+                MessageBox.Show("SSDQ method failed to converge. Try running SSDQ again.", "Error Information: " + ex.Message);
+            }
+        }
+
 
         private void StopSSDQbutton_Click(object sender, EventArgs e)
         {
@@ -1235,6 +1286,7 @@ namespace SSDQopenECA
                 numberOfFrame = 0;
                 RunSSDQButton.BackColor = Color.LightGray;
                 StopSSDQbutton.BackColor = Color.Red;
+                ParameterSettingsButton.Enabled = true;
                 MessageBox.Show("SSDQ Algorithm execution terminated.", "Information");
             }
         }
@@ -1256,15 +1308,21 @@ namespace SSDQopenECA
             }
             catch (Exception ex)
             {
-                
                 MessageBox.Show(ex.ToString());
             }
         }
 
         private static void ThreadStart_for_PlotWindow()
         {
-            Algorithm.Plotwindow = new Plot();
-            Application.Run(Algorithm.Plotwindow);
+            try
+            {
+                Algorithm.Plotwindow = new Plot();
+                Application.Run(Algorithm.Plotwindow);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Overflow error : " + ex.Message);
+            }
         }
 
         private void RecordData_button_Click(object sender, EventArgs e)

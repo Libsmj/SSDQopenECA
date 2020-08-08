@@ -332,6 +332,12 @@ namespace SSDQopenECA
                 {
                     for (int i = 0; i < Plot_channels; i++)
                     {
+                        if (P_data[i] >= Math.Pow(10, 28))
+                        {
+                            MessageBox.Show("SSDQ algorithm failed, overflow error");
+                            this.Close();
+                        }
+
                         Inputarray[i][graph_length - 1] = A_data[i];
                         Array.Copy(Inputarray[i], 1, Inputarray[i], 0, graph_length - 1);
 
