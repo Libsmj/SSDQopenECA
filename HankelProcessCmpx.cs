@@ -93,7 +93,11 @@ namespace HankelRobustDataEstimation
         //This change introduced for openECA implementation
         public Matrix<double>[] ProcessFrame(Vector<double>[] Current_data, int numberOfFrame)
         {
-            var csv1 = new StringBuilder();
+
+            /*
+             * temp
+             */
+            //var csv1 = new StringBuilder();
 
             Vector<Complex> ctvector = Vector<Complex>.Build.Dense(num_channel);
             Vector<double> flag_ctvector = Vector<double>.Build.Dense(num_channel);
@@ -115,6 +119,10 @@ namespace HankelRobustDataEstimation
                     ctvector[i] = Complex.Zero;
                 }
             }
+
+            /*
+             * temp
+             */
             //for (int i = 0; i < num_channel; i++)
             //{
             //    var newLine = string.Format("{0},{1},", ctvector.At(i).Magnitude, ctvector.At(i).Phase * 180.0 / Math.PI);
@@ -130,10 +138,10 @@ namespace HankelRobustDataEstimation
             data_observed.SetColumn(window_size, ctvector);
             flag_observed.SetColumn(window_size, flag_observed_ctvector);
 
-            //Till the first window size (L) data is retrieved , the code will not enter the following subsections and will keep getting data
+            // Till the first window size (L) data is retrieved , the code will not enter the following subsections and will keep getting data
 
             // Add by Hongyun and Lin, Initialize the window
-            if (numberOfFrame >= window_size && !Init_flag)
+            if (!Init_flag && numberOfFrame > window_size)
             {
                 Matrix<Complex> corrected = Programe.SAP(data_estimate.SubMatrix(0, num_channel, 0, window_size), Hankel_k, 1, Math.Pow(10, -3)); //correct data is provided in form of a "corrected matrix"
 
@@ -143,8 +151,7 @@ namespace HankelRobustDataEstimation
                 Init_flag = true;           //Init_flag has been set to true here and hereafter won't enter this section of code           
             }
 
-
-            if (numberOfFrame >= window_size && Init_flag)
+            if (Init_flag && numberOfFrame > window_size)
             {
                 flag_trusted.SetColumn(window_size, flag_ctvector);
 
@@ -351,6 +358,10 @@ namespace HankelRobustDataEstimation
                     data_updated_real[1][i, j] = data_updated.At(i, j).Phase;
                 }
             }
+
+            /*
+             * temp
+             */
             //for (int i = 0; i < num_channel; i++)
             //{
             //    var newLine = string.Format("{0},{1},", data_updated_real[0][i, 0], data_updated_real[1][i, 0] * 180.0 / Math.PI);

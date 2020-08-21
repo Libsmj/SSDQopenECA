@@ -55,8 +55,10 @@ namespace SSDQopenECA
         private double min_proc = 0;// min value of processed measurements in the array
         private double min_input = 0;// min value of input measurements in the array
 
-        private String temp1 = "1";
-        private String temp2 = "1";
+
+            // temp
+        //private String temp1 = "1";
+        //private String temp2 = "1";
 
         public Plot()
         {
@@ -332,7 +334,7 @@ namespace SSDQopenECA
                 {
                     for (int i = 0; i < Plot_channels; i++)
                     {
-                        if (P_data[i] >= Math.Pow(10, 28))
+                        if (P_data[i] >= Math.Pow(10, 26))
                         {
                             MessageBox.Show("SSDQ algorithm failed, overflow error");
                             this.Close();
@@ -497,6 +499,7 @@ namespace SSDQopenECA
                     InputDataChart.Series[Plotcheckedactualnamelist[i]].Points.AddY(Inputarray[i][j]);
                 }
             }
+            // temp
             //if (Algorithm.New_config.numberOfFrame >= 330)
             //{
             //    InputDataChart.SaveImage("C:\\Users\\Jacob\\Desktop\\temp\\i" + temp1 + ".png", System.Windows.Forms.DataVisualization.Charting.ChartImageFormat.Png);
@@ -536,6 +539,7 @@ namespace SSDQopenECA
                     ProcessedDataChart.Series[Plotcheckedprocessednamelist[i]].Points.AddY(Processedarray[i][j]);
                 }
             }
+            // temp
             //if (Algorithm.New_config.numberOfFrame >= 330)
             //{
             //    ProcessedDataChart.SaveImage("C:\\Users\\Jacob\\Desktop\\temp\\o" + temp2 + ".png", System.Windows.Forms.DataVisualization.Charting.ChartImageFormat.Png);

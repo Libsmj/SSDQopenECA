@@ -20,7 +20,6 @@ using MathNet.Numerics.LinearAlgebra.Factorization;
 using SSDQopenECA;
 using Error_Recovery;
 
-using System.IO;
 using System.Text;
 
 namespace HankelRobustDataEstimation
@@ -118,7 +117,7 @@ namespace HankelRobustDataEstimation
             // Step 1: get the incoming data
             for (int i = 0; i < num_channel; i++)
             {              
-                if (Current_data[i]!=0)
+                if (Current_data[i] != 0)
                 {
                     ctvector[i] = Current_data[i];
                     if (ctvector[i] != 0)
@@ -131,18 +130,6 @@ namespace HankelRobustDataEstimation
                     ctvector[i] = 0;
                 }
             }
-
-            //for (int i = 0; i < num_channel; i++)
-            //{
-            //    double test = ctvector.At(i) * 180 / Math.PI;
-            //    if (test >= 180)
-            //    {
-            //        test -= 360;
-            //    }
-            //    var newLine = string.Format("{0},", test);
-            //    csv1.Append(newLine);
-            //}
-            //csv1.Append(",");
 
             recalculate_count++; //Add by Hongyun and Lin
 
@@ -391,19 +378,6 @@ namespace HankelRobustDataEstimation
                     }
                 }
             }
-
-            //for (int i = 0; i < num_channel; i++)
-            //{
-            //    double test = data_updated[i, 0] * 180 / Math.PI;
-            //    if (test >= 180)
-            //    {
-            //        test -= 360;
-            //    }
-            //    var newLine = string.Format("{0},", test);
-            //    csv1.Append(newLine);
-            //}
-            //csv1.AppendLine("");
-            //File.AppendAllText(@"C:\Users\Jacob\Desktop\Angle.csv", csv1.ToString());
 
             return data_updated;
         }

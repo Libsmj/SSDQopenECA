@@ -28,6 +28,7 @@ namespace SSDQopenECA
         public static Input_screen New_config = new Input_screen();
         public static Input_screen2 Stored_config = new Input_screen2();
         public static Plot Plotwindow = new Plot();
+        public static bool dataRecieved = false;
 
         public class Output
         {
@@ -103,7 +104,11 @@ namespace SSDQopenECA
 
             try
             {
-                MainWindow.WriteMessage("opeECA Framework created....SSDQ Analytic receiving data");
+                if (!dataRecieved)
+                {
+                    MainWindow.WriteMessage("opeECA Framework created....SSDQ Analytic receiving data");
+                    dataRecieved = true;
+                }
 
                 //Check if New openECA framework creation is selected
                 if (New_config.SSDQ_started == true)
@@ -138,6 +143,7 @@ namespace SSDQopenECA
             {
                 // Display exceptions to the main window
                 MainWindow.WriteError(new InvalidOperationException($"Algorithm exception: {ex.Message}", ex));
+                dataRecieved = false;
             }
             return output;
         }

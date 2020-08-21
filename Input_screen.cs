@@ -734,6 +734,7 @@ namespace SSDQopenECA
             }
             else
             {
+                Algorithm.dataRecieved = false;
                 Savegroupbox.Enabled = false;
                 SSDQ_started = false;
                 Input_Output_mismatch = false;
@@ -1277,7 +1278,6 @@ namespace SSDQopenECA
             }
         }
 
-
         private void StopSSDQbutton_Click(object sender, EventArgs e)
         {
             if (SSDQ_started == true)
@@ -1321,7 +1321,7 @@ namespace SSDQopenECA
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Overflow error : " + ex.Message);
+                MessageBox.Show("An error occured : " + ex.Message);
             }
         }
 

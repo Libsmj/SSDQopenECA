@@ -372,4 +372,3 @@ C:\Users\Jacob\Desktop\SSDQopenECA\obj\Debug\SSDQopenECA.csproj.CoreCompileInput
 C:\Users\Jacob\Desktop\SSDQopenECA\obj\Debug\SSDQopenECA.csproj.CopyComplete
 C:\Users\Jacob\Desktop\SSDQopenECA\obj\Debug\SSDQopenECA.exe
 C:\Users\Jacob\Desktop\SSDQopenECA\obj\Debug\SSDQopenECA.pdb
-C:\Users\Jacob\Desktop\SSDQopenECA\obj\Debug\SSDQopenECA.csprojAssemblyReference.cache
