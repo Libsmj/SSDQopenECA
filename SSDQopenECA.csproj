@@ -137,12 +137,6 @@
     <Compile Include="Helpwindow.Designer.cs">
       <DependentUpon>Helpwindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Input_screen2.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Input_screen2.Designer.cs">
-      <DependentUpon>Input_screen2.cs</DependentUpon>
-    </Compile>
     <Compile Include="ParameterForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -198,9 +192,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Input_screen.resx">
       <DependentUpon>Input_screen.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Input_screen2.resx">
-      <DependentUpon>Input_screen2.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ParameterForm.resx">
       <DependentUpon>ParameterForm.cs</DependentUpon>

@@ -69,14 +69,8 @@ namespace HankelRobustDataEstimation
 
             tau_a = Convert.ToInt32(ParameterForm.a);
             tau_b = Convert.ToInt32(ParameterForm.b);
-            if (FrameworkConfiguration.newframework)
-            {
-                num_channel = Convert.ToInt32(Algorithm.New_config.NumChannelList[Meas]);
-            }
-            else
-            {
-                num_channel = Convert.ToInt32(Algorithm.Stored_config.NumChannelList[Meas]);
-            }
+
+            num_channel = Convert.ToInt32(Algorithm.SSDQ_config.NumChannelList[Meas]);
 
             data_estimate = Matrix<Complex>.Build.Dense(Convert.ToInt32(num_channel), window_size + 1);
             data_updated = Matrix<Complex>.Build.Dense(Convert.ToInt32(num_channel), window_size);
@@ -299,10 +293,6 @@ namespace HankelRobustDataEstimation
 
                     if (rand_approx_error / approx_error >= ratio_approx_error)
                     {
-                        //Matrix<Complex> corrected = Programe.SAP(data_observed.SubMatrix(0, num_channel, 0, window_size), Hankel_k, 3, Math.Pow(10, -3)); // correct data
-                        //data_estimate.SetSubMatrix(0, 0, corrected);
-                        //data_observed.SetSubMatrix(0, 0, corrected);
-
                         instant = event_instant + window_size - 1;
                         flag_trusted = flag_observed.Clone();
                         flag_output = 1;

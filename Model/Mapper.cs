@@ -58,28 +58,15 @@ namespace SSDQopenECA.Model
             SSDQopenECA.Model.GPA.In_Data obj = new SSDQopenECA.Model.GPA.In_Data();
 
             //Modified by Tapas for dynamic Mapping 
-            if (FrameworkConfiguration.newframework)
+            int count = Algorithm.SSDQ_config.Inentrynamelist.Count();
+            for (int i = 0; i < count; i++)
             {
-                int count = Algorithm.New_config.Inentrynamelist.Count();
-                for (int i = 0; i < count; i++)
-                {
-                    FieldMapping fieldMapping = fieldLookup[Algorithm.New_config.Inentrynamelist[i]];
-                    IMeasurement measurement = GetMeasurement(fieldMapping);
-                    obj.GetType().GetProperty(Algorithm.New_config.Inentrynamelist[i]).SetValue(obj, (double)measurement.Value);
+                FieldMapping fieldMapping = fieldLookup[Algorithm.SSDQ_config.Inentrynamelist[i]];
+                IMeasurement measurement = GetMeasurement(fieldMapping);
+                obj.GetType().GetProperty(Algorithm.SSDQ_config.Inentrynamelist[i]).SetValue(obj, (double)measurement.Value);
 
-                }
             }
-            else
-            {
-                int count = Algorithm.Stored_config.Inentrynamelist.Count();
-                for (int i = 0; i < count; i++)
-                {
-                    FieldMapping fieldMapping = fieldLookup[Algorithm.Stored_config.Inentrynamelist[i]];
-                    IMeasurement measurement = GetMeasurement(fieldMapping);
-                    obj.GetType().GetProperty(Algorithm.Stored_config.Inentrynamelist[i]).SetValue(obj, (double)measurement.Value);
 
-                }
-            }
             
             ////Auto Generated(GPA) code while creation of project for the first time
             //{
@@ -168,29 +155,14 @@ namespace SSDQopenECA.Model
             SSDQopenECA.Model.GPA._In_DataMeta obj = new SSDQopenECA.Model.GPA._In_DataMeta();
 
             //Modified by Tapas for dynamic Mapping 
-            if (FrameworkConfiguration.newframework)
+
+            int count = Algorithm.SSDQ_config.Inentrynamelist.Count();
+            for (int i = 0; i < count; i++)
             {
-                int count = Algorithm.New_config.Inentrynamelist.Count();
-                for (int i = 0; i < count; i++)
-                {
-                    FieldMapping fieldMapping = fieldLookup[Algorithm.New_config.Inentrynamelist[i]];
-                    IMeasurement measurement = GetMeasurement(fieldMapping);
-                    obj.GetType().GetProperty(Algorithm.New_config.Inentrynamelist[i]).SetValue(obj, GetMetaValues(measurement));
-
-                }
+                FieldMapping fieldMapping = fieldLookup[Algorithm.SSDQ_config.Inentrynamelist[i]];
+                IMeasurement measurement = GetMeasurement(fieldMapping);
+                obj.GetType().GetProperty(Algorithm.SSDQ_config.Inentrynamelist[i]).SetValue(obj, GetMetaValues(measurement));
             }
-            else
-            {
-                int count = Algorithm.Stored_config.Inentrynamelist.Count();
-                for (int i = 0; i < count; i++)
-                {
-                    FieldMapping fieldMapping = fieldLookup[Algorithm.Stored_config.Inentrynamelist[i]];
-                    IMeasurement measurement = GetMeasurement(fieldMapping);
-                    obj.GetType().GetProperty(Algorithm.Stored_config.Inentrynamelist[i]).SetValue(obj, GetMetaValues(measurement));
-
-                }
-            }
-
             ////Auto Generated(GPA) code while creation of project for the first time
             //{
             //    // Assign MetaValues value to "In_Entry1" field

@@ -37,8 +37,8 @@ namespace SSDQopenECA
             MeastypeCheckList.Items.Clear();
             AddedMeastypes.Clear();
             Addbuttonclicked = false;
-            Devicenamelist = Algorithm.Stored_config.Devicenamelist_updated;
-            SignalTypelist = Algorithm.Stored_config.SignalTypelist;
+            Devicenamelist = Algorithm.SSDQ_config.Devicenamelist_updated;
+            SignalTypelist = Algorithm.SSDQ_config.SignalTypelist;
             Database_file = FrameworkConfiguration.DB_filename;
             constring = "Data Source=" + Database_file;
             SQLiteConnection conDatabase = new SQLiteConnection(constring);

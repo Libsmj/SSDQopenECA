@@ -25,8 +25,7 @@ namespace SSDQopenECA
         public static Output output;
 
         public static RecordDataWindow RecordDataWindow = new RecordDataWindow();
-        public static Input_screen New_config = new Input_screen();
-        public static Input_screen2 Stored_config = new Input_screen2();
+        public static Input_screen SSDQ_config = new Input_screen(0);
         public static Plot Plotwindow = new Plot();
         public static bool dataRecieved = false;
 
@@ -49,46 +48,36 @@ namespace SSDQopenECA
     
         public static void Check1()
         {
-            if (New_config.InvokeRequired)
-                New_config.Invoke((MethodInvoker)delegate ()
+            if (SSDQ_config.InvokeRequired)
+                SSDQ_config.Invoke((MethodInvoker)delegate ()
                 {
                     Check1();
                 });
             else
             {
-                New_config.Update_Measurements();
+                SSDQ_config.Update_Measurements();
             }
         }
+
         public static void Check2()
-        {
-            if (Stored_config.InvokeRequired)
-                Stored_config.Invoke((MethodInvoker)delegate ()
-                {
-                    Check2();
-                });
-            else
-            {
-                Stored_config.Update_Measurements();
-            }
-        }
-        public static void Check3()
         {
             if (Plotwindow.InvokeRequired)
                 Plotwindow.Invoke((MethodInvoker)delegate ()
                 {
-                    Check3();
+                    Check2();
                 });
             else
             {
                 Plotwindow.Update_Measurements();
             }
         }
-        public static void Check4()
+
+        public static void Check3()
         {
             if (RecordDataWindow.InvokeRequired)
                 RecordDataWindow.Invoke((MethodInvoker)delegate ()
                 {
-                    Check4();
+                    Check3();
                 });
             else
             {
@@ -110,33 +99,24 @@ namespace SSDQopenECA
                     dataRecieved = true;
                 }
 
-                //Check if New openECA framework creation is selected
-                if (New_config.SSDQ_started == true)
+                //Check if openECA framework creation is selected
+                if (SSDQ_config.SSDQ_started == true)
                 {
                     Algorithm.Check1();
-                    for (int i = 0; i < New_config.Num_channels; i++)
+                    for (int i = 0; i < SSDQ_config.Num_channels; i++)
                     {
-                        output.OutputData.GetType().GetProperty(New_config.Outentrynamelist[i]).SetValue(output.OutputData, New_config.Proc_data_updated[i]);
-                    }
-                }
-                //Check if Load stored openECA framework creation is selected
-                if (Stored_config.SSDQ_started == true)
-                {
-                    Algorithm.Check2();
-                    for (int i = 0; i < Stored_config.Num_channels; i++)
-                    {
-                        output.OutputData.GetType().GetProperty(Stored_config.Outentrynamelist[i]).SetValue(output.OutputData, Stored_config.Proc_data_updated[i]);
+                        output.OutputData.GetType().GetProperty(SSDQ_config.Outentrynamelist[i]).SetValue(output.OutputData, SSDQ_config.Proc_data_updated[i]);
                     }
                 }
                 //Check if Plot button in Plot window is clicked
                 if (Plotwindow.Plot_started == true)
                 {
-                    Algorithm.Check3();
+                    Algorithm.Check2();
                 }
                 //Check if Record start button is clicked in Record Data Window
                 if (RecordDataWindow.Record_option == true)
                 {
-                    Algorithm.Check4();
+                    Algorithm.Check3();
                 }             
             }
             catch (Exception ex)

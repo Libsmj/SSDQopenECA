@@ -32,70 +32,98 @@ namespace SSDQopenECA
     public partial class Input_screen : Form
     {
         //Private Fields
-        private int OriginalPIDCount;           //maximum PID number of the measurement channels available in openECA database at the beginning
-        private int InitialPIDCount;            //maximum PID number of the measurement channels available in openECA database before output channel creation
-        private int num;                        //number of I/P channels of each type selected by the user
-        public int numberOfFrame;              //number of frames retrieved upon SSDQ execution
+        private int OriginalPIDCount;           // Maximum PID number of the measurement channels available in openECA database at the beginning
+        private int InitialPIDCount;            // Maximum PID number of the measurement channels available in openECA database before output channel creation
+        private int num;                        // Number of I/P channels of each type selected by the user
+        private int numberOfFrame;               // Number of frames retrieved upon SSDQ execution
         private int count = 0;
+        private int frameworkType;
 
-        private List<int> MeasType = new List<int>();   //Int Values - Only to get the signaltypeID for checked Input channels from input channel list for assigning to output channels creation before framework creation
-        private List<int> Meas = new List<int>();       //Int Values - Only get the condensed form of types of SignalTypeID present in the framework after framework creation.
-        private int[] MeasNum = new int[5];             //Int Values - Gets the index of a SingalTypeID after initialization
-        public double Num_channels;
-        public List<int> NumChannelList = new List<int>();
+        private List<int> MeasType = new List<int>();   // Int Values - Only to get the signaltypeID for checked Input channels from input channel list for assigning to output channels creation before framework creation
+        private List<int> Meas = new List<int>();       // Int Values - Only get the condensed form of types of SignalTypeID present in the framework after framework creation.
+        private int[] MeasNum = new int[5];             // Int Values - Gets the index of a SingalTypeID after initialization
 
-        private bool Frameworkcreatedonce = false;      //To check if the frameowrk is created once or not for enabling framework saving option        
-        private List<string> CSVhead = new List<string>();  //Header of the saved openECA framework csv file
-        private List<string> CSVdata = new List<string>();  //Each row of the saved openECA framework csv file
+        private bool Frameworkcreatedonce = false;          // To check if the frameowrk is created once or not for enabling framework saving option        
+        private List<string> SignalReflist = new List<string>();
+        private List<string> SignalIDlist = new List<string>();
+        private List<string> CSVhead = new List<string>();  // Header of the saved openECA framework csv file
+        private List<string> CSVdata = new List<string>();  // Each row of the saved openECA framework csv file
         private StreamWriter stream;                        
         private StringBuilder sb = new StringBuilder();
         private string strSeperator = ",";
+        private string Framework_filename = "";
         private string Database_file;                   
-        private string constring;                       //Full query name for opening the Database
+        private string constring;                           //Full query name for opening the Database
 
         private HankelProcess[] hankelProcess = new HankelProcess[5];
         private HankelProcessComplex[] hankelProcessComplex = new HankelProcessComplex[2];
         private bool[] complexOperations = new bool[3];
+        private int wdsize = 0;                                                     // Window size for hankel process
 
-        public Matrix<double>[] submatrixData = new Matrix<double>[5];
         private Matrix<double>[][] submatrixDataComplex = new Matrix<double>[2][];
         private Vector<double>[][] complexMeasurments = new Vector<double>[2][];
 
         private string Inputmeaslistmessage = "";
-        private List<int> Eachtypechannelnum = new List<int>();     //Depicts the list of number of each type of measurement selected
+        private List<int> Eachtypechannelnum = new List<int>();                     //Depicts the list of number of each type of measurement selected
         private bool Insufficientchannels = true;
-        private List<string> Totaldevicenamelist = new List<string>();  //Total devices added to database
-        private List<string> ActiveDevicenamelist = new List<string>(); //Total number of devices containing measurements (Non empty devices)
-        private bool Input_Output_mismatch = false;     //denotes mismatch between number and type of input and output measurement channels
-        private int wdsize = 0;                         //window size for hankel process
-        private Vector<double>[] data_observed_initial = new Vector<double>[5];  //array of 5 lists with each list corresponding to one type of measurment and array consists of the current frame of data of the selected measurement channels
-        private Vector<double>[] Proc_data;               //Vector of Processed data of any one type of measurement type
-        private List<string> IndataIDlist = new List<string>(); // Input measurement channels ID list as available in database used for openECA framework creation process
-        private List<string> OutdataIDlist = new List<string>();// Output measurement channels ID list as available in database used for openECA framework creation process
-        private List<Int32> OutDeviceIDlist = new List<Int32>();// List of the devices allocated as Output devices based on the user's selection
-        private List<string> OPchannelnamelist = new List<string>();// List of Output channels Signal reference names which are displayed in GUI
+        private List<string> Totaldevicenamelist = new List<string>();              // Total devices added to database
+        private List<string> ActiveDevicenamelist = new List<string>();             // Total number of devices containing measurements (Non empty devices)
+        private bool Input_Output_mismatch = false;                                 // Denotes mismatch between number and type of input and output measurement channels
+        private Vector<double>[] data_observed_initial = new Vector<double>[5];     // Array of 5 lists with each list corresponding to one type of measurment and array consists of the current frame of data of the selected measurement channels
+        private Vector<double>[] Proc_data;                                         // Vector of Processed data of any one type of measurement type
+        private List<string> IndataIDlist = new List<string>();                     // Input measurement channels ID list as available in database used for openECA framework creation process
+        private List<string> OutdataIDlist = new List<string>();                    // Output measurement channels ID list as available in database used for openECA framework creation process
+        private List<Int32> OutDeviceIDlist = new List<Int32>();                    // List of the devices allocated as Output devices based on the user's selection
+        private List<string> OPchannelnamelist = new List<string>();                // List of Output channels Signal reference names which are displayed in GUI
+        private List<string> UncheckedItems = new List<string>();
+        private List<string> Unavailablemeastypes = new List<string>();
 
         //Public Fields
-        public List<string> Inentrynamelist = new List<string>();   //List of Input entries required to update the UserDefinedTypes.ecaidl file
-        public List<string> Outentrynamelist = new List<string>();  //List of Output entries required to update the UserDefinedTypes.ecaidl file
-        //Used for openECA framework saving into CSV file
-        public List<string> Indatareflist = new List<string>();     //List of Input channels signal reference names selected for openECA framework creation 
-        public List<string> Indatatypelist = new List<string>();    //List of Input channels Data types(VPHM,IPHA,FREQ etc) selected for openECA framework creation 
-        public List<string> Indatadevicelist = new List<string>();  //List of devices for selected Input measurement channels    
-        public List<string> MeasTypelist = new List<string>();      //String values- To get all types of Measurements of the selected devices from device list
-
+        public List<string> Inentrynamelist = new List<string>();   // List of Input entries required to update the UserDefinedTypes.ecaidl file
+        public List<string> Outentrynamelist = new List<string>();  // List of Output entries required to update the UserDefinedTypes.ecaidl file
         
-        public List<string>[] Inentrynamelist_updated = new List<string>[5];    //Array of 5 lists containing the name of the Input entries selected for openECA framework creation separated as per measurement types
-        public List<string>[] IPchannelnamelist_updated = new List<string>[5];  //Array of 5 lists containing the signal reference names of the Input channels selected for openECA framework creation separated as per measurement types        
+        //Used for openECA framework saving into CSV file
+        public List<string> Indatareflist = new List<string>();     // List of Input channels signal reference names selected for openECA framework creation 
+        public List<string> Indatatypelist = new List<string>();    // List of Input channels Data types(VPHM,IPHA,FREQ etc) selected for openECA framework creation 
+        public List<string> Indatadevicelist = new List<string>();  // List of devices for selected Input measurement channels    
+        public List<string> MeasTypelist = new List<string>();      // String values- To get all types of Measurements of the selected devices from device list
+        
+        public List<string>[] Inentrynamelist_updated = new List<string>[5];        // Array of 5 lists containing the name of the Input entries selected for openECA framework creation separated as per measurement types
+        public List<string>[] IPchannelnamelist_updated = new List<string>[5];      // Array of 5 lists containing the signal reference names of the Input channels selected for openECA framework creation separated as per measurement types        
         public bool SSDQ_started = false;      
         public Thread MainWindow_thread = new Thread(ThreadStart_for_main_window);
-        public List<double> Proc_data_updated = new List<double>();           //List of Processed data for a particular frame in the same sequence of the output measurment channels
-        public Matrix<double> submatrixStacked;                 // Submatrix of each selected measurment type stacked on top of each other
-        public string Channelnameprefix;                        // prefix for Output measurment channels
 
-        public Input_screen()
+        public Matrix<double>[] submatrixData = new Matrix<double>[5];
+        public List<double> Proc_data_updated = new List<double>();                 // List of Processed data for a particular frame in the same sequence of the output measurment channels
+        public Matrix<double> submatrixStacked;                                     // Submatrix of each selected measurment type stacked on top of each other
+        public string Channelnameprefix;                                            // Prefix for Output measurment channels
+
+        public List<string> Devicenamelist_updated = new List<string>();
+        public List<string> Devicenamelist = new List<string>();
+        public List<string> Meastypelist_updated = new List<string>();
+        public List<string> SignalTypelist = new List<string>();
+        public List<int> NumChannelList = new List<int>();
+
+        public double Num_channels;
+
+        public Input_screen(int type)
         {
-            InitializeComponent();            
+            InitializeComponent();
+            frameworkType = type;
+
+            if (frameworkType == 0)
+            {
+                Adddevices_button.Visible = false;
+                Config_locationbox.Visible = false;
+                MeasTypeOldgroupbox.Visible = false;
+            }
+            else
+            {
+                GetDeviceButton.Visible = false;
+                MeasTypeNewgroupbox.Visible = false;
+                DataSourcegroupbox.Visible = false;
+                Create_Framework_button.Text = "Load openECA Framework";
+            }
         }
 
         private void Input_screen_Load(object sender, EventArgs e)
@@ -175,10 +203,11 @@ namespace SSDQopenECA
                 MessageBox.Show("Wrong Database file selected. Choose the appropriate openECA.db database file in the installed directory. ", "Error Information");
                 this.Close();
             }
-            
-            
         }
-        
+
+
+
+        // New Config
         private void GetDeviceButton_Click(object sender, EventArgs e)
         {
             InitializeMeasType();
@@ -234,23 +263,6 @@ namespace SSDQopenECA
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
-            }
-        }
-
-        private void AllDevicesbutton_Click(object sender, EventArgs e)
-        {
-            for (int i = 0; i < DeviceCheckList.Items.Count; i++)
-            {
-                DeviceCheckList.SetItemChecked(i, true);
-            }
-
-        }
-
-        private void Deselect_devices_Click(object sender, EventArgs e)
-        {
-            for (int i = 0; i < DeviceCheckList.Items.Count; i++)
-            {
-                DeviceCheckList.SetItemChecked(i, false);
             }
         }
 
@@ -327,25 +339,20 @@ namespace SSDQopenECA
             Freq_Button.Checked = false;
         }
 
-        private void RefreshInputList_Click(object sender, EventArgs e)
-        {            
-            InputChannelList.Items.Clear();
-            FillInputCheckListBox();
-        }
-
-        private void FillInputCheckListBox()
-        {           
+        private void FillInputCheckListBox_New()
+        {
             try
             {
                 //SQLConnection, SQLDataReader and SQLCommand instead of following if SQL database is used instead of SQLite
                 SQLiteConnection conDatabase = new SQLiteConnection(constring);
                 SQLiteDataReader reader;
                 conDatabase.Open();
-                if (!openECA_DB.Checked & !ExtPDC_DB.Checked)
+
+                if (!openECA_DB.Checked && !ExtPDC_DB.Checked)
                 {
                     MessageBox.Show("Select Data Source", "Missing Information");
                 }
-                else if(DeviceCheckList.CheckedItems.Count==0)
+                else if (DeviceCheckList.CheckedItems.Count == 0)
                 {
                     MessageBox.Show("Select Input Device", "Missing Information");
                 }
@@ -363,19 +370,17 @@ namespace SSDQopenECA
                             for (int i = 0; i < DeviceCheckList.CheckedItems.Count; i++)
                             {
                                 //Retrieve all the Channel names (which is same as the Signal Reference names) of the selected devices
-                                //string query_Imag = "SELECT SignalReference FROM ActiveMeasurement WHERE SignalType='IPHM' AND Device=" + "'" + Convert.ToString(DeviceCheckList.CheckedItems[i]) + "' AND PointTag ; ";
                                 string query_Imag = "SELECT SignalReference FROM ActiveMeasurement WHERE SignalType='IPHM' AND Device=" + "'" + Convert.ToString(DeviceCheckList.CheckedItems[i]) + "' ; ";
                                 SQLiteCommand cmd_Imag = new SQLiteCommand(query_Imag, conDatabase);
                                 reader = cmd_Imag.ExecuteReader();
                                 while (reader.Read())
                                 {
                                     string sSR = reader.GetString(0);
-                                    if(!OutputChannelList.Items.Contains(sSR))// To prevent displaying the Output channels in the input channel list if "Same Device Allocation" option selected by the user
+                                    if (!OutputChannelList.Items.Contains(sSR))// To prevent displaying the Output channels in the input channel list if "Same Device Allocation" option selected by the user
                                     {
                                         InputChannelList.Items.Add(sSR);
                                         num++;
                                     }
-                                    
                                 }
                             }
                             Inputmeaslistmessage = Inputmeaslistmessage + "Total Number of measurement channels of Type 'Current magnitude' across all selected devices= " + Convert.ToString(num) + "\n";
@@ -420,7 +425,7 @@ namespace SSDQopenECA
                                 }
                             }
 
-                            Inputmeaslistmessage = Inputmeaslistmessage+ "Total Number of measurement channels of Type 'Voltage magnitude' across all selected devices= " + Convert.ToString(num) + "\n" ;
+                            Inputmeaslistmessage = Inputmeaslistmessage + "Total Number of measurement channels of Type 'Voltage magnitude' across all selected devices= " + Convert.ToString(num) + "\n";
                             num = 0;
                         }
                         if (Volt_AngButton.Checked)
@@ -440,7 +445,7 @@ namespace SSDQopenECA
                                     }
                                 }
                             }
-                            Inputmeaslistmessage = Inputmeaslistmessage+ "Total Number of measurement channels of Type 'Voltage Angle' across all selected devices= " + Convert.ToString(num) + "\n" ;
+                            Inputmeaslistmessage = Inputmeaslistmessage + "Total Number of measurement channels of Type 'Voltage Angle' across all selected devices= " + Convert.ToString(num) + "\n";
                             num = 0;
                         }
 
@@ -464,19 +469,441 @@ namespace SSDQopenECA
                             Inputmeaslistmessage = Inputmeaslistmessage + "Total Number of measurement channels of Type 'Frequency' across all selected devices= " + Convert.ToString(num) + "\n";
                             num = 0;
                         }
-                        MessageBox.Show(Inputmeaslistmessage,"Input Channel Information");
-                    }  
-                }             
+                        MessageBox.Show(Inputmeaslistmessage, "Input Channel Information");
+                    }
+                }
                 conDatabase.Close();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
             }
-            
+
         }
 
-        //Select/Deselect All Measurement channels
+
+
+        // Existing Config
+        private void SearchFrameworkbutton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var FD = new System.Windows.Forms.OpenFileDialog();
+                if (FD.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    //Open and read the contents of the saved framework (.csv) file
+                    Framework_LocationBox.Text = FD.FileName;
+                    Framework_filename = Framework_LocationBox.Text;
+                    Devicenamelist.Clear();
+                    SignalReflist.Clear();
+                    SignalIDlist.Clear();
+                    SignalTypelist.Clear();
+                    using (var rd = new StreamReader(Framework_filename))
+                    {
+                        while (!rd.EndOfStream)
+                        {
+                            var splits = rd.ReadLine().Split(',');
+                            if ((splits[0] != "") && (splits[1] != "") && (splits[2] != "") && (splits[3] != ""))
+                            {
+                                Devicenamelist.Add(splits[0]);
+                                SignalReflist.Add(splits[1]);
+                                SignalIDlist.Add(splits[2]);
+                                SignalTypelist.Add(splits[3]);
+                            }
+
+                        }
+                    }
+                    if (Devicenamelist[0] == "Device" && SignalReflist[0] == "Input Measurement Channel Signal Reference" && SignalIDlist[0] == "Input Measurement Channel Signal ID" && SignalTypelist[0] == "Input Measurement Channel SignalType ID")
+                    {
+                        MessageBox.Show("Retrieving Data from the stored openECA configuration.", "Information");
+                        Populatedata();
+                        MeasurementBox.Enabled = true;
+                    }
+                    else
+                    {
+                        //StoredMeasurementBox.Enabled = false;
+                        MessageBox.Show("Wrong framework file selected. Choose the appropriate framework (.csv) file for proper execution. ", "Error Information");
+                    }
+
+                }
+
+            }
+            catch
+            {
+                MessageBox.Show("Wrong framework file selected. Choose the appropriate framework (.csv) file for proper execution. ", "Error Information");
+            }
+        }
+
+        private void Populatedata()
+        {
+            DeviceCheckList.Items.Clear();
+            InputChannelList.Items.Clear();
+            MeasTypecheckList.Items.Clear();
+            OutputDevice_combobox.Text = "";
+
+            for (int i = 1; i < Devicenamelist.Count; i++)
+            {
+                if (!DeviceCheckList.Items.Contains(Devicenamelist[i]))
+                {
+                    DeviceCheckList.Items.Add(Devicenamelist[i]);
+                }
+                InputChannelList.Items.Add(SignalReflist[i]);
+                InputChannelList.SetItemChecked(i - 1, true);
+
+                if (SignalTypelist[i] == "VPHM" && !MeasTypecheckList.Items.Contains("Voltage Magnitude"))
+                {
+                    MeasTypecheckList.Items.Add("Voltage Magnitude");
+                }
+                if (SignalTypelist[i] == "VPHA" && !MeasTypecheckList.Items.Contains("Voltage Angle"))
+                {
+                    MeasTypecheckList.Items.Add("Voltage Angle");
+                }
+                if (SignalTypelist[i] == "IPHM" && !MeasTypecheckList.Items.Contains("Current Magnitude"))
+                {
+                    MeasTypecheckList.Items.Add("Current Magnitude");
+                }
+                if (SignalTypelist[i] == "IPHA" && !MeasTypecheckList.Items.Contains("Current Angle"))
+                {
+                    MeasTypecheckList.Items.Add("Current Angle");
+                }
+                if (SignalTypelist[i] == "FREQ" && !MeasTypecheckList.Items.Contains("Frequency"))
+                {
+                    MeasTypecheckList.Items.Add("Frequency");
+                }
+            }
+
+            for (int i = 0; i < DeviceCheckList.Items.Count; i++)
+            {
+                DeviceCheckList.SetItemChecked(i, true);
+            }
+
+            for (int i = 0; i < MeasTypecheckList.Items.Count; i++)
+            {
+                MeasTypecheckList.SetItemChecked(i, true);
+            }
+            FillOutputCheckListBox();
+        }
+
+        private void Adddevices_button_Click(object sender, EventArgs e)
+        {
+            Devicenamelist_updated.Clear();
+            for (int i = 0; i < DeviceCheckList.CheckedItems.Count; i++)
+            {
+                Devicenamelist_updated.Add(Convert.ToString(DeviceCheckList.CheckedItems[i]));
+            }
+
+            UncheckedItems.Clear();
+            for (int i = 0; i < DeviceCheckList.Items.Count; i++)
+            {
+                if (!DeviceCheckList.GetItemChecked(i))
+                {
+                    UncheckedItems.Add(Convert.ToString(DeviceCheckList.Items[i]));
+
+                }
+            }
+            for (int i = 0; i < UncheckedItems.Count; i++)
+            {
+                DeviceCheckList.Items.Remove(UncheckedItems[i]);
+            }
+
+
+
+            AddDevices.Addbuttonclicked = false;
+            var AddDevicesWindow_thread = new Thread(ThreadStart_for_AddDevicesWindow);
+            AddDevicesWindow_thread.TrySetApartmentState(ApartmentState.STA);
+            AddDevicesWindow_thread.Start();
+            while (AddDevices.Addbuttonclicked == false)
+            {
+
+            }
+            if (AddDevices.AddedDevices.Count != 0)
+            {
+                for (int i = 0; i < AddDevices.AddedDevices.Count; i++)
+                {
+                    if (!DeviceCheckList.Items.Contains(AddDevices.AddedDevices[i]))
+                    {
+                        DeviceCheckList.Items.Add(AddDevices.AddedDevices[i]);
+                    }
+
+                }
+                for (int i = 0; i < DeviceCheckList.Items.Count; i++)
+                {
+                    DeviceCheckList.SetItemChecked(i, true);
+
+                }
+            }
+        }
+
+        private static void ThreadStart_for_AddDevicesWindow()
+        {
+            AddDevices AddDevices = new AddDevices();
+            Application.Run(AddDevices);
+        }
+
+        private void Addmeastypes_button_Click(object sender, EventArgs e)
+        {
+            Devicenamelist_updated.Clear();
+            for (int i = 0; i < DeviceCheckList.CheckedItems.Count; i++)
+            {
+                Devicenamelist_updated.Add(Convert.ToString(DeviceCheckList.CheckedItems[i]));
+            }
+
+            UncheckedItems.Clear();
+            for (int i = 0; i < MeasTypecheckList.Items.Count; i++)
+            {
+                if (!MeasTypecheckList.GetItemChecked(i))
+                {
+                    UncheckedItems.Add(Convert.ToString(MeasTypecheckList.Items[i]));
+
+                }
+            }
+            for (int i = 0; i < UncheckedItems.Count; i++)
+            {
+                MeasTypecheckList.Items.Remove(UncheckedItems[i]);
+            }
+
+            AddMeastypes.Addbuttonclicked = false;
+
+
+            var AddMeastypeWindow_thread = new Thread(ThreadStart_for_AddMeastypeWindow);
+            AddMeastypeWindow_thread.TrySetApartmentState(ApartmentState.STA);
+            AddMeastypeWindow_thread.Start();
+            while (AddMeastypes.Addbuttonclicked == false)
+            {
+
+            }
+            Unavailablemeastypes.Clear();
+            for (int i = 0; i < MeasTypecheckList.Items.Count; i++)
+            {
+                if (!AddMeastypes.Meastypelist_updated.Contains(MeasTypecheckList.Items[i]))
+                {
+                    Unavailablemeastypes.Add(Convert.ToString(MeasTypecheckList.Items[i]));
+
+                }
+            }
+            for (int i = 0; i < Unavailablemeastypes.Count; i++)
+            {
+                MeasTypecheckList.Items.Remove(Unavailablemeastypes[i]);
+            }
+
+
+            if (AddMeastypes.AddedMeastypes.Count != 0)
+            {
+                for (int i = 0; i < AddMeastypes.AddedMeastypes.Count; i++)
+                {
+                    if (!MeasTypecheckList.Items.Contains(AddMeastypes.AddedMeastypes[i]))
+                    {
+                        MeasTypecheckList.Items.Add(AddMeastypes.AddedMeastypes[i]);
+                    }
+                }
+                for (int i = 0; i < MeasTypecheckList.Items.Count; i++)
+                {
+                    MeasTypecheckList.SetItemChecked(i, true);
+                }
+            }
+
+        }
+
+        private static void ThreadStart_for_AddMeastypeWindow()
+        {
+            AddMeastypes AddMeastypes = new AddMeastypes();
+            Application.Run(AddMeastypes);
+        }
+
+        private void SelectAllTypes_button_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < MeasTypecheckList.Items.Count; i++)
+            {
+                MeasTypecheckList.SetItemChecked(i, false);
+            }
+        }
+
+        private void DeselectTypes_button_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < MeasTypecheckList.Items.Count; i++)
+            {
+                MeasTypecheckList.SetItemChecked(i, false);
+            }
+        }
+
+        private void FillInputCheckListBox_Saved()
+        {
+            try
+            {
+                //SQLConnection, SQLDataReader and SQLCommand instead of following if SQL database is used instead of SQLite
+                SQLiteConnection conDatabase = new SQLiteConnection(constring);
+                SQLiteDataReader reader;
+                conDatabase.Open();
+
+                if (DeviceCheckList.CheckedItems.Count == 0)
+                {
+                    MessageBox.Show("Select Input Device", "Missing Information");
+                }
+                else
+                {
+                    if (MeasTypecheckList.CheckedItems.Count == 0)
+                    {
+                        MessageBox.Show("Select Measurement Type", "Missing Information");
+                    }
+                    else
+                    {
+
+                        if (MeasTypecheckList.CheckedItems.Contains("Current Magnitude"))
+                        {
+                            for (int i = 0; i < DeviceCheckList.CheckedItems.Count; i++)
+                            {
+                                //Retrieve all the Channel names (which is same as the Signal Reference names) of the selected devices
+                                string query_Imag = "SELECT SignalReference FROM ActiveMeasurement WHERE SignalType='IPHM' AND Device=" + "'" + Convert.ToString(DeviceCheckList.CheckedItems[i]) + "' ; ";
+                                SQLiteCommand cmd_Imag = new SQLiteCommand(query_Imag, conDatabase);
+                                reader = cmd_Imag.ExecuteReader();
+                                while (reader.Read())
+                                {
+                                    string sSR = reader.GetString(0);
+                                    if (!OutputChannelList.Items.Contains(sSR))
+                                    {
+                                        InputChannelList.Items.Add(sSR);
+
+                                    }
+
+                                }
+                            }
+
+
+                        }
+                        if (MeasTypecheckList.CheckedItems.Contains("Current Angle"))
+                        {
+                            for (int i = 0; i < DeviceCheckList.CheckedItems.Count; i++)
+                            {
+                                string query_Iang = "SELECT SignalReference FROM ActiveMeasurement WHERE SignalType='IPHA' AND Device=" + "'" + Convert.ToString(DeviceCheckList.CheckedItems[i]) + "' ; ";
+                                SQLiteCommand cmd_Iang = new SQLiteCommand(query_Iang, conDatabase);
+                                reader = cmd_Iang.ExecuteReader();
+                                while (reader.Read())
+                                {
+                                    string sSR = reader.GetString(0);
+                                    if (!OutputChannelList.Items.Contains(sSR))
+                                    {
+                                        InputChannelList.Items.Add(sSR);
+
+                                    }
+
+                                }
+                            }
+
+                        }
+                        if (MeasTypecheckList.CheckedItems.Contains("Voltage Magnitude"))
+                        {
+                            for (int i = 0; i < DeviceCheckList.CheckedItems.Count; i++)
+                            {
+                                string query_Vmag = "SELECT SignalReference FROM ActiveMeasurement WHERE SignalType='VPHM' AND Device=" + "'" + Convert.ToString(DeviceCheckList.CheckedItems[i]) + "' ; ";
+                                SQLiteCommand cmd_Vmag = new SQLiteCommand(query_Vmag, conDatabase);
+                                reader = cmd_Vmag.ExecuteReader();
+                                while (reader.Read())
+                                {
+                                    string sSR = reader.GetString(0);
+                                    if (!OutputChannelList.Items.Contains(sSR))
+                                    {
+                                        InputChannelList.Items.Add(sSR);
+
+                                    }
+
+                                }
+                            }
+
+
+                        }
+                        if (MeasTypecheckList.CheckedItems.Contains("Voltage Angle"))
+                        {
+                            for (int i = 0; i < DeviceCheckList.CheckedItems.Count; i++)
+                            {
+                                string query_Vang = "SELECT SignalReference FROM ActiveMeasurement WHERE SignalType='VPHA' AND Device=" + "'" + Convert.ToString(DeviceCheckList.CheckedItems[i]) + "' ; ";
+                                SQLiteCommand cmd_Vang = new SQLiteCommand(query_Vang, conDatabase);
+                                reader = cmd_Vang.ExecuteReader();
+                                while (reader.Read())
+                                {
+                                    string sSR = reader.GetString(0);
+                                    if (!OutputChannelList.Items.Contains(sSR))
+                                    {
+                                        InputChannelList.Items.Add(sSR);
+
+                                    }
+                                }
+                            }
+
+                        }
+
+                        if (MeasTypecheckList.CheckedItems.Contains("Frequency"))
+                        {
+                            for (int i = 0; i < DeviceCheckList.CheckedItems.Count; i++)
+                            {
+                                string query_freq = "SELECT SignalReference FROM ActiveMeasurement WHERE SignalType='FREQ' AND Device=" + "'" + Convert.ToString(DeviceCheckList.CheckedItems[i]) + "' ; ";
+                                SQLiteCommand cmd_freq = new SQLiteCommand(query_freq, conDatabase);
+                                reader = cmd_freq.ExecuteReader();
+                                while (reader.Read())
+                                {
+                                    string sSR = reader.GetString(0);
+                                    if (!OutputChannelList.Items.Contains(sSR))
+                                    {
+                                        InputChannelList.Items.Add(sSR);
+
+                                    }
+
+                                }
+                            }
+
+                        }
+
+                    }
+                }
+                conDatabase.Close();
+                for (int i = 0; i < InputChannelList.Items.Count; i++)
+                {
+                    if (SignalReflist.Contains(InputChannelList.Items[i]))
+                    {
+                        InputChannelList.SetItemChecked(i, true);
+                    }
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+
+
+        // Shared
+        private void RefreshInputList_Click(object sender, EventArgs e)
+        {
+            InputChannelList.Items.Clear();
+            if (frameworkType == 0)
+            {
+                FillInputCheckListBox_New();
+            }
+            else
+            {
+                FillInputCheckListBox_Saved();
+            }
+        }
+
+        private void AllDevicesbutton_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < DeviceCheckList.Items.Count; i++)
+            {
+                DeviceCheckList.SetItemChecked(i, true);
+            }
+
+        }
+
+        private void Deselect_devices_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < DeviceCheckList.Items.Count; i++)
+            {
+                DeviceCheckList.SetItemChecked(i, false);
+            }
+        }
+
         private void AllMeasbutton_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < InputChannelList.Items.Count; i++)
@@ -493,9 +920,9 @@ namespace SSDQopenECA
             }
         }
 
-        private void UpdateOPChannels_Click(object sender, EventArgs e)
+        private void UpdateChannels_Click(object sender, EventArgs e)
         {
-            FillOutputCheckListBox();            
+            FillOutputCheckListBox();
         }
 
         private void FillOutputCheckListBox()
@@ -575,13 +1002,12 @@ namespace SSDQopenECA
                         {
                             OutDeviceIDlist.Add(Convert.ToInt32(cmd_outdeviceID.ExecuteScalar()));
                         }
-
-                    }                   
+                    }
                     else
                     {
                         string query_outdeviceID = String.Format("SELECT DeviceID,SignalReference FROM Measurement ;");
                         SQLiteCommand cmd_outdeviceID = new SQLiteCommand(query_outdeviceID, conDatabase);
-                        
+
                         for (int i = 0; i < InputChannelList.CheckedItems.Count; i++)
                         {
                             SQLiteDataReader reader;
@@ -590,12 +1016,11 @@ namespace SSDQopenECA
                             {
                                 if (Convert.ToString(InputChannelList.CheckedItems[i]) == reader.GetString(1))
                                 {
-                                    OutDeviceIDlist.Add(reader.GetInt32(0));    
+                                    OutDeviceIDlist.Add(reader.GetInt32(0));
                                 }
                             }
                             reader.Close();
                         }
-                        
                     }
                     string query_MeasType = String.Format("SELECT SignalTypeID,SignalReference FROM Measurement ;");
                     SQLiteCommand cmd_MeasType = new SQLiteCommand(query_MeasType, conDatabase);
@@ -654,8 +1079,6 @@ namespace SSDQopenECA
                         }
                         else
                         {
-                          
-                           
                             for (int i = 0; i < InputChannelList.CheckedItems.Count; i++)
                             {
                                 string query_insert = "INSERT INTO Measurement (PointID,DeviceID,PointTag,SignalTypeID,SignalReference,Description,Subscribed,Enabled) VALUES (@P_id,@Dev_id,@P_tag,@Sigtype_id,@Sig_ref,@Des,@Sub,@En)";
@@ -666,7 +1089,7 @@ namespace SSDQopenECA
                                 };
                                 //Specify the parameters of each column of this new entry being added to the database
                                 cmd_insert.Parameters.Add(new SQLiteParameter("@P_id", Convert.ToString(InitialPIDCount + i + 1)));
-                                cmd_insert.Parameters.Add(new SQLiteParameter("@Dev_id", Convert.ToString(OutDeviceIDlist[i])));     
+                                cmd_insert.Parameters.Add(new SQLiteParameter("@Dev_id", Convert.ToString(OutDeviceIDlist[i])));
                                 cmd_insert.Parameters.Add(new SQLiteParameter("@P_tag", Channelnameprefix + InputChannelList.CheckedItems[i]));
                                 cmd_insert.Parameters.Add(new SQLiteParameter("@Sigtype_id", Convert.ToString(MeasType[i] + 1)));
                                 cmd_insert.Parameters.Add(new SQLiteParameter("@Sig_ref", Channelnameprefix + InputChannelList.CheckedItems[i]));
@@ -676,7 +1099,7 @@ namespace SSDQopenECA
 
                                 cmd_insert.ExecuteNonQuery();
                             }
-                            MessageBox.Show("Successfully added output measurement channels into the database","Information");
+                            MessageBox.Show("Successfully added output measurement channels into the database", "Information");
                             string query_opchannels = String.Format("SELECT SignalReference FROM Measurement WHERE PointID > '{0}'", Convert.ToString(InitialPIDCount));
                             SQLiteCommand cmd_opchannels = new SQLiteCommand(query_opchannels, conDatabase);
                             SQLiteDataReader reader;
@@ -693,7 +1116,7 @@ namespace SSDQopenECA
                             {
                                 OutputChannelList.SetItemChecked(i, true);
                             }
-                        }                       
+                        }
                     }
                     else
                     {
@@ -734,17 +1157,16 @@ namespace SSDQopenECA
             }
             else
             {
+                numberOfFrame = 0;
                 Algorithm.dataRecieved = false;
                 Savegroupbox.Enabled = false;
                 SSDQ_started = false;
                 Input_Output_mismatch = false;
-                numberOfFrame = 0;
                 RunSSDQButton.BackColor = Color.LightGray;
                 StopSSDQbutton.BackColor = Color.LightGray;
 
                 try
                 {
-                    
                     if (InputChannelList.CheckedItems.Count == 0)
                     {
                         MessageBox.Show("Select Input Measurement Channels", "Missing Information");
@@ -755,13 +1177,13 @@ namespace SSDQopenECA
                     }
                     else if (InputChannelList.CheckedItems.Count != OutputChannelList.CheckedItems.Count)
                     {
-                        MessageBox.Show("Input & Output Measurement Channels Number Mismatch. To Troubleshoot Create/Update Output Measurement Channels. ", "Error Information");
+                        MessageBox.Show("Input & Output Measurement Channels Number Mismatch. To Troubleshoot Create/Update Output Measurement Channels.", "Error Information");
                     }
                     else
                     {
-                        for(int i = 0; i < InputChannelList.CheckedItems.Count; i++)
+                        for (int i = 0; i < InputChannelList.CheckedItems.Count; i++)
                         {
-                            if(Convert.ToString(OutputChannelList.CheckedItems[i])!= Channelnameprefix + Convert.ToString(InputChannelList.CheckedItems[i]))
+                            if (Convert.ToString(OutputChannelList.CheckedItems[i]) != Channelnameprefix + Convert.ToString(InputChannelList.CheckedItems[i]))
                             {
                                 Input_Output_mismatch = true;
                                 break;
@@ -788,7 +1210,7 @@ namespace SSDQopenECA
                             //Checks for the Checked items in the Measurement list and retrieves the total number of items and their ID values for creation of .ecaidl and .ecamap files
                             string query_entry = "SELECT ID,SignalReference,Device,SignalType FROM ActiveMeasurement ;";
                             SQLiteCommand cmd_entry = new SQLiteCommand(query_entry, conDatabase);
-                            
+
                             for (int i = 0; i < InputChannelList.CheckedItems.Count; i++)
                             {
                                 reader = cmd_entry.ExecuteReader();
@@ -820,11 +1242,12 @@ namespace SSDQopenECA
                                 }
                                 reader.Close();
                             }
+
                             conDatabase.Close();
                             Num_channels = InputChannelList.CheckedItems.Count;     //Total number  of selected channels
                             Makedatastructs();                                      //Call the method which modifies the UserDefinedTypes.ecaidl file
                             MakeMappings();                                         //Call the method which modifies the UserDefinedMappings.ecamap file
-                            Frameworkcreatedonce = true;                            
+                            Frameworkcreatedonce = true;
                             MainWindow_thread = new Thread(ThreadStart_for_main_window);
                             MainWindow_thread.TrySetApartmentState(ApartmentState.STA);
                             MainWindow_thread.Start();
@@ -865,8 +1288,7 @@ namespace SSDQopenECA
             {
                 output_data.Fields.Add(new UDTField()
                 {
-                    
-                    Type = new DataType() {Category="FloatingPoint",Identifier="Double"},
+                    Type = new DataType() {Category = "FloatingPoint", Identifier = "Double"},
                     Identifier = Outentrynamelist[i]
                 });
             }
@@ -898,12 +1320,11 @@ namespace SSDQopenECA
             };
             for (int i = 0; i < Inentrynamelist.Count; i++)
             {
-                
                 input_map.FieldMappings.Add(new FieldMapping()
                 {
                     Field = In_DataFields[Inentrynamelist[i]],
                     Expression = IndataIDlist[i]
-                });                      
+                });
             }
 
             TypeMapping output_map = new TypeMapping
@@ -945,9 +1366,8 @@ namespace SSDQopenECA
             {
                 MessageBox.Show(ex.ToString());
             }
+        }
 
-        }      
-        
         private void ParameterSettingsButton_Click(object sender, EventArgs e)
         {
             var Parameterwindow_thread = new Thread(ThreadStart_for_Parameterwindow);
@@ -959,9 +1379,9 @@ namespace SSDQopenECA
         {
             ParameterForm Parameterwindow = new ParameterForm();
             Application.Run(Parameterwindow);
-        }      
+        }
 
-        public void SaveFrameworkbutton_Click(object sender, EventArgs e)
+        private void SaveFrameworkbutton_Click(object sender, EventArgs e)
         {
             try
             {
@@ -993,12 +1413,11 @@ namespace SSDQopenECA
                 {
                     MessageBox.Show("Create atleast one instance of openECAFramework", "Error Information");
                 }
-                
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
-            }           
+            }
         }
 
         private void RunSSDQButton_Click(object sender, EventArgs e)
@@ -1044,7 +1463,7 @@ namespace SSDQopenECA
                                 hankelProcessComplex[1] = new HankelProcessComplex(2);
                                 complexMeasurments[1] = new Vector<double>[2];
                                 complexMeasurments[1][0] = Vector<double>.Build.Dense(NumChannelList[Meas[MeasNum[2]]]);
-                                complexMeasurments[1][1] = Vector<double>.Build.Dense(NumChannelList[Meas[MeasNum[3]]]);   
+                                complexMeasurments[1][1] = Vector<double>.Build.Dense(NumChannelList[Meas[MeasNum[3]]]);
                             }
                         }
 
@@ -1058,12 +1477,11 @@ namespace SSDQopenECA
                 {
                     MessageBox.Show("Create an openECA instance to Run SSDQ", "Error Information");
                 }
-                
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
-            }           
+            }
         }
 
         private void InitializeLists()
@@ -1215,7 +1633,7 @@ namespace SSDQopenECA
             }
         }
 
-        public void RealOperations(Object obj)
+        private void RealOperations(Object obj)
         {
             try
             {
@@ -1247,7 +1665,7 @@ namespace SSDQopenECA
             }
         }
 
-        public void ComplexOperations(Object obj)
+        private void ComplexOperations(Object obj)
         {
             try
             {
@@ -1303,7 +1721,7 @@ namespace SSDQopenECA
                 }
                 else
                 {
-                    MessageBox.Show("Run SSDQ for using Plot Option", "Error Information");
+                    MessageBox.Show("Run SSDQ to use the Plot option", "Error Information");
                 }
             }
             catch (Exception ex)
@@ -1319,9 +1737,9 @@ namespace SSDQopenECA
                 Algorithm.Plotwindow = new Plot();
                 Application.Run(Algorithm.Plotwindow);
             }
-            catch(Exception ex)
+            catch
             {
-                MessageBox.Show("An error occured : " + ex.Message);
+                MessageBox.Show("An error occured, plot window closing.");
             }
         }
 
@@ -1365,7 +1783,7 @@ namespace SSDQopenECA
                 SQLiteCommand cmd_rowcount = new SQLiteCommand(query_rowcount, conDatabase);
                 int PIDcount = Convert.ToInt32(cmd_rowcount.ExecuteScalar());
 
-                if (PIDcount > Math.Min(InitialPIDCount,OriginalPIDCount))
+                if (PIDcount > Math.Min(InitialPIDCount, OriginalPIDCount))
                 {
                     string query_delete = String.Format("DELETE FROM Measurement WHERE PointID > '{0}'", Convert.ToString(InitialPIDCount));
                     SQLiteCommand cmd_delete = new SQLiteCommand(query_delete, conDatabase);
@@ -1379,5 +1797,6 @@ namespace SSDQopenECA
 
             }
         }
+
     }
 }

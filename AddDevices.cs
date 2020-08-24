@@ -33,7 +33,7 @@ namespace SSDQopenECA
             DeviceCheckList.Items.Clear();
             AddedDevices.Clear();
             Addbuttonclicked = false;
-            Devicenamelist = Algorithm.Stored_config.Devicenamelist_updated;
+            Devicenamelist = Algorithm.SSDQ_config.Devicenamelist_updated;
             Database_file = FrameworkConfiguration.DB_filename;
             constring = "Data Source=" + Database_file;
             SQLiteConnection conDatabase = new SQLiteConnection(constring);

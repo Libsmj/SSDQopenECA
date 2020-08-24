@@ -361,7 +361,6 @@ C:\Users\Jacob\Desktop\SSDQopenECA\obj\Debug\SSDQopenECA.AddMeastypes.resources
 C:\Users\Jacob\Desktop\SSDQopenECA\obj\Debug\SSDQopenECA.FrameworkConfiguration.resources
 C:\Users\Jacob\Desktop\SSDQopenECA\obj\Debug\SSDQopenECA.Helpwindow.resources
 C:\Users\Jacob\Desktop\SSDQopenECA\obj\Debug\SSDQopenECA.Input_screen.resources
-C:\Users\Jacob\Desktop\SSDQopenECA\obj\Debug\SSDQopenECA.Input_screen2.resources
 C:\Users\Jacob\Desktop\SSDQopenECA\obj\Debug\SSDQopenECA.ParameterForm.resources
 C:\Users\Jacob\Desktop\SSDQopenECA\obj\Debug\SSDQopenECA.Plot.resources
 C:\Users\Jacob\Desktop\SSDQopenECA\obj\Debug\SSDQopenECA.RecordDataWindow.resources

@@ -59,24 +59,12 @@ namespace SSDQopenECA
         private void RecordDataWindow_Load(object sender, EventArgs e)
         {
             wdsize = ParameterForm.L;
-            if (FrameworkConfiguration.newframework)
-            {
-                IPchannelnamelist = Algorithm.New_config.Indatareflist;
-                Inentrynamelist = Algorithm.New_config.Inentrynamelist;
-                Indatadevicelist = Algorithm.New_config.Indatadevicelist;
-                Indatatypelist = Algorithm.New_config.Indatatypelist;
-                //IPchannelnamelist_updated = Algorithm.New_config.IPchannelnamelist_updated;
-                Channelnameprefix = Algorithm.New_config.Channelnameprefix;
-            }
-            else
-            {
-                IPchannelnamelist = Algorithm.Stored_config.Indatareflist;
-                Inentrynamelist = Algorithm.Stored_config.Inentrynamelist;              
-                Indatadevicelist = Algorithm.Stored_config.Indatadevicelist;
-                Indatatypelist = Algorithm.Stored_config.Indatatypelist;
-                //IPchannelnamelist_updated = Algorithm.Stored_config.IPchannelnamelist_updated;
-                Channelnameprefix = Algorithm.Stored_config.Channelnameprefix;
-            }
+            IPchannelnamelist = Algorithm.SSDQ_config.Indatareflist;
+            Inentrynamelist = Algorithm.SSDQ_config.Inentrynamelist;
+            Indatadevicelist = Algorithm.SSDQ_config.Indatadevicelist;
+            Indatatypelist = Algorithm.SSDQ_config.Indatatypelist;
+            //IPchannelnamelist_updated = Algorithm.SSDQ_config.IPchannelnamelist_updated;
+            Channelnameprefix = Algorithm.SSDQ_config.Channelnameprefix;
 
             FillDevices();
             Startbutton.Enabled = false;
@@ -350,17 +338,10 @@ namespace SSDQopenECA
         public void Update_Measurements()
         {
             numFrames++;
-            
-            if (FrameworkConfiguration.newframework)
-            {
-                SSDQ_started = Algorithm.New_config.SSDQ_started;
-                submatrix = Algorithm.New_config.submatrixStacked;
-            }
-            else
-            {
-                SSDQ_started = Algorithm.Stored_config.SSDQ_started;
-                submatrix = Algorithm.Stored_config.submatrixStacked;
-            }
+
+            SSDQ_started = Algorithm.SSDQ_config.SSDQ_started;
+            submatrix = Algorithm.SSDQ_config.submatrixStacked;
+
             if (SSDQ_started == true)
             {
                 for (int i = 0; i < Record_channels; i++)
@@ -459,8 +440,6 @@ namespace SSDQopenECA
                 }
                 this.Close();
             }
-
-
         }       
 
         private void Stopbutton_Click(object sender, EventArgs e)

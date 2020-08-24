@@ -69,25 +69,12 @@ namespace SSDQopenECA
         {
             wdsize = ParameterForm.L;
             //Retrieve necessary data from the earlier window(Either New or Load options)
-            if (FrameworkConfiguration.newframework)
-            {             
-                Inentrynamelist = Algorithm.New_config.Inentrynamelist_updated;
-                IPchannelnamelist = Algorithm.New_config.Indatareflist;
-                IPchannelnamelist_updated = Algorithm.New_config.IPchannelnamelist_updated;
-                Indatadevicelist = Algorithm.New_config.Indatadevicelist;
-                Indatatypelist = Algorithm.New_config.Indatatypelist;
-                Channelnameprefix = Algorithm.New_config.Channelnameprefix;
-
-            }
-            else
-            {
-                Inentrynamelist = Algorithm.Stored_config.Inentrynamelist_updated;
-                IPchannelnamelist = Algorithm.Stored_config.Indatareflist;
-                IPchannelnamelist_updated = Algorithm.Stored_config.IPchannelnamelist_updated;
-                Indatadevicelist = Algorithm.Stored_config.Indatadevicelist;
-                Indatatypelist = Algorithm.Stored_config.Indatatypelist;
-                Channelnameprefix = Algorithm.Stored_config.Channelnameprefix;
-            }
+            Inentrynamelist = Algorithm.SSDQ_config.Inentrynamelist_updated;
+            IPchannelnamelist = Algorithm.SSDQ_config.Indatareflist;
+            IPchannelnamelist_updated = Algorithm.SSDQ_config.IPchannelnamelist_updated;
+            Indatadevicelist = Algorithm.SSDQ_config.Indatadevicelist;
+            Indatatypelist = Algorithm.SSDQ_config.Indatatypelist;
+            Channelnameprefix = Algorithm.SSDQ_config.Channelnameprefix;
             FillDevices();
         }
 
@@ -285,16 +272,9 @@ namespace SSDQopenECA
                     P_data = Vector<double>.Build.Dense(Plot_channels);
 
                     //Retrieve the window size of data of all channels 
-                    if (FrameworkConfiguration.newframework)
-                    {
-                        SSDQ_started = Algorithm.New_config.SSDQ_started;
-                        submatrix = Algorithm.New_config.submatrixData[Meas];
-                    }
-                    else
-                    {
-                        SSDQ_started = Algorithm.Stored_config.SSDQ_started;
-                        submatrix = Algorithm.Stored_config.submatrixData[Meas];
-                    }
+                    SSDQ_started = Algorithm.SSDQ_config.SSDQ_started;
+                    submatrix = Algorithm.SSDQ_config.submatrixData[Meas];
+
                 }             
             }
             catch (Exception ex)

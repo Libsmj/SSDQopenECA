@@ -77,14 +77,9 @@ namespace HankelRobustDataEstimation
 
             tau_a = Convert.ToInt32(ParameterForm.a);
             tau_b = Convert.ToInt32(ParameterForm.b);
-            if (FrameworkConfiguration.newframework)
-            {
-                num_channel = Convert.ToInt32(Algorithm.New_config.NumChannelList[Meas]);
-            }
-            else
-            {
-                num_channel = Convert.ToInt32(Algorithm.Stored_config.NumChannelList[Meas]);
-            }
+
+            num_channel = Convert.ToInt32(Algorithm.SSDQ_config.NumChannelList[Meas]);
+    
 
             instant = -300;
 

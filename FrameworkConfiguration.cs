@@ -18,6 +18,7 @@ namespace SSDQopenECA
         public static string DB_filename = "";      //Database filename
         public static Thread Frameworkwindow_thread = new Thread(ThreadStart_for_NewFrameworkwindow);
         public static bool newframework = false;    //variable differentiating between New and Load Framework options
+
         public FrameworkConfiguration()
         {
             InitializeComponent();
@@ -26,7 +27,7 @@ namespace SSDQopenECA
         private void Newbutton_Click(object sender, EventArgs e)
         {
             //Multiple instances of openECA are prohibited
-            if (Frameworkwindow_thread.IsAlive || Algorithm.New_config.MainWindow_thread.IsAlive || Algorithm.Stored_config.MainWindow_thread.IsAlive)
+            if (Frameworkwindow_thread.IsAlive || Algorithm.SSDQ_config.MainWindow_thread.IsAlive)
             {
                 MessageBox.Show("An instance of openECA framework creation window has been created and is running.Close the creation window and try again", "Error Information");
             }
@@ -39,16 +40,17 @@ namespace SSDQopenECA
             }
 
         }
+
         private static void ThreadStart_for_NewFrameworkwindow()
         {
             //Execute an object of Input_screen which refers to New openECA framwework creation option
-            Algorithm.New_config = new Input_screen();
-            Application.Run(Algorithm.New_config);
+            Algorithm.SSDQ_config = new Input_screen(0);
+            Application.Run(Algorithm.SSDQ_config);
         }
 
         private void Presavedbutton_Click(object sender, EventArgs e)
         {
-            if (Frameworkwindow_thread.IsAlive || Algorithm.New_config.MainWindow_thread.IsAlive || Algorithm.Stored_config.MainWindow_thread.IsAlive)
+            if (Frameworkwindow_thread.IsAlive || Algorithm.SSDQ_config.MainWindow_thread.IsAlive)
             {
                 MessageBox.Show("An instance of openECA framework creation window has been created and is running.Close the creation window and try again", "Error Information");
             }
@@ -61,11 +63,12 @@ namespace SSDQopenECA
             }
 
         }
+
         private static void ThreadStart_for_SavedFrameworkwindow()
         {
             //Execute an object of Input_screen which refers to loading of Stored openECA framwework creation option
-            Algorithm.Stored_config = new Input_screen2();
-            Application.Run(Algorithm.Stored_config);
+            Algorithm.SSDQ_config = new Input_screen(1);
+            Application.Run(Algorithm.SSDQ_config);
         }
 
         private void FrameworkConfiguration_Load(object sender, EventArgs e)
@@ -108,11 +111,13 @@ namespace SSDQopenECA
             Help_thread.TrySetApartmentState(ApartmentState.STA);
             Help_thread.Start();
         }
+
         private static void ThreadStart_for_Helpwindow()
         {
             //Execute an object of Help class which contains additional details of the product.
             Helpwindow Help = new Helpwindow();
             Application.Run(Help);
         }
+
     }
 }
