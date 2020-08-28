@@ -111,14 +111,11 @@ namespace HankelRobustDataEstimation
 
             // Step 1: get the incoming data
             for (int i = 0; i < num_channel; i++)
-            {              
-                if (Current_data[i] != 0)
+            {
+                ctvector[i] = Current_data[i];
+                if (ctvector[i] > double.Epsilon)
                 {
-                    ctvector[i] = Current_data[i];
-                    if (ctvector[i] != 0)
-                    {
-                        flag_observed_ctvector[i] = 1;
-                    }
+                    flag_observed_ctvector[i] = 1;
                 }
                 else
                 {
@@ -138,31 +135,26 @@ namespace HankelRobustDataEstimation
             //Till the first window size (L) data is retrieved , the code will not enter the following subsections and will keep getting data
 
             // Add by Hongyun and Lin, Initialize the window
-            if (numberOfFrame >= window_size && !Init_flag)
+            if (!Init_flag && numberOfFrame > window_size)
             {
                 Matrix<double> corrected = Programe.SAP(data_estimate.SubMatrix(0, num_channel, 0, window_size), Hankel_k, 1, Math.Pow(10, -3)); //correct data is provided in form of a "corrected matrix"
 
-                for (int i = 0; i < window_size; i++)
-                {
-                    data_estimate.SetColumn(i, corrected.Column(i));        // reset the column of submatrix with columns of corrected matrix
-                    data_updated.SetColumn(i, corrected.Column(i));   
-                }
-                
+                data_estimate.SetSubMatrix(0, 0, corrected);
+                data_updated.SetSubMatrix(0, 0, corrected);
+
                 Init_flag = true;           //Init_flag has been set to true here and hereafter won't enter this section of code           
             }
 
-
-            //Rest part
-            if (numberOfFrame >= window_size && Init_flag)
+            if (Init_flag && numberOfFrame > window_size)
             {
                 flag_trusted.SetColumn(window_size, flag_ctvector);
 
-                Matrix<double> Hankel_matrix = ExtensionFunction.ExtensionFunction.Hankel(data_estimate.SubMatrix(0, num_channel, 0, window_size), Hankel_k);
                 // Hankel matrix of past L observations
+                Matrix<double> Hankel_matrix = ExtensionFunction.ExtensionFunction.Hankel(data_estimate.SubMatrix(0, num_channel, 0, window_size), Hankel_k);
+
+                // the long vectors with past L-1 and current observations
                 Matrix<double> ct_kvectors = ExtensionFunction.ExtensionFunction.Hankel(data_estimate.SubMatrix(0, num_channel, window_size - Hankel_k + 1, Hankel_k), Hankel_k);
                 double[] flag_ct_kvectors = (flag_trusted.SubMatrix(0, num_channel, window_size - Hankel_k + 1, Hankel_k)).ToColumnMajorArray();
-                // the long vectors with past L-1 and current observations
-
 
                 // Step 3: conduct SVD, estimate the rank and underlying subspace
                 Matrix<double> Diag_kvectors = Matrix<double>.Build.DenseOfDiagonalArray(flag_ct_kvectors);
@@ -185,19 +177,19 @@ namespace HankelRobustDataEstimation
                     else { break; }
                 }
                 // only keep the r basis
-                columnspace = columnspace.SubMatrix(0, num_channel * Hankel_k, 0, rank);   //here we get U_hat the matrix formed by r columns 
+                columnspace = columnspace.SubMatrix(0, num_channel * Hankel_k, 0, rank);
 
 
                 // Step 4: compute the coefficient and estimate the incoming measurements
-                Matrix<double> coeff = (columnspace.Transpose() * Diag_kvectors * columnspace).Inverse() *
-                    columnspace.Transpose() * Diag_kvectors * ct_kvectors;
+                Matrix<double> coeff = (columnspace.ConjugateTransposeThisAndMultiply(Diag_kvectors) * columnspace).Inverse() *
+                    (columnspace.ConjugateTransposeThisAndMultiply(Diag_kvectors) * ct_kvectors);
                 Matrix<double> estimated_ctvector = columnspace.SubMatrix(num_channel * (Hankel_k - 1), num_channel, 0, rank) * coeff;
 
 
                 // Step 5: determine the trusted and untrusted entries, and re-estimate the untrusted entries
                 for (int i = 0; i < num_channel; i++)
                 {
-                    if (Math.Abs(estimated_ctvector.At(i, 0) - ctvector[i]) <= tau_t * threshold)           //tau_t*threshold is s(i) in paper
+                    if (Math.Abs(estimated_ctvector.At(i, 0) - ctvector[i]) <= tau_t * threshold)
                     {
                         flag_ct_kvectors[i + (Hankel_k - 1) * num_channel] = 1;
                         flag_ctvector[i] = 1;
@@ -206,15 +198,14 @@ namespace HankelRobustDataEstimation
                     {
                         num_untrusted++;
                     }
-
                 }
 
                 // re-estimate the untrusted entries
                 if (num_untrusted > 0)
                 {
                     Diag_kvectors = Matrix<double>.Build.DenseOfDiagonalArray(flag_ct_kvectors);
-                    coeff = (columnspace.Transpose() * Diag_kvectors * columnspace).Inverse() *
-                        columnspace.Transpose() * Diag_kvectors * ct_kvectors;
+                    coeff = (columnspace.ConjugateTransposeThisAndMultiply(Diag_kvectors) * columnspace).Inverse() *
+                        (columnspace.ConjugateTransposeThisAndMultiply(Diag_kvectors) * ct_kvectors);
                     estimated_ctvector = columnspace.SubMatrix(num_channel * (Hankel_k - 1), num_channel, 0, rank) * coeff;
 
                     for (int i = 0; i < num_channel; i++)
@@ -231,55 +222,47 @@ namespace HankelRobustDataEstimation
 
 
                 // Step 6: update the matrices         
-                // update the submatrix, submatrix_raw_data, flag_submatrix
-                for (int i = 0; i < window_size; i++)
-                {
-                    data_estimate.SetColumn(i, data_estimate.Column(i + 1));
-                    data_observed.SetColumn(i, data_observed.Column(i + 1));
-                    flag_trusted.SetColumn(i, flag_trusted.Column(i + 1));
-                    flag_observed.SetColumn(i, flag_observed.Column(i + 1));
-                }
-
-
+                // update the data_estimate, data_observed, flag_trusted
+                data_estimate.SetSubMatrix(0, 0, data_estimate.SubMatrix(0, num_channel, 1, window_size));
+                data_observed.SetSubMatrix(0, 0, data_observed.SubMatrix(0, num_channel, 1, window_size));
+                flag_trusted.SetSubMatrix(0, 0, flag_trusted.SubMatrix(0, num_channel, 1, window_size));
+                flag_observed.SetSubMatrix(0, 0, flag_observed.SubMatrix(0, num_channel, 1, window_size));
 
                 // Step 7: differentiate the event data from bad data
                 if (flag_event == 0)
                 {
                     if (num_untrusted >= num_channel * channel_threshold)
                     {
-                        Vector<double> consecutive_untrusted = bad_data_duration - (flag_trusted.SubMatrix(0, num_channel,
-                            window_size - bad_data_duration + 1, bad_data_duration)).RowSums();
-                        Vector<double> consecutive_observed = flag_observed.SubMatrix(0, num_channel,
-                            window_size - bad_data_duration + 1, bad_data_duration).RowSums();
+                        Vector<double> consecutive_untrusted = bad_data_duration - (flag_trusted.SubMatrix(0, num_channel, window_size - bad_data_duration, bad_data_duration)).RowSums();
+                        Vector<double> consecutive_observed = flag_observed.SubMatrix(0, num_channel, window_size - bad_data_duration, bad_data_duration).RowSums();
+
                         int sum_channel = 0;
                         for (int i = 0; i < num_channel; i++)
-                        {   
-                            // check the number of channels that are consecutively observed and identified as untrusted
+                        {   // check the number of channels that are consecutively observed and identified as untrusted
                             if ((consecutive_observed[i] == bad_data_duration) &&
                                 (consecutive_untrusted[i] >= Math.Ceiling(bad_data_duration / 2.0)))
                             {
                                 sum_channel++;
                             }
                         }
+
                         // if there exist multiple channels that are consucutively observed and untrusted
-                        int starting_index = 0;
                         if (sum_channel >= num_channel * channel_threshold)
                         {
-                            Vector<double> column_sum = (flag_trusted.SubMatrix(0, num_channel,
-                                window_size - bad_data_duration + 1, bad_data_duration)).ColumnSums();
+                            int starting_index = 0;
+                            Vector<double> column_sum = (flag_trusted.SubMatrix(0, num_channel, window_size - bad_data_duration, bad_data_duration)).ColumnSums();
 
-                            for (int i = bad_data_duration - 1; i >= 0; i--)
+                            for (starting_index = 0; starting_index < bad_data_duration; starting_index++)
                             {
-                                if (column_sum[i] <= Math.Ceiling(num_channel * (1 - channel_threshold)))
+                                if (column_sum[starting_index] <= Math.Ceiling(num_channel * (1 - channel_threshold)))
                                 {
-                                    starting_index++;
+                                    break;
                                 }
-                                else { break; }
                             }
-                            flag_event = window_size - starting_index;
-                            event_instant = numberOfFrame - starting_index;
+
+                            flag_event = window_size - bad_data_duration + starting_index;
+                            event_instant = numberOfFrame - bad_data_duration + starting_index + 1;
                         }
-                        
                     }
                 }
                 else if (flag_event > 1)
@@ -290,8 +273,8 @@ namespace HankelRobustDataEstimation
                 {
                     flag_event--;
                     Matrix<double> window_data = data_observed.SubMatrix(0, num_channel, 0, window_size);
-                    Matrix<double> Hankel_matrix_2 = ExtensionFunction.ExtensionFunction.Hankel(window_data, Hankel_k);
-                    double approx_error = Math.Sqrt(1 - Math.Pow(Hankel_matrix_2.L2Norm(), 2) / Math.Pow(Hankel_matrix_2.FrobeniusNorm(), 2));
+                    Hankel_matrix = ExtensionFunction.ExtensionFunction.Hankel(window_data, Hankel_k);
+                    double approx_error = Math.Sqrt(1 - Math.Pow(Hankel_matrix.L2Norm(), 2) / Math.Pow(Hankel_matrix.FrobeniusNorm(), 2));
                     double rand_approx_error = 0;
                     for (int i = 1; i <= 500; i++)
                     {
@@ -310,25 +293,21 @@ namespace HankelRobustDataEstimation
 
                     if (rand_approx_error / approx_error >= ratio_approx_error)
                     {
-                        data_estimate = data_observed.Clone();
-                        instant = event_instant;
+                        instant = event_instant + window_size - 1;
                         flag_trusted = flag_observed.Clone();
                         flag_output = 1;
                     }
-
                 }
             }
             else
             {
                 flag_ctvector = (Vector<double>.Build.Dense(num_channel)).Add(1);
                 flag_trusted.SetColumn(window_size, flag_ctvector);
-                for (int i = 0; i < window_size; i++)
-                {
-                    data_estimate.SetColumn(i, data_estimate.Column(i + 1));
-                    data_observed.SetColumn(i, data_observed.Column(i + 1));
-                    flag_trusted.SetColumn(i, flag_trusted.Column(i + 1));
-                    flag_observed.SetColumn(i, flag_observed.Column(i + 1));
-                }
+
+                data_estimate.SetSubMatrix(0, 0, data_estimate.SubMatrix(0, num_channel, 1, window_size));
+                data_observed.SetSubMatrix(0, 0, data_observed.SubMatrix(0, num_channel, 1, window_size));
+                flag_trusted.SetSubMatrix(0, 0, flag_trusted.SubMatrix(0, num_channel, 1, window_size));
+                flag_observed.SetSubMatrix(0, 0, flag_observed.SubMatrix(0, num_channel, 1, window_size));
             }
 
             // Add by Hongyun and Lin, SAP for cumulative problem 
@@ -336,41 +315,29 @@ namespace HankelRobustDataEstimation
             {
                 Matrix<double> corrected = Programe.SAP(data_estimate.SubMatrix(0, num_channel, 0, window_size), Hankel_k, 1, Math.Pow(10, -3)); //correct data
 
-                for (int i = 0; i < window_size; i++)
-                {
-                    data_estimate.SetColumn(i, corrected.Column(i));
-                }
+                data_estimate.SetSubMatrix(0, 0, corrected);
+
                 recalculate_count = 0;
             }
 
-            
+
             if (Init_flag) //this line add by Hongyun and Lin, make sure does not oupt anything before correct the first window data
             {
                 if (flag_output == 0)
                 {
                     //Introduced for openECA implementation
-                    for (int j = 0; j < window_size-1; j++)
-                    {
-                        data_updated.SetColumn(j, data_updated.Column(j+1));
-                    }
+                    data_updated.SetSubMatrix(0, 0, data_updated.SubMatrix(0, num_channel, 1, window_size - 1));
                     data_updated.SetColumn(window_size - 1, ctvector);
                 }
                 else
                 {
-                    
+
                     flag_output = 0;
                     // Add by Hongyun and Lin, when event founded, correct the event data
                     Matrix<double> corrected = Programe.SAP(data_observed.SubMatrix(0, num_channel, 0, window_size), Hankel_k, 3, Math.Pow(10, -3)); // correct data
-
-                    for (int i = 0; i < window_size; i++)
-                    {
-                        data_estimate.SetColumn(i, corrected.Column(i));
-                    }
+                    data_estimate.SetSubMatrix(0, 0, corrected);
                     //Introduced for openECA implementation
-                    for (int j = 0; j < window_size; j++)
-                    {
-                        data_updated.SetColumn(j, corrected.Column(j));
-                    }
+                    data_updated.SetSubMatrix(0, 0, corrected);
                 }
             }
 

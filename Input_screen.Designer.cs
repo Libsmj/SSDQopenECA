@@ -32,6 +32,11 @@
             this.InputChannelList = new System.Windows.Forms.CheckedListBox();
             this.Create_Framework_button = new System.Windows.Forms.Button();
             this.MeasurementBox = new System.Windows.Forms.GroupBox();
+            this.MeasTypeOldgroupbox = new System.Windows.Forms.GroupBox();
+            this.DeselectTypes_button = new System.Windows.Forms.Button();
+            this.SelectAllTypes_button = new System.Windows.Forms.Button();
+            this.Addmeastypes_button = new System.Windows.Forms.Button();
+            this.MeasTypecheckList = new System.Windows.Forms.CheckedListBox();
             this.Deselect_IPchannels = new System.Windows.Forms.Button();
             this.Deselect_devices = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -40,7 +45,6 @@
             this.AllMeasbutton = new System.Windows.Forms.Button();
             this.AllDevicesbutton = new System.Windows.Forms.Button();
             this.DeviceCheckList = new System.Windows.Forms.CheckedListBox();
-            this.GetDeviceButton = new System.Windows.Forms.Button();
             this.OutputChannelList = new System.Windows.Forms.CheckedListBox();
             this.DataSourcegroupbox = new System.Windows.Forms.GroupBox();
             this.ExtPDC_DB = new System.Windows.Forms.CheckBox();
@@ -53,6 +57,7 @@
             this.Volt_MagButton = new System.Windows.Forms.CheckBox();
             this.AvailableMeastypebutton = new System.Windows.Forms.Button();
             this.RefreshInputList = new System.Windows.Forms.Button();
+            this.Adddevices_button = new System.Windows.Forms.Button();
             this.Savegroupbox = new System.Windows.Forms.GroupBox();
             this.CSVlocationlabel = new System.Windows.Forms.Label();
             this.Locationlabel = new System.Windows.Forms.Label();
@@ -68,13 +73,8 @@
             this.Config_locationbox = new System.Windows.Forms.GroupBox();
             this.Framework_LocationBox = new System.Windows.Forms.TextBox();
             this.SearchFrameworkbutton = new System.Windows.Forms.Button();
-            this.MeasTypeOldgroupbox = new System.Windows.Forms.GroupBox();
-            this.DeselectTypes_button = new System.Windows.Forms.Button();
-            this.SelectAllTypes_button = new System.Windows.Forms.Button();
-            this.Addmeastypes_button = new System.Windows.Forms.Button();
-            this.MeasTypecheckList = new System.Windows.Forms.CheckedListBox();
-            this.Adddevices_button = new System.Windows.Forms.Button();
             this.MeasurementBox.SuspendLayout();
+            this.MeasTypeOldgroupbox.SuspendLayout();
             this.DataSourcegroupbox.SuspendLayout();
             this.MeasTypeNewgroupbox.SuspendLayout();
             this.Savegroupbox.SuspendLayout();
@@ -82,7 +82,6 @@
             this.SSDQactionBox.SuspendLayout();
             this.Datagroupbox.SuspendLayout();
             this.Config_locationbox.SuspendLayout();
-            this.MeasTypeOldgroupbox.SuspendLayout();
             this.SuspendLayout();
             // 
             // Heading
@@ -91,7 +90,7 @@
             this.Heading.AutoSize = true;
             this.Heading.Font = new System.Drawing.Font("Microsoft Sans Serif", 39.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Heading.ForeColor = System.Drawing.Color.Navy;
-            this.Heading.Location = new System.Drawing.Point(223, 9);
+            this.Heading.Location = new System.Drawing.Point(189, 9);
             this.Heading.Name = "Heading";
             this.Heading.Size = new System.Drawing.Size(750, 61);
             this.Heading.TabIndex = 0;
@@ -133,7 +132,6 @@
             this.MeasurementBox.Controls.Add(this.AllMeasbutton);
             this.MeasurementBox.Controls.Add(this.AllDevicesbutton);
             this.MeasurementBox.Controls.Add(this.DeviceCheckList);
-            this.MeasurementBox.Controls.Add(this.GetDeviceButton);
             this.MeasurementBox.Controls.Add(this.OutputChannelList);
             this.MeasurementBox.Controls.Add(this.DataSourcegroupbox);
             this.MeasurementBox.Controls.Add(this.MeasTypeNewgroupbox);
@@ -142,12 +140,70 @@
             this.MeasurementBox.Controls.Add(this.Create_Framework_button);
             this.MeasurementBox.Controls.Add(this.Adddevices_button);
             this.MeasurementBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MeasurementBox.Location = new System.Drawing.Point(20, 132);
+            this.MeasurementBox.Location = new System.Drawing.Point(8, 90);
             this.MeasurementBox.Name = "MeasurementBox";
             this.MeasurementBox.Size = new System.Drawing.Size(1044, 556);
             this.MeasurementBox.TabIndex = 9;
             this.MeasurementBox.TabStop = false;
             this.MeasurementBox.Text = "Framework Settings";
+            // 
+            // MeasTypeOldgroupbox
+            // 
+            this.MeasTypeOldgroupbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.MeasTypeOldgroupbox.Controls.Add(this.DeselectTypes_button);
+            this.MeasTypeOldgroupbox.Controls.Add(this.SelectAllTypes_button);
+            this.MeasTypeOldgroupbox.Controls.Add(this.Addmeastypes_button);
+            this.MeasTypeOldgroupbox.Controls.Add(this.MeasTypecheckList);
+            this.MeasTypeOldgroupbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.MeasTypeOldgroupbox.Location = new System.Drawing.Point(6, 358);
+            this.MeasTypeOldgroupbox.Name = "MeasTypeOldgroupbox";
+            this.MeasTypeOldgroupbox.Size = new System.Drawing.Size(294, 188);
+            this.MeasTypeOldgroupbox.TabIndex = 26;
+            this.MeasTypeOldgroupbox.TabStop = false;
+            this.MeasTypeOldgroupbox.Text = "Measurement Type";
+            // 
+            // DeselectTypes_button
+            // 
+            this.DeselectTypes_button.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.DeselectTypes_button.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.DeselectTypes_button.Location = new System.Drawing.Point(164, 156);
+            this.DeselectTypes_button.Name = "DeselectTypes_button";
+            this.DeselectTypes_button.Size = new System.Drawing.Size(103, 23);
+            this.DeselectTypes_button.TabIndex = 3;
+            this.DeselectTypes_button.Text = "Deselect All";
+            this.DeselectTypes_button.UseVisualStyleBackColor = false;
+            this.DeselectTypes_button.Click += new System.EventHandler(this.DeselectTypes_button_Click);
+            // 
+            // SelectAllTypes_button
+            // 
+            this.SelectAllTypes_button.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.SelectAllTypes_button.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.SelectAllTypes_button.Location = new System.Drawing.Point(17, 156);
+            this.SelectAllTypes_button.Name = "SelectAllTypes_button";
+            this.SelectAllTypes_button.Size = new System.Drawing.Size(103, 23);
+            this.SelectAllTypes_button.TabIndex = 2;
+            this.SelectAllTypes_button.Text = "Select All";
+            this.SelectAllTypes_button.UseVisualStyleBackColor = false;
+            this.SelectAllTypes_button.Click += new System.EventHandler(this.SelectAllTypes_button_Click);
+            // 
+            // Addmeastypes_button
+            // 
+            this.Addmeastypes_button.Location = new System.Drawing.Point(22, 26);
+            this.Addmeastypes_button.Name = "Addmeastypes_button";
+            this.Addmeastypes_button.Size = new System.Drawing.Size(235, 29);
+            this.Addmeastypes_button.TabIndex = 1;
+            this.Addmeastypes_button.Text = "Update Measurement Types";
+            this.Addmeastypes_button.UseVisualStyleBackColor = true;
+            this.Addmeastypes_button.Click += new System.EventHandler(this.Addmeastypes_button_Click);
+            // 
+            // MeasTypecheckList
+            // 
+            this.MeasTypecheckList.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.MeasTypecheckList.FormattingEnabled = true;
+            this.MeasTypecheckList.Location = new System.Drawing.Point(10, 61);
+            this.MeasTypecheckList.Name = "MeasTypecheckList";
+            this.MeasTypecheckList.Size = new System.Drawing.Size(263, 89);
+            this.MeasTypecheckList.TabIndex = 0;
             // 
             // Deselect_IPchannels
             // 
@@ -155,7 +211,7 @@
             this.Deselect_IPchannels.BackColor = System.Drawing.SystemColors.ControlLight;
             this.Deselect_IPchannels.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.Deselect_IPchannels.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Deselect_IPchannels.Location = new System.Drawing.Point(489, 485);
+            this.Deselect_IPchannels.Location = new System.Drawing.Point(489, 482);
             this.Deselect_IPchannels.Name = "Deselect_IPchannels";
             this.Deselect_IPchannels.Size = new System.Drawing.Size(103, 23);
             this.Deselect_IPchannels.TabIndex = 25;
@@ -218,7 +274,7 @@
             this.AllMeasbutton.BackColor = System.Drawing.SystemColors.ControlLight;
             this.AllMeasbutton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.AllMeasbutton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.AllMeasbutton.Location = new System.Drawing.Point(329, 485);
+            this.AllMeasbutton.Location = new System.Drawing.Point(347, 482);
             this.AllMeasbutton.Name = "AllMeasbutton";
             this.AllMeasbutton.Size = new System.Drawing.Size(103, 23);
             this.AllMeasbutton.TabIndex = 19;
@@ -250,19 +306,6 @@
             this.DeviceCheckList.Name = "DeviceCheckList";
             this.DeviceCheckList.Size = new System.Drawing.Size(294, 174);
             this.DeviceCheckList.TabIndex = 17;
-            // 
-            // GetDeviceButton
-            // 
-            this.GetDeviceButton.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.GetDeviceButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.GetDeviceButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.GetDeviceButton.Location = new System.Drawing.Point(79, 110);
-            this.GetDeviceButton.Name = "GetDeviceButton";
-            this.GetDeviceButton.Size = new System.Drawing.Size(142, 33);
-            this.GetDeviceButton.TabIndex = 16;
-            this.GetDeviceButton.Text = "Get Input Devices";
-            this.GetDeviceButton.UseVisualStyleBackColor = false;
-            this.GetDeviceButton.Click += new System.EventHandler(this.GetDeviceButton_Click);
             // 
             // OutputChannelList
             // 
@@ -414,6 +457,19 @@
             this.RefreshInputList.UseVisualStyleBackColor = false;
             this.RefreshInputList.Click += new System.EventHandler(this.RefreshInputList_Click);
             // 
+            // Adddevices_button
+            // 
+            this.Adddevices_button.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.Adddevices_button.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.Adddevices_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold);
+            this.Adddevices_button.Location = new System.Drawing.Point(66, 110);
+            this.Adddevices_button.Name = "Adddevices_button";
+            this.Adddevices_button.Size = new System.Drawing.Size(172, 33);
+            this.Adddevices_button.TabIndex = 34;
+            this.Adddevices_button.Text = "Update Input Devices";
+            this.Adddevices_button.UseVisualStyleBackColor = false;
+            this.Adddevices_button.Click += new System.EventHandler(this.Adddevices_button_Click);
+            // 
             // Savegroupbox
             // 
             this.Savegroupbox.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -421,7 +477,7 @@
             this.Savegroupbox.Controls.Add(this.Locationlabel);
             this.Savegroupbox.Controls.Add(this.SaveFrameworkbutton);
             this.Savegroupbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Savegroupbox.Location = new System.Drawing.Point(20, 694);
+            this.Savegroupbox.Location = new System.Drawing.Point(8, 652);
             this.Savegroupbox.Name = "Savegroupbox";
             this.Savegroupbox.Size = new System.Drawing.Size(1044, 73);
             this.Savegroupbox.TabIndex = 28;
@@ -491,9 +547,9 @@
             this.EPRIpictureBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.EPRIpictureBox.BackgroundImage = global::SSDQopenECA.Properties.Resources.EPRI_Logo;
             this.EPRIpictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.EPRIpictureBox.Location = new System.Drawing.Point(20, 9);
+            this.EPRIpictureBox.Location = new System.Drawing.Point(8, 9);
             this.EPRIpictureBox.Name = "EPRIpictureBox";
-            this.EPRIpictureBox.Size = new System.Drawing.Size(192, 118);
+            this.EPRIpictureBox.Size = new System.Drawing.Size(152, 75);
             this.EPRIpictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.EPRIpictureBox.TabIndex = 13;
             this.EPRIpictureBox.TabStop = false;
@@ -506,7 +562,7 @@
             this.SSDQactionBox.Controls.Add(this.ParameterSettingsButton);
             this.SSDQactionBox.Controls.Add(this.RunSSDQButton);
             this.SSDQactionBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SSDQactionBox.Location = new System.Drawing.Point(1070, 240);
+            this.SSDQactionBox.Location = new System.Drawing.Point(1058, 198);
             this.SSDQactionBox.Name = "SSDQactionBox";
             this.SSDQactionBox.Size = new System.Drawing.Size(207, 368);
             this.SSDQactionBox.TabIndex = 30;
@@ -571,7 +627,7 @@
             this.Config_locationbox.Controls.Add(this.Framework_LocationBox);
             this.Config_locationbox.Controls.Add(this.SearchFrameworkbutton);
             this.Config_locationbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Config_locationbox.Location = new System.Drawing.Point(218, 82);
+            this.Config_locationbox.Location = new System.Drawing.Point(184, 41);
             this.Config_locationbox.Name = "Config_locationbox";
             this.Config_locationbox.Size = new System.Drawing.Size(950, 58);
             this.Config_locationbox.TabIndex = 31;
@@ -598,87 +654,16 @@
             this.SearchFrameworkbutton.UseVisualStyleBackColor = false;
             this.SearchFrameworkbutton.Click += new System.EventHandler(this.SearchFrameworkbutton_Click);
             // 
-            // MeasTypeOldgroupbox
-            // 
-            this.MeasTypeOldgroupbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.MeasTypeOldgroupbox.Controls.Add(this.DeselectTypes_button);
-            this.MeasTypeOldgroupbox.Controls.Add(this.SelectAllTypes_button);
-            this.MeasTypeOldgroupbox.Controls.Add(this.Addmeastypes_button);
-            this.MeasTypeOldgroupbox.Controls.Add(this.MeasTypecheckList);
-            this.MeasTypeOldgroupbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MeasTypeOldgroupbox.Location = new System.Drawing.Point(6, 358);
-            this.MeasTypeOldgroupbox.Name = "MeasTypeOldgroupbox";
-            this.MeasTypeOldgroupbox.Size = new System.Drawing.Size(294, 188);
-            this.MeasTypeOldgroupbox.TabIndex = 26;
-            this.MeasTypeOldgroupbox.TabStop = false;
-            this.MeasTypeOldgroupbox.Text = "Measurement Type";
-            // 
-            // DeselectTypes_button
-            // 
-            this.DeselectTypes_button.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.DeselectTypes_button.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.DeselectTypes_button.Location = new System.Drawing.Point(170, 156);
-            this.DeselectTypes_button.Name = "DeselectTypes_button";
-            this.DeselectTypes_button.Size = new System.Drawing.Size(103, 23);
-            this.DeselectTypes_button.TabIndex = 3;
-            this.DeselectTypes_button.Text = "Deselect All";
-            this.DeselectTypes_button.UseVisualStyleBackColor = false;
-            this.DeselectTypes_button.Click += new System.EventHandler(this.DeselectTypes_button_Click);
-            // 
-            // SelectAllTypes_button
-            // 
-            this.SelectAllTypes_button.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.SelectAllTypes_button.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.SelectAllTypes_button.Location = new System.Drawing.Point(10, 156);
-            this.SelectAllTypes_button.Name = "SelectAllTypes_button";
-            this.SelectAllTypes_button.Size = new System.Drawing.Size(89, 23);
-            this.SelectAllTypes_button.TabIndex = 2;
-            this.SelectAllTypes_button.Text = "Select All";
-            this.SelectAllTypes_button.UseVisualStyleBackColor = false;
-            this.SelectAllTypes_button.Click += new System.EventHandler(this.SelectAllTypes_button_Click);
-            // 
-            // Addmeastypes_button
-            // 
-            this.Addmeastypes_button.Location = new System.Drawing.Point(22, 26);
-            this.Addmeastypes_button.Name = "Addmeastypes_button";
-            this.Addmeastypes_button.Size = new System.Drawing.Size(235, 29);
-            this.Addmeastypes_button.TabIndex = 1;
-            this.Addmeastypes_button.Text = "Update Measurement Types";
-            this.Addmeastypes_button.UseVisualStyleBackColor = true;
-            this.Addmeastypes_button.Click += new System.EventHandler(this.Addmeastypes_button_Click);
-            // 
-            // MeasTypecheckList
-            // 
-            this.MeasTypecheckList.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MeasTypecheckList.FormattingEnabled = true;
-            this.MeasTypecheckList.Location = new System.Drawing.Point(10, 61);
-            this.MeasTypecheckList.Name = "MeasTypecheckList";
-            this.MeasTypecheckList.Size = new System.Drawing.Size(263, 89);
-            this.MeasTypecheckList.TabIndex = 0;
-            // 
-            // Adddevices_button
-            // 
-            this.Adddevices_button.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.Adddevices_button.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.Adddevices_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold);
-            this.Adddevices_button.Location = new System.Drawing.Point(66, 110);
-            this.Adddevices_button.Name = "Adddevices_button";
-            this.Adddevices_button.Size = new System.Drawing.Size(172, 33);
-            this.Adddevices_button.TabIndex = 34;
-            this.Adddevices_button.Text = "Update Input Devices";
-            this.Adddevices_button.UseVisualStyleBackColor = false;
-            this.Adddevices_button.Click += new System.EventHandler(this.Adddevices_button_Click);
-            // 
             // Input_screen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1319, 781);
-            this.Controls.Add(this.Config_locationbox);
+            this.ClientSize = new System.Drawing.Size(1295, 752);
             this.Controls.Add(this.Savegroupbox);
             this.Controls.Add(this.SSDQactionBox);
+            this.Controls.Add(this.Config_locationbox);
             this.Controls.Add(this.EPRIpictureBox);
             this.Controls.Add(this.MeasurementBox);
             this.Controls.Add(this.Heading);
@@ -689,6 +674,7 @@
             this.Load += new System.EventHandler(this.Input_screen_Load);
             this.MeasurementBox.ResumeLayout(false);
             this.MeasurementBox.PerformLayout();
+            this.MeasTypeOldgroupbox.ResumeLayout(false);
             this.DataSourcegroupbox.ResumeLayout(false);
             this.DataSourcegroupbox.PerformLayout();
             this.MeasTypeNewgroupbox.ResumeLayout(false);
@@ -700,7 +686,6 @@
             this.Datagroupbox.ResumeLayout(false);
             this.Config_locationbox.ResumeLayout(false);
             this.Config_locationbox.PerformLayout();
-            this.MeasTypeOldgroupbox.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -719,7 +704,6 @@
         private System.Windows.Forms.CheckedListBox OutputChannelList;
         private System.Windows.Forms.GroupBox DataSourcegroupbox;
         private System.Windows.Forms.CheckedListBox DeviceCheckList;
-        private System.Windows.Forms.Button GetDeviceButton;
         private System.Windows.Forms.Button AllMeasbutton;
         private System.Windows.Forms.Button AllDevicesbutton;
         private System.Windows.Forms.Button UpdateChannels;

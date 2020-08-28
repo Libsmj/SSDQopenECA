@@ -88,11 +88,6 @@ namespace HankelRobustDataEstimation
         public Matrix<double>[] ProcessFrame(Vector<double>[] Current_data, int numberOfFrame)
         {
 
-            /*
-             * temp
-             */
-            //var csv1 = new StringBuilder();
-
             Vector<Complex> ctvector = Vector<Complex>.Build.Dense(num_channel);
             Vector<double> flag_ctvector = Vector<double>.Build.Dense(num_channel);
             Vector<double> flag_observed_ctvector = Vector<double>.Build.Dense(num_channel);
@@ -113,16 +108,6 @@ namespace HankelRobustDataEstimation
                     ctvector[i] = Complex.Zero;
                 }
             }
-
-            /*
-             * temp
-             */
-            //for (int i = 0; i < num_channel; i++)
-            //{
-            //    var newLine = string.Format("{0},{1},", ctvector.At(i).Magnitude, ctvector.At(i).Phase * 180.0 / Math.PI);
-            //    csv1.Append(newLine);
-            //}
-            //csv1.Append(",");
 
             recalculate_count++; //Add by Hongyun and Lin
 
@@ -348,17 +333,6 @@ namespace HankelRobustDataEstimation
                     data_updated_real[1][i, j] = data_updated.At(i, j).Phase;
                 }
             }
-
-            /*
-             * temp
-             */
-            //for (int i = 0; i < num_channel; i++)
-            //{
-            //    var newLine = string.Format("{0},{1},", data_updated_real[0][i, 0], data_updated_real[1][i, 0] * 180.0 / Math.PI);
-            //    csv1.Append(newLine);
-            //}
-            //csv1.AppendLine("");
-            //File.AppendAllText(@"C:\Users\Jacob\Desktop\1.csv", csv1.ToString());
 
             return data_updated_real;
         }

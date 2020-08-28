@@ -113,13 +113,13 @@ namespace SSDQopenECA
 
             if (frameworkType == 0)
             {
-                Adddevices_button.Visible = false;
                 Config_locationbox.Visible = false;
                 MeasTypeOldgroupbox.Visible = false;
             }
             else
             {
-                GetDeviceButton.Visible = false;
+                Config_locationbox.Location = new Point(50, 125);
+                MeasurementBox.Enabled = false;
                 MeasTypeNewgroupbox.Visible = false;
                 DataSourcegroupbox.Visible = false;
                 Create_Framework_button.Text = "Load openECA Framework";
@@ -208,13 +208,6 @@ namespace SSDQopenECA
 
 
         // New Config
-        private void GetDeviceButton_Click(object sender, EventArgs e)
-        {
-            InitializeMeasType();
-            DeviceCheckList.Items.Clear();
-            FillDeviceCheckListBox();
-        } 
-
         private void FillDeviceCheckListBox()
         {
             try
@@ -526,7 +519,6 @@ namespace SSDQopenECA
                     }
 
                 }
-
             }
             catch
             {
@@ -582,56 +574,6 @@ namespace SSDQopenECA
                 MeasTypecheckList.SetItemChecked(i, true);
             }
             FillOutputCheckListBox();
-        }
-
-        private void Adddevices_button_Click(object sender, EventArgs e)
-        {
-            Devicenamelist_updated.Clear();
-            for (int i = 0; i < DeviceCheckList.CheckedItems.Count; i++)
-            {
-                Devicenamelist_updated.Add(Convert.ToString(DeviceCheckList.CheckedItems[i]));
-            }
-
-            UncheckedItems.Clear();
-            for (int i = 0; i < DeviceCheckList.Items.Count; i++)
-            {
-                if (!DeviceCheckList.GetItemChecked(i))
-                {
-                    UncheckedItems.Add(Convert.ToString(DeviceCheckList.Items[i]));
-
-                }
-            }
-            for (int i = 0; i < UncheckedItems.Count; i++)
-            {
-                DeviceCheckList.Items.Remove(UncheckedItems[i]);
-            }
-
-
-
-            AddDevices.Addbuttonclicked = false;
-            var AddDevicesWindow_thread = new Thread(ThreadStart_for_AddDevicesWindow);
-            AddDevicesWindow_thread.TrySetApartmentState(ApartmentState.STA);
-            AddDevicesWindow_thread.Start();
-            while (AddDevices.Addbuttonclicked == false)
-            {
-
-            }
-            if (AddDevices.AddedDevices.Count != 0)
-            {
-                for (int i = 0; i < AddDevices.AddedDevices.Count; i++)
-                {
-                    if (!DeviceCheckList.Items.Contains(AddDevices.AddedDevices[i]))
-                    {
-                        DeviceCheckList.Items.Add(AddDevices.AddedDevices[i]);
-                    }
-
-                }
-                for (int i = 0; i < DeviceCheckList.Items.Count; i++)
-                {
-                    DeviceCheckList.SetItemChecked(i, true);
-
-                }
-            }
         }
 
         private static void ThreadStart_for_AddDevicesWindow()
@@ -874,6 +816,62 @@ namespace SSDQopenECA
 
 
         // Shared
+        private void Adddevices_button_Click(object sender, EventArgs e)
+        {
+            if (frameworkType == 0)
+            {
+                InitializeMeasType();
+                DeviceCheckList.Items.Clear();
+                FillDeviceCheckListBox();
+            }
+            else
+            {
+                Devicenamelist_updated.Clear();
+                for (int i = 0; i < DeviceCheckList.CheckedItems.Count; i++)
+                {
+                    Devicenamelist_updated.Add(Convert.ToString(DeviceCheckList.CheckedItems[i]));
+                }
+
+                UncheckedItems.Clear();
+                for (int i = 0; i < DeviceCheckList.Items.Count; i++)
+                {
+                    if (!DeviceCheckList.GetItemChecked(i))
+                    {
+                        UncheckedItems.Add(Convert.ToString(DeviceCheckList.Items[i]));
+
+                    }
+                }
+                for (int i = 0; i < UncheckedItems.Count; i++)
+                {
+                    DeviceCheckList.Items.Remove(UncheckedItems[i]);
+                }
+
+                AddDevices.Addbuttonclicked = false;
+                var AddDevicesWindow_thread = new Thread(ThreadStart_for_AddDevicesWindow);
+                AddDevicesWindow_thread.TrySetApartmentState(ApartmentState.STA);
+                AddDevicesWindow_thread.Start();
+                while (AddDevices.Addbuttonclicked == false)
+                {
+
+                }
+                if (AddDevices.AddedDevices.Count != 0)
+                {
+                    for (int i = 0; i < AddDevices.AddedDevices.Count; i++)
+                    {
+                        if (!DeviceCheckList.Items.Contains(AddDevices.AddedDevices[i]))
+                        {
+                            DeviceCheckList.Items.Add(AddDevices.AddedDevices[i]);
+                        }
+
+                    }
+                    for (int i = 0; i < DeviceCheckList.Items.Count; i++)
+                    {
+                        DeviceCheckList.SetItemChecked(i, true);
+                    }
+                }
+            }
+        }
+
         private void RefreshInputList_Click(object sender, EventArgs e)
         {
             InputChannelList.Items.Clear();

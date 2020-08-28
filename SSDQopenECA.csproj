@@ -164,6 +164,12 @@
     <Compile Include="Model\GPA\_Out_DataMeta.cs" />
     <Compile Include="Model\Mapper.cs" />
     <Compile Include="Model\Unmapper.cs" />
+    <Compile Include="PlotFigure.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PlotFigure.Designer.cs">
+      <DependentUpon>PlotFigure.cs</DependentUpon>
+    </Compile>
     <Compile Include="RecordDataWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -198,6 +204,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Plot.resx">
       <DependentUpon>Plot.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PlotFigure.resx">
+      <DependentUpon>PlotFigure.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="RecordDataWindow.resx">
       <DependentUpon>RecordDataWindow.cs</DependentUpon>
