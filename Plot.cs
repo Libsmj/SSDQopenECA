@@ -272,8 +272,8 @@ namespace SSDQopenECA
                     SSDQ_started = Algorithm.SSDQ_config.SSDQ_started;
                     submatrix = Algorithm.SSDQ_config.submatrixData[Meas];
                 }
-                //figures = new PlotFigure(PlotChannelList, Meas);
-                //figures.Show();
+                figures = new PlotFigure(PlotChannelList, Meas);
+                figures.Show();
             }
             catch (Exception ex)
             {
@@ -285,60 +285,60 @@ namespace SSDQopenECA
         {
             if (SSDQ_started == true)
             {
-                //figures.Update_Measurements();
-                try
-                {
-                    for (int i = 0; i < Plot_channels; i++)
-                    {
-                        var propertyvalue2 = Algorithm.InData.GetType().GetProperty(PlotInentrynamelist[i]).GetValue(Algorithm.InData, null);
-                        A_data[i] = Convert.ToDouble(propertyvalue2);
-                        P_data[i] = Convert.ToDouble(submatrix.At(Plotcheckedindexlist[i], wdsize - 1));
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Could not record data: " + ex.Message);
-                    return;
-                }
+                figures.Update_Measurements();
+                //try
+                //{
+                //    for (int i = 0; i < Plot_channels; i++)
+                //    {
+                //        var propertyvalue2 = Algorithm.InData.GetType().GetProperty(PlotInentrynamelist[i]).GetValue(Algorithm.InData, null);
+                //        A_data[i] = Convert.ToDouble(propertyvalue2);
+                //        P_data[i] = Convert.ToDouble(submatrix.At(Plotcheckedindexlist[i], wdsize - 1));
+                //    }
+                //}
+                //catch (Exception ex)
+                //{
+                //    Console.WriteLine("Could not record data: " + ex.Message);
+                //    return;
+                //}
 
-                AxisMaxMinCalc();
-                DecidePlotproperties();
-                if (!incomingDataStarted)
-                {
-                    incomingDataStarted = true;
-                    StartGraphs();
-                }
-                //Update input and processed arrays for each frame
-                if (incomingDataStarted)
-                {
-                    for (int i = 0; i < Plot_channels; i++)
-                    {
-                        if (P_data[i] >= Math.Pow(10, 26))
-                        {
-                            MessageBox.Show("SSDQ algorithm failed, overflow error");
-                            this.Close();
-                        }
+                //AxisMaxMinCalc();
+                //DecidePlotproperties();
+                //if (!incomingDataStarted)
+                //{
+                //    incomingDataStarted = true;
+                //    StartGraphs();
+                //}
+                ////Update input and processed arrays for each frame
+                //if (incomingDataStarted)
+                //{
+                //    for (int i = 0; i < Plot_channels; i++)
+                //    {
+                //        if (P_data[i] >= Math.Pow(10, 26))
+                //        {
+                //            MessageBox.Show("SSDQ algorithm failed, overflow error");
+                //            this.Close();
+                //        }
 
-                        Inputarray[i][graph_length - 1] = A_data[i];
-                        Array.Copy(Inputarray[i], 1, Inputarray[i], 0, graph_length - 1);
+                //        Inputarray[i][graph_length - 1] = A_data[i];
+                //        Array.Copy(Inputarray[i], 1, Inputarray[i], 0, graph_length - 1);
 
                         
-                        for (int j = 0; j < wdsize; j++)
-                        {
-                            Processedarray[i][Processedarray[i].Length + j - wdsize] = Convert.ToDouble(submatrix.At(Plotcheckedindexlist[i], j));
-                            //For angle measurements convert back to degrees from radians
-                            if (Meas == 1 || Meas == 3)
-                            {
-                                Processedarray[i][Processedarray[i].Length + j - wdsize] = (Processedarray[i][Processedarray[i].Length + j - wdsize] * 360 / (2 * Math.PI)) % 360;
-                                if (Processedarray[i][Processedarray[i].Length + j - wdsize] > 180)
-                                {
-                                    Processedarray[i][Processedarray[i].Length + j - wdsize] = Processedarray[i][Processedarray[i].Length + j - wdsize] - 360;
-                                }
-                            }
-                        }
-                        Array.Copy(Processedarray[i], 1, Processedarray[i], 0, Processedarray[i].Length - 1);
-                    }
-                }
+                //        for (int j = 0; j < wdsize; j++)
+                //        {
+                //            Processedarray[i][Processedarray[i].Length + j - wdsize] = Convert.ToDouble(submatrix.At(Plotcheckedindexlist[i], j));
+                //            //For angle measurements convert back to degrees from radians
+                //            if (Meas == 1 || Meas == 3)
+                //            {
+                //                Processedarray[i][Processedarray[i].Length + j - wdsize] = (Processedarray[i][Processedarray[i].Length + j - wdsize] * 360 / (2 * Math.PI)) % 360;
+                //                if (Processedarray[i][Processedarray[i].Length + j - wdsize] > 180)
+                //                {
+                //                    Processedarray[i][Processedarray[i].Length + j - wdsize] = Processedarray[i][Processedarray[i].Length + j - wdsize] - 360;
+                //                }
+                //            }
+                //        }
+                //        Array.Copy(Processedarray[i], 1, Processedarray[i], 0, Processedarray[i].Length - 1);
+                //    }
+                //}
             }
             else
             {

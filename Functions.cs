@@ -128,7 +128,7 @@ namespace Error_Recovery
             Matrix<double> ones = Matrix<double>.Build.Dense(n_col, 1, 1);
             Matrix<double> p = omega * ones / n_col;
 
-            Matrix<Complex> x = Matrix<Complex>.Build.Dense(n_row, n_col); //Create a n_row*n_col Matrix with all 0
+            Matrix<Complex> x = Matrix<Complex>.Build.Dense(n_row, n_col); // Create a n_row*n_col Matrix with all 0
 
             Matrix<double> diag_result = Matrix<double>.Build.Dense(p.RowCount, p.RowCount);
             diag_result.SetDiagonal(p.Column(0).PointwisePower(-1));
@@ -163,6 +163,7 @@ namespace Error_Recovery
 
                     Matrix<Complex> x_pre = x.Clone();
                     W = F_Hankel(x + diag_result.ToComplex() * (g - e), n1);   //Construct the Hankel matrix
+                    //W = F_Hankel(x + (diag_result * 1/2).ToComplex() * (g - e), n1);   //Construct the Hankel matrix
 
                     Result = F_svds(W, 7);  //Compute the largest r+1 singular value components
                     Matrix<Complex> U = Result[0].SubMatrix(0, Result[0].RowCount, 0, r);
@@ -175,6 +176,7 @@ namespace Error_Recovery
 
                     double T_pre = T;
                     T = 2 * ((Math.Pow(0.8, c) * s[r - 1] + s[r]) / Math.Sqrt(n_row * n_col));
+
                     if ((x - x_pre).FrobeniusNorm() / x_pre.FrobeniusNorm() < Math.Pow(10, -6) || Math.Abs(T - T_pre) < eps)
                     {
                         break;

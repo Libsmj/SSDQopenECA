@@ -42,7 +42,7 @@ namespace HankelRobustDataEstimation
         private int tau_a;// = 3;
         private int tau_b;// = 30;
 
-        private double threshold;// = 0.0015;    
+        private double threshold;// = 0.0021;
         private double decaying_factor = 50;
         private int instant = -300;
         private int event_instant = 0;
