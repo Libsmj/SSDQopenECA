@@ -30,9 +30,6 @@ namespace SSDQopenECA
         private List<string> Plotcheckedprocessednamelist = new List<string>(); //Name of Output channels for plotting
         private List<int> Plotcheckedindexlist = new List<int>();
         private int Meas;
-        private List<string> Indatadevicelist = new List<string>();
-        private List<string> Indatatypelist = new List<string>();
-        private List<string> IPchannelnamelist = new List<string>();
         private List<string>[] IPchannelnamelist_updated = new List<string>[5];
         private bool SSDQ_started;
         private Matrix<double> submatrix;
@@ -54,9 +51,6 @@ namespace SSDQopenECA
             wdsize = ParameterForm.L;
             IPchannelnamelist_updated = Algorithm.SSDQ_config.IPchannelnamelist_updated;
             Inentrynamelist = Algorithm.SSDQ_config.Inentrynamelist_updated;
-            IPchannelnamelist = Algorithm.SSDQ_config.Indatareflist;
-            Indatadevicelist = Algorithm.SSDQ_config.Indatadevicelist;
-            Indatatypelist = Algorithm.SSDQ_config.Indatatypelist;
             Channelnameprefix = Algorithm.SSDQ_config.Channelnameprefix;
 
             Plot_started = true;

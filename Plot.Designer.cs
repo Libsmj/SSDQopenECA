@@ -28,16 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            this.ProcessedDataChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.InputDataChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.InputPlotLabel = new System.Windows.Forms.Label();
-            this.ProcessedPlotlabel = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.MeasComboBox = new System.Windows.Forms.ComboBox();
             this.AvailableMeastypebutton = new System.Windows.Forms.Button();
@@ -51,97 +41,22 @@
             this.Deselect_devices = new System.Windows.Forms.Button();
             this.AllDevicesbutton = new System.Windows.Forms.Button();
             this.DevicecheckedListBox = new System.Windows.Forms.CheckedListBox();
-            ((System.ComponentModel.ISupportInitialize)(this.ProcessedDataChart)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.InputDataChart)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.ChannelRefgroupbox.SuspendLayout();
             this.Devicesgroupbox.SuspendLayout();
             this.SuspendLayout();
             // 
-            // ProcessedDataChart
-            // 
-            this.ProcessedDataChart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            chartArea3.Name = "ChartArea1";
-            chartArea3.Position.Auto = false;
-            chartArea3.Position.Height = 100F;
-            chartArea3.Position.Width = 87F;
-            this.ProcessedDataChart.ChartAreas.Add(chartArea3);
-            legend3.Name = "Legend1";
-            this.ProcessedDataChart.Legends.Add(legend3);
-            this.ProcessedDataChart.Location = new System.Drawing.Point(366, 378);
-            this.ProcessedDataChart.Name = "ProcessedDataChart";
-            series3.BorderWidth = 3;
-            series3.ChartArea = "ChartArea1";
-            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series3.Legend = "Legend1";
-            series3.Name = "Processedseries";
-            this.ProcessedDataChart.Series.Add(series3);
-            this.ProcessedDataChart.Size = new System.Drawing.Size(977, 312);
-            this.ProcessedDataChart.TabIndex = 41;
-            this.ProcessedDataChart.Text = "Processed Data Chart";
-            // 
-            // InputDataChart
-            // 
-            this.InputDataChart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            chartArea4.Name = "ChartArea1";
-            chartArea4.Position.Auto = false;
-            chartArea4.Position.Height = 100F;
-            chartArea4.Position.Width = 87F;
-            this.InputDataChart.ChartAreas.Add(chartArea4);
-            legend4.Name = "Legend1";
-            this.InputDataChart.Legends.Add(legend4);
-            this.InputDataChart.Location = new System.Drawing.Point(366, 35);
-            this.InputDataChart.Name = "InputDataChart";
-            series4.BorderWidth = 3;
-            series4.ChartArea = "ChartArea1";
-            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series4.Legend = "Legend1";
-            series4.Name = "Inputseries";
-            this.InputDataChart.Series.Add(series4);
-            this.InputDataChart.Size = new System.Drawing.Size(977, 314);
-            this.InputDataChart.TabIndex = 42;
-            this.InputDataChart.Text = "Input Data Chart";
-            // 
-            // InputPlotLabel
-            // 
-            this.InputPlotLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.InputPlotLabel.AutoSize = true;
-            this.InputPlotLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.InputPlotLabel.Location = new System.Drawing.Point(749, 15);
-            this.InputPlotLabel.Name = "InputPlotLabel";
-            this.InputPlotLabel.Size = new System.Drawing.Size(174, 20);
-            this.InputPlotLabel.TabIndex = 43;
-            this.InputPlotLabel.Text = "Input Measurements";
-            // 
-            // ProcessedPlotlabel
-            // 
-            this.ProcessedPlotlabel.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.ProcessedPlotlabel.AutoSize = true;
-            this.ProcessedPlotlabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ProcessedPlotlabel.Location = new System.Drawing.Point(735, 355);
-            this.ProcessedPlotlabel.Name = "ProcessedPlotlabel";
-            this.ProcessedPlotlabel.Size = new System.Drawing.Size(216, 20);
-            this.ProcessedPlotlabel.TabIndex = 44;
-            this.ProcessedPlotlabel.Text = "Processed Measurements";
-            // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.InputPlotLabel);
-            this.groupBox1.Controls.Add(this.ProcessedPlotlabel);
-            this.groupBox1.Controls.Add(this.InputDataChart);
-            this.groupBox1.Controls.Add(this.ProcessedDataChart);
             this.groupBox1.Controls.Add(this.MeasComboBox);
             this.groupBox1.Controls.Add(this.AvailableMeastypebutton);
             this.groupBox1.Controls.Add(this.ChannelRefgroupbox);
             this.groupBox1.Controls.Add(this.PlotButton);
             this.groupBox1.Controls.Add(this.Devicesgroupbox);
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(3, 2);
+            this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1349, 696);
+            this.groupBox1.Size = new System.Drawing.Size(376, 696);
             this.groupBox1.TabIndex = 46;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Plot Options";
@@ -303,17 +218,14 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1357, 702);
+            this.ClientSize = new System.Drawing.Size(405, 723);
             this.Controls.Add(this.groupBox1);
             this.Name = "Plot";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Plot";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Plot_FormClosing);
             this.Load += new System.EventHandler(this.Plot_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.ProcessedDataChart)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.InputDataChart)).EndInit();
             this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.ChannelRefgroupbox.ResumeLayout(false);
             this.Devicesgroupbox.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -321,11 +233,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.DataVisualization.Charting.Chart ProcessedDataChart;
-        private System.Windows.Forms.DataVisualization.Charting.Chart InputDataChart;
-        private System.Windows.Forms.Label InputPlotLabel;
-        private System.Windows.Forms.Label ProcessedPlotlabel;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox Devicesgroupbox;
         private System.Windows.Forms.Button Deselect_devices;
