@@ -100,8 +100,6 @@ namespace HankelRobustDataEstimation
         //This change introduced for openECA implementation
         public Matrix<double> ProcessFrame(Vector <double> Current_data, int numberOfFrame)
         {
-            var csv1 = new StringBuilder();
-
             Vector<double> ctvector = Vector<double>.Build.Dense(num_channel);
             Vector<double> flag_ctvector = Vector<double>.Build.Dense(num_channel);
             Vector<double> flag_observed_ctvector = Vector<double>.Build.Dense(num_channel);

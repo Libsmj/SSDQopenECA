@@ -130,7 +130,7 @@
       <DependentUpon>FrameworkConfiguration.cs</DependentUpon>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="HankelProcessCmpx.cs" />
+    <Compile Include="HankelProcessComplex.cs" />
     <Compile Include="Helpwindow.cs">
       <SubType>Form</SubType>
     </Compile>
