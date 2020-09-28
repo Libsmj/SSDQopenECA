@@ -250,10 +250,8 @@ namespace SSDQopenECA
 
         private void StreamInputdata()
         {
-
             while (incomingDataStarted)
             {
-
                 if (InputDataChart.IsHandleCreated)
                 {
                     this.Invoke((MethodInvoker)delegate { UpdateInputgraph(); });
@@ -285,7 +283,7 @@ namespace SSDQopenECA
 
         private void StreamProcesseddata()
         {
-            while (incomingDataStarted)
+            while (incomingDataStarted && Plot_started)
             {
 
                 if (ProcessedDataChart.IsHandleCreated)
