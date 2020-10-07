@@ -1,0 +1,14 @@
+C:\Users\Jacob\Desktop\SSDQopenECA\obj\Release\SSDQopenECA.csprojAssemblyReference.cache
+C:\Users\Jacob\Desktop\SSDQopenECA\obj\Release\SSDQopenECA.AddDevices.resources
+C:\Users\Jacob\Desktop\SSDQopenECA\obj\Release\SSDQopenECA.AddMeastypes.resources
+C:\Users\Jacob\Desktop\SSDQopenECA\obj\Release\SSDQopenECA.FrameworkConfiguration.resources
+C:\Users\Jacob\Desktop\SSDQopenECA\obj\Release\SSDQopenECA.Helpwindow.resources
+C:\Users\Jacob\Desktop\SSDQopenECA\obj\Release\SSDQopenECA.Input_screen.resources
+C:\Users\Jacob\Desktop\SSDQopenECA\obj\Release\SSDQopenECA.ParameterForm.resources
+C:\Users\Jacob\Desktop\SSDQopenECA\obj\Release\SSDQopenECA.Plot.resources
+C:\Users\Jacob\Desktop\SSDQopenECA\obj\Release\SSDQopenECA.PlotFigure.resources
+C:\Users\Jacob\Desktop\SSDQopenECA\obj\Release\SSDQopenECA.RecordDataWindow.resources
+C:\Users\Jacob\Desktop\SSDQopenECA\obj\Release\SSDQopenECA.Properties.Resources.resources
+C:\Users\Jacob\Desktop\SSDQopenECA\obj\Release\SSDQopenECA.Terms.resources
+C:\Users\Jacob\Desktop\SSDQopenECA\obj\Release\SSDQopenECA.csproj.GenerateResource.cache
+C:\Users\Jacob\Desktop\SSDQopenECA\obj\Release\SSDQopenECA.csproj.CoreCompileInputs.cache

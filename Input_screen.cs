@@ -1156,7 +1156,6 @@ namespace SSDQopenECA
             else
             {
                 numberOfFrame = 0;
-                Algorithm.dataRecieved = false;
                 Savegroupbox.Enabled = false;
                 SSDQ_started = false;
                 Input_Output_mismatch = false;
