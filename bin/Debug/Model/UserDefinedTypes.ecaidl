@@ -1,0 +1,52 @@
+category GPA
+In_Data {
+    FloatingPoint Double In_Entry1
+    FloatingPoint Double In_Entry2
+    FloatingPoint Double In_Entry3
+    FloatingPoint Double In_Entry4
+    FloatingPoint Double In_Entry5
+    FloatingPoint Double In_Entry6
+    FloatingPoint Double In_Entry7
+    FloatingPoint Double In_Entry8
+    FloatingPoint Double In_Entry9
+    FloatingPoint Double In_Entry10
+    FloatingPoint Double In_Entry11
+    FloatingPoint Double In_Entry12
+    FloatingPoint Double In_Entry13
+    FloatingPoint Double In_Entry14
+    FloatingPoint Double In_Entry15
+    FloatingPoint Double In_Entry16
+    FloatingPoint Double In_Entry17
+    FloatingPoint Double In_Entry18
+    FloatingPoint Double In_Entry19
+    FloatingPoint Double In_Entry20
+    FloatingPoint Double In_Entry21
+    FloatingPoint Double In_Entry22
+}
+
+category GPA
+Out_Data {
+    FloatingPoint Double Out_Entry1
+    FloatingPoint Double Out_Entry2
+    FloatingPoint Double Out_Entry3
+    FloatingPoint Double Out_Entry4
+    FloatingPoint Double Out_Entry5
+    FloatingPoint Double Out_Entry6
+    FloatingPoint Double Out_Entry7
+    FloatingPoint Double Out_Entry8
+    FloatingPoint Double Out_Entry9
+    FloatingPoint Double Out_Entry10
+    FloatingPoint Double Out_Entry11
+    FloatingPoint Double Out_Entry12
+    FloatingPoint Double Out_Entry13
+    FloatingPoint Double Out_Entry14
+    FloatingPoint Double Out_Entry15
+    FloatingPoint Double Out_Entry16
+    FloatingPoint Double Out_Entry17
+    FloatingPoint Double Out_Entry18
+    FloatingPoint Double Out_Entry19
+    FloatingPoint Double Out_Entry20
+    FloatingPoint Double Out_Entry21
+    FloatingPoint Double Out_Entry22
+}
+
