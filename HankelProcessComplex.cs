@@ -17,11 +17,9 @@ using System.Numerics;
 using System.Linq;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Factorization;
+using MathNet.Numerics.Statistics;
 using SSDQopenECA;
 using Error_Recovery;
-
-using System.IO;
-using System.Text;
 
 namespace HankelRobustDataEstimation
 {
@@ -42,7 +40,7 @@ namespace HankelRobustDataEstimation
         private int tau_a;// = 3;
         private int tau_b;// = 30;
 
-        private double threshold;// = 0.0021;
+        private double[] threshold = new double[2];
         private double decaying_factor = 50;
         private int instant = -300;
         private int event_instant = 0;
@@ -63,8 +61,19 @@ namespace HankelRobustDataEstimation
             //Initialize each object based upon the type of measurement to facilitate simultaneous execution of SSDQ algorithm.
             window_size = ParameterForm.L;
             Hankel_k = ParameterForm.k;
-            threshold = 0.0021;
+            threshold[0] = 0.0015;
+            threshold[0] = 0.0052;
             ratio_approx_error = ParameterForm.n;
+
+
+
+
+
+
+
+
+
+
             recalculate_threshold = ParameterForm.r;
 
             tau_a = Convert.ToInt32(ParameterForm.a);
@@ -84,10 +93,11 @@ namespace HankelRobustDataEstimation
             data_updated_real[1] = Matrix<double>.Build.Dense(Convert.ToInt32(num_channel), window_size);
         }
 
+
+
         //This change introduced for openECA implementation
         public Matrix<double>[] ProcessFrame(Vector<double>[] Current_data, int numberOfFrame)
         {
-
             Vector<Complex> ctvector = Vector<Complex>.Build.Dense(num_channel);
             Vector<double> flag_ctvector = Vector<double>.Build.Dense(num_channel);
             Vector<double> flag_observed_ctvector = Vector<double>.Build.Dense(num_channel);
@@ -127,54 +137,116 @@ namespace HankelRobustDataEstimation
                 data_estimate.SetSubMatrix(0, 0, corrected);
                 data_updated.SetSubMatrix(0, 0, corrected);
 
-                Init_flag = true;           //Init_flag has been set to true here and hereafter won't enter this section of code           
+                Matrix<double> estimated_mag = Matrix_Magnitude(data_updated);
+                Matrix<Complex> estimated_ang = Matrix_Phase(data_updated);
+
+                Vector<double> std = Vector<double>.Build.Dense(num_channel);
+                for (int i = 0; i < num_channel; i++)
+                {
+                    std[i] = ArrayStatistics.StandardDeviation(estimated_mag.Row(i).ToArray());
+                }
+                threshold[0] = Math.Max(std.Max(), 0.001);
+
+                Matrix<Complex> diff = estimated_ang.SubMatrix(0, num_channel, 0, window_size - 1) - estimated_ang.SubMatrix(0, num_channel, 1, window_size - 1);
+                Matrix<double> temp = Matrix_Magnitude(diff);
+                Vector<double> mean = Vector<double>.Build.Dense(num_channel);
+                for (int i = 0; i < num_channel; i++)
+                {
+                    mean[i] = ArrayStatistics.Mean(temp.Row(i).ToArray());
+                }
+                threshold[1] = ArrayStatistics.Mean(mean.ToArray());
+
+                //Init_flag has been set to true here and hereafter won't enter this section of code
+                Init_flag = true;
+            }
+
+            // Add by Hongyun and Lin, SAP for cumulative problem 
+            if (recalculate_count == recalculate_threshold)
+            {
+                Matrix<Complex> corrected = Programe.SAP(data_estimate.SubMatrix(0, num_channel, 0, window_size), Hankel_k, 1, Math.Pow(10, -3)); //correct data
+
+                data_estimate.SetSubMatrix(0, 0, corrected);
+
+                recalculate_count = 0;
             }
 
             if (Init_flag && numberOfFrame > window_size)
             {
                 flag_trusted.SetColumn(window_size, flag_ctvector);
 
-                // Hankel matrix of past L observations
-                Matrix<Complex> Hankel_matrix = ExtensionFunction.ExtensionFunction.Hankel(data_estimate.SubMatrix(0, num_channel, 0, window_size), Hankel_k);
+                // Mag data and angle data seperately
+                Matrix<double> estimated_mag = Matrix_Magnitude(data_estimate);
+                Matrix<Complex> estimated_ang = Matrix_Phase(data_estimate);
 
-                // the long vectors with past L-1 and current observations
-                Matrix<Complex> ct_kvectors = ExtensionFunction.ExtensionFunction.Hankel(data_estimate.SubMatrix(0, num_channel, window_size - Hankel_k + 1, Hankel_k), Hankel_k);
+                // Hankel matrix of past L observations
+                Matrix<double> Hankel_matrix_mag = ExtensionFunction.ExtensionFunction.Hankel(estimated_mag.SubMatrix(0, num_channel, 0, window_size), Hankel_k);
+                Matrix<Complex> Hankel_matrix_ang = ExtensionFunction.ExtensionFunction.Hankel(estimated_ang.SubMatrix(0, num_channel, 0, window_size), Hankel_k);
+
+                Matrix<double> ct_kvectors_mag = ExtensionFunction.ExtensionFunction.Hankel(estimated_mag.SubMatrix(0, num_channel, window_size - Hankel_k + 1, Hankel_k), Hankel_k);
+                Matrix<Complex> ct_kvectors_ang = ExtensionFunction.ExtensionFunction.Hankel(estimated_ang.SubMatrix(0, num_channel, window_size - Hankel_k + 1, Hankel_k), Hankel_k);
+
                 double[] flag_ct_kvectors = (flag_trusted.SubMatrix(0, num_channel, window_size - Hankel_k + 1, Hankel_k)).ToColumnMajorArray();
+                Matrix<double> Diag_kvectors = Matrix<double>.Build.DenseOfDiagonalArray(flag_ct_kvectors);
 
                 // Step 3: conduct SVD, estimate the rank and underlying subspace
-                Matrix<Complex> Diag_kvectors = Matrix<double>.Build.DenseOfDiagonalArray(flag_ct_kvectors).ToComplex();
-
+                // Magnitude
                 // estimate the underlying subspace basis
-                Svd<Complex> svd = Hankel_matrix.Svd();
-                Vector<double> singularvalue = svd.S.Real();
-                Matrix<Complex> columnspace = svd.U;
+                Svd<double> svd_mag = Hankel_matrix_mag.Svd();
+                Vector<double> singularvalue = svd_mag.S;
+                Matrix<double> U_mag = svd_mag.U;
 
                 int L = singularvalue.Count;
-                int rank = 1;
+                int rank_mag = 1;
 
                 // estimate the rank of the underlying subspace 
                 for (int i = 1; i < L; i++)
                 {
                     if (singularvalue[i] >= 0.01 * singularvalue[0])
                     {
-                        rank++;
+                        rank_mag++;
                     }
                     else { break; }
                 }
                 // only keep the r basis
-                columnspace = columnspace.SubMatrix(0, num_channel * Hankel_k, 0, rank);
-
+                U_mag = U_mag.SubMatrix(0, num_channel * Hankel_k, 0, rank_mag);
 
                 // Step 4: compute the coefficient and estimate the incoming measurements
-                Matrix<Complex> coeff = (columnspace.ConjugateTransposeThisAndMultiply(Diag_kvectors) * columnspace).Inverse() *
-                    (columnspace.ConjugateTransposeThisAndMultiply(Diag_kvectors) * ct_kvectors);
-                Matrix<Complex> estimated_ctvector = columnspace.SubMatrix(num_channel * (Hankel_k - 1), num_channel, 0, rank) * coeff;
+                Matrix<double> coeff_mag = (U_mag.TransposeThisAndMultiply(Diag_kvectors) * U_mag).Inverse() *
+                    U_mag.TransposeThisAndMultiply(Diag_kvectors) * ct_kvectors_mag;
+                Matrix<double> estimated_ctvector_mag = U_mag.SubMatrix(num_channel * (Hankel_k - 1), num_channel, 0, rank_mag) * coeff_mag;
+
+
+                // Phase
+                Svd<Complex> svd_ang = Hankel_matrix_ang.Svd();
+                singularvalue = svd_ang.S.Real();
+                Matrix<Complex> U_ang = svd_ang.U;
+
+                L = singularvalue.Count;
+                int rank_ang = 1;
+
+                // estimate the rank of the underlying subspace 
+                for (int i = 1; i < L; i++)
+                {
+                    if (singularvalue[i] >= 0.01 * singularvalue[0])
+                    {
+                        rank_ang++;
+                    }
+                    else { break; }
+                }
+                // only keep the r basis
+                U_ang = U_ang.SubMatrix(0, num_channel * Hankel_k, 0, rank_ang);
+
+                Matrix<Complex> coeff_ang = (U_ang.ConjugateTransposeThisAndMultiply(Diag_kvectors.ToComplex()) * U_ang).Inverse() *
+                    U_ang.ConjugateTransposeThisAndMultiply(Diag_kvectors.ToComplex()) * ct_kvectors_ang;
+                Matrix<Complex> estimated_ctvector_ang = U_ang.SubMatrix(num_channel * (Hankel_k - 1), num_channel, 0, rank_ang) * coeff_ang;
+                estimated_ctvector_ang = Matrix_Phase(estimated_ctvector_ang);
 
 
                 // Step 5: determine the trusted and untrusted entries, and re-estimate the untrusted entries
                 for (int i = 0; i < num_channel; i++)
                 {
-                    if (Complex.Abs(estimated_ctvector.At(i, 0) - ctvector[i]) <= tau_t * threshold)
+                    if (Math.Abs(estimated_ctvector_mag.At(i, 0) - ctvector[i].Magnitude) <= tau_t * threshold[0] &&
+                        Complex.Abs(estimated_ctvector_ang.At(i, 0) - (ctvector[i] / (ctvector[i].Magnitude + double.Epsilon))) <= tau_t * threshold[1])
                     {
                         flag_ct_kvectors[i + (Hankel_k - 1) * num_channel] = 1;
                         flag_ctvector[i] = 1;
@@ -188,16 +260,22 @@ namespace HankelRobustDataEstimation
                 // re-estimate the untrusted entries
                 if (num_untrusted > 0)
                 {
-                    Diag_kvectors = Matrix<double>.Build.DenseOfDiagonalArray(flag_ct_kvectors).ToComplex();
-                    coeff = (columnspace.ConjugateTransposeThisAndMultiply(Diag_kvectors) * columnspace).Inverse() *
-                        (columnspace.ConjugateTransposeThisAndMultiply(Diag_kvectors) * ct_kvectors);
-                    estimated_ctvector = columnspace.SubMatrix(num_channel * (Hankel_k - 1), num_channel, 0, rank) * coeff;
+                    Diag_kvectors = Matrix<double>.Build.DenseOfDiagonalArray(flag_ct_kvectors);
+
+                    coeff_mag = (U_mag.Transpose() * Diag_kvectors * U_mag).Inverse() *
+                        U_mag.Transpose() * Diag_kvectors * ct_kvectors_mag;
+                    estimated_ctvector_mag = U_mag.SubMatrix(num_channel * (Hankel_k - 1), num_channel, 0, rank_mag) * coeff_mag;
+
+                    coeff_ang = coeff_ang = (U_ang.ConjugateTransposeThisAndMultiply(Diag_kvectors.ToComplex()) * U_ang).Inverse() *
+                        U_ang.ConjugateTransposeThisAndMultiply(Diag_kvectors.ToComplex()) * ct_kvectors_ang;
+                    estimated_ctvector_ang = U_ang.SubMatrix(num_channel * (Hankel_k - 1), num_channel, 0, rank_ang) * coeff_ang;
+                    estimated_ctvector_ang = Matrix_Phase(estimated_ctvector_ang);
 
                     for (int i = 0; i < num_channel; i++)
                     {
                         if (flag_ctvector[i] == 0)
                         {
-                            ctvector[i] = estimated_ctvector.At(i, 0);
+                            ctvector[i] = estimated_ctvector_mag.At(i, 0) * estimated_ctvector_ang.At(i, 0);
                             flag_ctvector[i] = 0.1;
                         }
                     }
@@ -206,8 +284,8 @@ namespace HankelRobustDataEstimation
                 flag_trusted.SetColumn(window_size, flag_ctvector);
 
 
-                // Step 6: update the matrices         
-                // update the data_estimate, data_observed, flag_trusted
+                // Step 6: update the matrices
+                // update the data_estimate, data_observed, flag_trusted, flag_observed
                 data_estimate.SetSubMatrix(0, 0, data_estimate.SubMatrix(0, num_channel, 1, window_size));
                 data_observed.SetSubMatrix(0, 0, data_observed.SubMatrix(0, num_channel, 1, window_size));
                 flag_trusted.SetSubMatrix(0, 0, flag_trusted.SubMatrix(0, num_channel, 1, window_size));
@@ -258,7 +336,7 @@ namespace HankelRobustDataEstimation
                 {
                     flag_event--;
                     Matrix<Complex> window_data = data_observed.SubMatrix(0, num_channel, 0, window_size);
-                    Hankel_matrix = ExtensionFunction.ExtensionFunction.Hankel(window_data, Hankel_k);
+                    Matrix<Complex> Hankel_matrix = ExtensionFunction.ExtensionFunction.Hankel(window_data, Hankel_k);
                     double approx_error = Math.Sqrt(1 - Math.Pow(Hankel_matrix.L2Norm(), 2) / Math.Pow(Hankel_matrix.FrobeniusNorm(), 2));
                     double rand_approx_error = 0;
                     for (int i = 1; i <= 500; i++)
@@ -295,17 +373,6 @@ namespace HankelRobustDataEstimation
                 flag_observed.SetSubMatrix(0, 0, flag_observed.SubMatrix(0, num_channel, 1, window_size));
             }
 
-            // Add by Hongyun and Lin, SAP for cumulative problem 
-            if (recalculate_count == recalculate_threshold)
-            {
-                Matrix<Complex> corrected = Programe.SAP(data_estimate.SubMatrix(0, num_channel, 0, window_size), Hankel_k, 1, Math.Pow(10, -3)); //correct data
-
-                data_estimate.SetSubMatrix(0, 0, corrected);
-
-                recalculate_count = 0;
-            }
-
-
             if (Init_flag) //this line add by Hongyun and Lin, make sure does not oupt anything before correct the first window data
             {
                 if (flag_output == 0)
@@ -335,6 +402,17 @@ namespace HankelRobustDataEstimation
             }
 
             return data_updated_real;
+        }
+
+
+        private static Matrix<double> Matrix_Magnitude(Matrix<Complex> X)
+        {
+            return (X.Real().PointwisePower(2) + X.Imaginary().PointwisePower(2)).PointwisePower(0.5);
+        }
+
+        private static Matrix<Complex> Matrix_Phase(Matrix<Complex> X)
+        {
+            return X.PointwiseDivide((Matrix_Magnitude(X) + double.Epsilon).ToComplex());
         }
     }
 }

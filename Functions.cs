@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Threading;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 
@@ -17,10 +16,13 @@ namespace Error_Recovery
 {
     class Programe
     {
-        public static Matrix<double> SAP(Matrix<double> x_p, int n1, int r_true, double eps)
+        public static Matrix<double> SAP(Matrix<double> x_p, int n1, int true_rank, double eps)
         {
             int n_row = x_p.RowCount; // get row count which is number of channels
             int n_col = x_p.ColumnCount;
+            int n2 = n_col - n1 + 1;
+            double eta = 0.5 * Math.Sqrt(n1 * n2);
+            true_rank = Math.Min(true_rank, n2 - 1);
 
             Matrix<double> omega = Matrix<double>.Build.Dense(n_row, n_col);
             for (int i = 0; i < n_row; i++)   //omega = (x_p~=0);
@@ -47,21 +49,25 @@ namespace Error_Recovery
             Matrix<double> diag_result = Matrix<double>.Build.Dense(p.RowCount, p.RowCount);
             diag_result.SetDiagonal(p.Column(0).PointwisePower(-1));
 
-            Matrix<double> W = F_Hankel(diag_result * x_p, n1);         //Initialize W
+            Vector<double> repetition_num = F_repetition_num(n1, n2);
 
-            int r = 1;
-            while (r <= r_true)
+            Matrix<double> w = diag_result * x_p;
+
+            int r = 0;
+            while (r < true_rank)
             {
+                Matrix<double> W = F_Hankel(w, n1); //W = F_Hankel(diag(1./p)*x_p,n1); % initialize W
+
                 Matrix<double>[] Result = F_svds(W, 2);    //[~,S,~] = F_svdsecon(W,r+1);
 
                 Matrix<double> S = Result[1];
                 Vector<double> s = S.Diagonal();
 
-                double T = 2 * (s[r - 1] + s[r]) / (Math.Sqrt(n_row * n_col)); //T = 1*(s(r)+s(r+1))/(sqrt(n_row*n_col));
+                double T = 2 * (s[r] + s[r + 1]) / eta;
 
-                for (int c = 1; c <= 50; c++)
+                for (int c = 1; c <= 200; c++)
                 {
-                    Matrix<double> g = omega.PointwiseMultiply((x_p - x));
+                    Matrix<double> g = omega.PointwiseMultiply(x_p - x);
 
                     Matrix<double> e = g.Clone();   //e = g.*(abs(g)>T);
                     for (int i = 0; i < e.RowCount; i++)
@@ -76,25 +82,27 @@ namespace Error_Recovery
                     }
 
                     Matrix<double> x_pre = x.Clone();
-                    W = F_Hankel(x + diag_result * (g - e), n1);   //Construct the Hankel matrix
-                    
+
+                    w = x + diag_result * (g - e);
+
+                    W = F_Hankel(w, n1);   //Construct the Hankel matrix
+
                     Result = F_svds(W, 7);  //Compute the largest r+1 singular value components
-                    Matrix<double> U = Result[0].SubMatrix(0, Result[0].RowCount, 0, r);
-                    S = Result[1].SubMatrix(0, r, 0, r);
-                    Matrix<double> V = Result[2].SubMatrix(0, Result[2].RowCount, 0, r);
+                    Matrix<double> U = Result[0].SubMatrix(0, Result[0].RowCount, 0, r + 2);
+                    S = Result[1].SubMatrix(0, r + 2, 0, r + 2);
+                    Matrix<double> V = Result[2].SubMatrix(0, Result[2].RowCount, 0, r + 2);
 
-                    Matrix<double> L = U * S * V.Transpose();
                     s = Result[1].Diagonal();
-                    x = F_Hankel_inv(L, n_row);  //Hankel pseudoinverse Operator
 
-                    double T_pre = T;
-                    T = 2 * ((Math.Pow(0.8, c) * s[r - 1] + s[r]) / Math.Sqrt(n_row * n_col)); //T = ((0.8) ^ c * s(r) + s(r + 1)) / (sqrt(ch_n * n));
-                    if ((x - x_pre).FrobeniusNorm() / x_pre.FrobeniusNorm() < Math.Pow(10, -6) || Math.Abs(T - T_pre) < eps)
+                    x = F_Hankel_inv(U, S, V, r + 1, n_row, repetition_num);
+
+                    T = (Math.Pow(0.9, c) * s[r] + s[r + 1]) / eta;
+                    if ((x - x_pre).FrobeniusNorm() / x_pre.FrobeniusNorm() < eps)
                     {
                         break;
                     }
                 }
-                if ((s[r] / Math.Sqrt(n_row * n_col)) < eps)
+                if (s[r + 1] / (2 * eta) < eps)
                 {
                     return x;
                 }
@@ -103,12 +111,15 @@ namespace Error_Recovery
             return x;
         }
 
-        public static Matrix<Complex> SAP(Matrix<Complex> x_p, int n1, int r_true, double eps)
+        public static Matrix<Complex> SAP(Matrix<Complex> x_p, int n1, int true_rank, double eps)
         {
             int n_row = x_p.RowCount; // get row count which is number of channels
             int n_col = x_p.ColumnCount;
+            int n2 = n_col - n1 + 1;
+            double eta = 0.5 * Math.Sqrt(n1 * n2);
+            true_rank = Math.Min(true_rank, n2 - 1);
 
-            Matrix<double> omega = Matrix<double>.Build.Dense(n_row, n_col);
+            Matrix<Complex> omega = Matrix<Complex>.Build.Dense(n_row, n_col);
             for (int i = 0; i < n_row; i++)   //omega = (x_p~=0);
             {
                 for (int j = 0; j < n_col; j++)
@@ -125,29 +136,33 @@ namespace Error_Recovery
             }
 
             //This equal to build a matrix calcuate the rate of how many times 1 appears in every row
-            Matrix<double> ones = Matrix<double>.Build.Dense(n_col, 1, 1);
-            Matrix<double> p = omega * ones / n_col;
+            Matrix<Complex> ones = Matrix<Complex>.Build.Dense(n_col, 1, 1);
+            Matrix<Complex> p = omega * ones / n_col;
 
-            Matrix<Complex> x = Matrix<Complex>.Build.Dense(n_row, n_col); // Create a n_row*n_col Matrix with all 0
+            Matrix<Complex> x = Matrix<Complex>.Build.Dense(n_row, n_col); //Create a n_row*n_col Matrix with all 0
 
-            Matrix<double> diag_result = Matrix<double>.Build.Dense(p.RowCount, p.RowCount);
+            Matrix<Complex> diag_result = Matrix<Complex>.Build.Dense(p.RowCount, p.RowCount);
             diag_result.SetDiagonal(p.Column(0).PointwisePower(-1));
 
-            Matrix<Complex> W = F_Hankel(diag_result.ToComplex() * x_p, n1);         //Initialize W
+            Vector<double> repetition_num = F_repetition_num(n1, n2);
 
-            int r = 1;
-            while (r <= r_true)
+            Matrix<Complex> w = diag_result * x_p;
+
+            int r = 0;
+            while (r < true_rank)
             {
+                Matrix<Complex> W = F_Hankel(w, n1); //W = F_Hankel(diag(1./p)*x_p,n1); % initialize W
+
                 Matrix<Complex>[] Result = F_svds(W, 2);    //[~,S,~] = F_svdsecon(W,r+1);
 
                 Matrix<double> S = Result[1].Real();
                 Vector<double> s = S.Diagonal();
 
-                double T = 2 * (s[r - 1] + s[r]) / (Math.Sqrt(n_row * n_col));
+                double T = 2 * (s[r] + s[r + 1]) / eta;
 
-                for (int c = 1; c <= 50; c++)
+                for (int c = 1; c <= 200; c++)
                 {
-                    Matrix<Complex> g = omega.ToComplex().PointwiseMultiply(x_p - x);
+                    Matrix<Complex> g = omega.PointwiseMultiply(x_p - x);
 
                     Matrix<Complex> e = g.Clone();   //e = g.*(abs(g)>T);
                     for (int i = 0; i < e.RowCount; i++)
@@ -162,27 +177,27 @@ namespace Error_Recovery
                     }
 
                     Matrix<Complex> x_pre = x.Clone();
-                    W = F_Hankel(x + diag_result.ToComplex() * (g - e), n1);   //Construct the Hankel matrix
-                    //W = F_Hankel(x + (diag_result * 1/2).ToComplex() * (g - e), n1);   //Construct the Hankel matrix
+
+                    w = x + diag_result * (g - e);
+
+                    W = F_Hankel(w, n1);   //Construct the Hankel matrix
 
                     Result = F_svds(W, 7);  //Compute the largest r+1 singular value components
-                    Matrix<Complex> U = Result[0].SubMatrix(0, Result[0].RowCount, 0, r);
-                    S = Result[1].Real().SubMatrix(0, r, 0, r);
-                    Matrix<Complex> V = Result[2].SubMatrix(0, Result[2].RowCount, 0, r);
+                    Matrix<Complex> U = Result[0].SubMatrix(0, Result[0].RowCount, 0, r + 2);
+                    S = Result[1].Real().SubMatrix(0, r + 2, 0, r + 2);
+                    Matrix<Complex> V = Result[2].SubMatrix(0, Result[2].RowCount, 0, r + 2);
 
-                    Matrix<Complex> L = U * S.ToComplex() * V.ConjugateTranspose();
                     s = Result[1].Real().Diagonal();
-                    x = F_Hankel_inv(L, n_row);  //Hankel pseudoinverse Operator
 
-                    double T_pre = T;
-                    T = 2 * ((Math.Pow(0.8, c) * s[r - 1] + s[r]) / Math.Sqrt(n_row * n_col));
+                    x = F_Hankel_inv(U, S, V, r + 1, n_row, repetition_num);
 
-                    if ((x - x_pre).FrobeniusNorm() / x_pre.FrobeniusNorm() < Math.Pow(10, -6) || Math.Abs(T - T_pre) < eps)
+                    T = (Math.Pow(0.9, c) * s[r] + s[r + 1]) / eta;
+                    if ((x - x_pre).FrobeniusNorm() / x_pre.FrobeniusNorm() < eps)
                     {
                         break;
                     }
                 }
-                if ((s[r] / Math.Sqrt(n_row * n_col)) < eps)
+                if (s[r + 1] / (2 * eta) < eps)
                 {
                     return x;
                 }
@@ -205,18 +220,21 @@ namespace Error_Recovery
             return L;
         }
 
-        static Matrix<double> F_Hankel_inv(Matrix<double> L, int n_ori_row)
+        static Matrix<double> F_Hankel_inv(Matrix<double> U, Matrix<double> S, Matrix<double> V, int r, int n_c, Vector<double> repetition_num)
         {
-            int n_row = L.RowCount; // get row 
-            int n2 = L.ColumnCount; // get column
-            int n1 = n_row / n_ori_row;  //the number of observation Vectors in each column
+            int n1 = U.RowCount / n_c;
+            int n2 = V.RowCount;
+            Matrix<double> x = Matrix<double>.Build.Dense(n_c, n1 + n2 - 1);
 
-            //Multi-Threading -------------------------------------------
-            MP_slice<double> operation = new MP_slice<double>(L, n_ori_row);
-            operation.Perform();
-            Matrix<double> x = operation.x;
+            for (int i = 0; i < r; i++)
+            {
+                Matrix<double> Ut = Reshape(U.Column(i), n_c, n1);
 
-            Vector<double> repetition_num = F_repetition_num(n1, n2);
+                for (int j = 0; j < n_c; j++)
+                {
+                    x.SetRow(j, x.Row(j) + S.At(i, i) * Conv(Ut.Row(j), V.Column(i).Conjugate()));
+                }
+            }
 
             Matrix<double> diag_result = Matrix<double>.Build.DenseDiagonal(repetition_num.Count, 0);
             diag_result.SetDiagonal(repetition_num.PointwisePower(-1));
@@ -224,54 +242,26 @@ namespace Error_Recovery
             return x * diag_result;
         }
 
-        static Matrix<Complex> F_Hankel_inv(Matrix<Complex> L, int n_ori_row)
+        static Matrix<Complex> F_Hankel_inv(Matrix<Complex> U, Matrix<double> S, Matrix<Complex> V, int r, int n_c, Vector<double> repetition_num)
         {
-            int n_row = L.RowCount; // get row 
-            int n2 = L.ColumnCount; // get column
-            int n1 = n_row / n_ori_row;  //the number of observation Vectors in each column
+            int n1 = U.RowCount / n_c;
+            int n2 = V.RowCount;
+            Matrix<Complex> x = Matrix<Complex>.Build.Dense(n_c, n1 + n2 - 1);
 
-            //Multi-Threading -------------------------------------------
-            MP_slice<Complex> operation = new MP_slice<Complex>(L, n_ori_row);
-            operation.Perform();
-            Matrix<Complex> x = operation.x;
+            for (int i = 0; i < r; i++)
+            {
+                Matrix<Complex> Ut = Reshape(U.Column(i), n_c, n1);
 
-            Vector<double> repetition_num = F_repetition_num(n1, n2);
+                for (int j = 0; j < n_c; j++)
+                {
+                    x.SetRow(j, x.Row(j) + S.At(i, i) * Conv(Ut.Row(j), V.Column(i).Conjugate()));
+                }
+            }
 
             Matrix<double> diag_result = Matrix<double>.Build.DenseDiagonal(repetition_num.Count, 0);
             diag_result.SetDiagonal(repetition_num.PointwisePower(-1));
 
             return x * diag_result.ToComplex();
-        }
-
-        static Vector<double> F_repetition_num(int n1, int n2)
-        {
-            if (n1 > n2)
-            {
-                int temp = n1;
-                n1 = n2;
-                n2 = temp;
-            }
-
-            int n = n1 + n2 - 1;
-
-            Vector<double> num = Vector<double>.Build.Dense(n);
-
-            for (int a = 1; a < n + 1; a++)
-            {
-                if (a <= n1)
-                {
-                    num[a - 1] = a;
-                }
-                else if (a >= n2)
-                {
-                    num[a - 1] = n2 + n1 - a;
-                }
-                else
-                {
-                    num[a - 1] = n1;
-                }
-            }
-            return num;
         }
 
         static Vector<T> Slice<T>(Matrix<T> M, int start, int end) where T : struct, IEquatable<T>, IFormattable // start ,end is matlab start number 
@@ -318,63 +308,81 @@ namespace Error_Recovery
 
             return result;
         }
-    }
-    
-    class MP_slice<T> where T : struct, IEquatable<T>, IFormattable
-    {
 
-        public Matrix<T> x;
-        readonly Matrix<T> L;
-        readonly int n1;
-        readonly int n2;
-        readonly int n_row;
-        readonly int n_ori_row;
-
-        public MP_slice(Matrix<T> L1, int na)
+        static Vector<double> Conv(Vector<double> u, Vector<double> v)
         {
-            L = L1;
-            n_ori_row = na;
-            n_row = L.RowCount;
-            n2 = L.ColumnCount;
-            n1 = n_row / n_ori_row;
-
-            x = Matrix<T>.Build.Dense(n_ori_row, n1 + n2 - 1);
-        }
-
-        void Slices(object data)
-        {
-            int i = (int)data;
-
-            for (int r = 0; r < n1; r++)
+            Vector<double> w = Vector<double>.Build.Dense(u.Count + v.Count - 1, 0);
+            for (int i = 0; i < u.Count; i++)
             {
-                if ((i + 1) + 1 - (r + 1) > 0 && (i + 1) + 1 - (r + 1) <= n2)
+                for (int j = 0; j < v.Count; j++)
                 {
-                    int start = n_ori_row * (r) + 1;
-                    int end = n_ori_row * (r + 1);
-                    int length = end - start;
-                    x.SetColumn(i,
-                        x.Column(i) + L.Column((i - r),     //column 
-                        n_ori_row * (r),                    //row n_ori_row * (r) + 1
-                        length + 1));                       //length
+                    w[i + j] += u[i] * v[j];
                 }
             }
+            return w;
         }
 
-        public void Perform()
+        static Vector<Complex> Conv(Vector<Complex> u, Vector<Complex> v)
         {
-            Thread[] allt = new Thread[n1 + n2 - 1];
-
-            for (int i = 0; i < n1 + n2 - 1; i++)
+            Vector<Complex> w = Vector<Complex>.Build.Dense(u.Count + v.Count - 1, 0);
+            for (int i = 0; i < u.Count; i++)
             {
-                Thread onestep = new Thread(Slices);
-                onestep.Start(i);
-                allt[i] = onestep;
+                for (int j = 0; j < v.Count; j++)
+                {
+                    w[i + j] += u[i] * v[j];
+                }
+            }
+            return w;
+        }
+
+        static Matrix<T> Reshape<T>(Vector<T> x, int row, int col) where T : struct, IEquatable<T>, IFormattable
+        {
+            Matrix<T> y = Matrix<T>.Build.Dense(row, col);
+
+            int n = 0;
+            int m = 0;
+            for (int i = 0; i < x.Count; i++)
+            {
+                y[n++, m] = x[i];
+                if (n == row)
+                {
+                    n = 0;
+                    m++;
+                }
             }
 
-            for (int i = 0; i < n1 + n2 - 1; i++)
+            return y;
+        }
+
+        static Vector<double> F_repetition_num(int n1, int n2)
+        {
+            if (n1 > n2)
             {
-                allt[i].Join();
+                int temp = n1;
+                n1 = n2;
+                n2 = temp;
             }
+
+            int n = n1 + n2 - 1;
+
+            Vector<double> num = Vector<double>.Build.Dense(n);
+
+            for (int a = 1; a < n + 1; a++)
+            {
+                if (a <= n1)
+                {
+                    num[a - 1] = a;
+                }
+                else if (a >= n2)
+                {
+                    num[a - 1] = n2 + n1 - a;
+                }
+                else
+                {
+                    num[a - 1] = n1;
+                }
+            }
+            return num;
         }
     }
 }
