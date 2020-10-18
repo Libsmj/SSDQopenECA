@@ -25,7 +25,7 @@ namespace SSDQopenECA
         public static double    n = 1.2;
         public static double    a = 3;
         public static double    b = 30;
-        public static int       r = 1800;
+        public static int       r = 600;
 
         public static bool paramsavailable = false;
 
