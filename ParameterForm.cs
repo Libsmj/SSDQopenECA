@@ -23,7 +23,7 @@ namespace SSDQopenECA
         public static double    ea = 2;
         public static int       k = 6;
         public static double    n = 1.2;
-        public static double    a = 3;
+        public static double    a = 6;
         public static double    b = 30;
         public static int       r = 600;
 

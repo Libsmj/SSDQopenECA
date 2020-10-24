@@ -37,7 +37,7 @@ namespace HankelRobustDataEstimation
         private int window_size;//= 10;
         private int Hankel_k;// = 6;
         private double ratio_approx_error;// = 1.2;
-        private int tau_a;// = 3;
+        private int tau_a;// = 6;
         private int tau_b;// = 30;
 
         private double[] threshold = new double[2];
@@ -108,6 +108,7 @@ namespace HankelRobustDataEstimation
             // Step 1: get the incoming data
             for (int i = 0; i < num_channel; i++)
             {
+                Console.WriteLine(Current_data[0][i] + " " + Current_data[1][i]);
                 ctvector[i] = Complex.FromPolarCoordinates(Current_data[0][i], Current_data[1][i]);
                 if (ctvector[i].Magnitude > double.Epsilon)
                 {

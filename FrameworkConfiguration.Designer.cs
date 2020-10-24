@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrameworkConfiguration));
             this.EPRIpictureBox = new System.Windows.Forms.PictureBox();
             this.Heading = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -186,6 +187,7 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.Heading);
             this.Controls.Add(this.EPRIpictureBox);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrameworkConfiguration";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FrameworkConfiguration";

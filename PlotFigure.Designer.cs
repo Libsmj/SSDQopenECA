@@ -34,6 +34,7 @@
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PlotFigure));
             this.InputPlotLabel = new System.Windows.Forms.Label();
             this.ProcessedPlotlabel = new System.Windows.Forms.Label();
             this.InputDataChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -118,6 +119,7 @@
             this.Controls.Add(this.ProcessedPlotlabel);
             this.Controls.Add(this.InputDataChart);
             this.Controls.Add(this.ProcessedDataChart);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "PlotFigure";
             this.Text = "Figure";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Plot_FormClosing);

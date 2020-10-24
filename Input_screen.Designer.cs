@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Input_screen));
             this.Heading = new System.Windows.Forms.Label();
             this.InputChannelList = new System.Windows.Forms.CheckedListBox();
             this.Create_Framework_button = new System.Windows.Forms.Button();
@@ -667,6 +668,7 @@
             this.Controls.Add(this.EPRIpictureBox);
             this.Controls.Add(this.MeasurementBox);
             this.Controls.Add(this.Heading);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Input_screen";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SSDQ openECA Configuration";

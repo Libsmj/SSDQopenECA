@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddDevices));
             this.DeviceCheckList = new System.Windows.Forms.CheckedListBox();
             this.Adddevicesgroupbox = new System.Windows.Forms.GroupBox();
             this.Adddevices_button = new System.Windows.Forms.Button();
@@ -102,6 +103,7 @@
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(462, 390);
             this.Controls.Add(this.Adddevicesgroupbox);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "AddDevices";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Add Devices";

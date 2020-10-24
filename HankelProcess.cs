@@ -37,7 +37,7 @@ namespace HankelRobustDataEstimation
         private int window_size;//= 10;
         private int Hankel_k;// = 6;
         private double ratio_approx_error;// = 1.2;
-        private int tau_a;// = 3;
+        private int tau_a;// = 6;
         private int tau_b;// = 30;
 
         private double threshold;// = 0.0021;
@@ -135,12 +135,12 @@ namespace HankelRobustDataEstimation
                 data_estimate.SetSubMatrix(0, 0, corrected);
                 data_updated.SetSubMatrix(0, 0, corrected);
 
-                Vector<double> std = Vector<double>.Build.Dense(num_channel);
-                for (int i = 0; i < num_channel; i++)
-                {
-                    std[i] = ArrayStatistics.StandardDeviation(data_updated.Row(i).ToArray());
-                }
-                threshold = Math.Max(std.Max(), 0.001) / 1.5;
+                //Vector<double> std = Vector<double>.Build.Dense(num_channel);
+                //for (int i = 0; i < num_channel; i++)
+                //{
+                //    std[i] = ArrayStatistics.StandardDeviation(data_updated.Row(i).ToArray());
+                //}
+                //threshold = Math.Max(std.Max(), 0.001) / 1.5;
 
                 //Init_flag has been set to true here and hereafter won't enter this section of code
                 Init_flag = true;

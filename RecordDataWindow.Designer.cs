@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RecordDataWindow));
             this.RecordDataBox = new System.Windows.Forms.GroupBox();
             this.CSVgroupBox = new System.Windows.Forms.GroupBox();
             this.Saveasbutton = new System.Windows.Forms.Button();
@@ -331,6 +332,7 @@
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(893, 659);
             this.Controls.Add(this.RecordDataBox);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "RecordDataWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Record Data";

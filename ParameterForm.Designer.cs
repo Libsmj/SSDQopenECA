@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ParameterForm));
             this.ParameterBox = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
             this.ParamtextBox5 = new System.Windows.Forms.TextBox();
@@ -253,6 +254,7 @@
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(674, 400);
             this.Controls.Add(this.ParameterBox);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ParameterForm";
             this.Text = "Parameter Settings";
             this.Load += new System.EventHandler(this.ParameterForm_Load);
