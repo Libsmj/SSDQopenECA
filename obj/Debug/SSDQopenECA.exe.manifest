@@ -43,6 +43,18 @@
     </dependentAssembly>
   </dependency>
   <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Antlr3.Runtime.dll" size="103424">
+      <assemblyIdentity name="Antlr3.Runtime" version="3.5.0.2" publicKeyToken="EB42632606E9261F" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>qgYkxzh0dor1kmBWi5G6jrfJ6lu0vbPz53Z7YcjQ/u4=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ECAClientFramework.dll" size="417280">
       <assemblyIdentity name="ECAClientFramework" version="1.0.4.0" language="neutral" processorArchitecture="msil" />
       <hash>
@@ -103,6 +115,18 @@
     </dependentAssembly>
   </dependency>
   <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ExpressionEvaluator.dll" size="501248">
+      <assemblyIdentity name="ExpressionEvaluator" version="2.0.4.0" publicKeyToken="90D9F15D622E2348" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>OmVhNGUkfZTbT3gIh5j/ayty9ETyxQTOzwdb7kxbCzM=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="GSF.Communication.dll" size="163936">
       <assemblyIdentity name="GSF.Communication" version="2.2.63.0" language="neutral" processorArchitecture="msil" />
       <hash>
@@ -123,6 +147,42 @@
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
         <dsig:DigestValue>bwhkrry04CV560W3CuUPtKuq3FOHocpiuOg469j6ExM=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="GSF.PhasorProtocols.dll" size="350720">
+      <assemblyIdentity name="GSF.PhasorProtocols" version="2.3.4.0" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>6+PZNySYELKdeyz23ttJFIhzXiPW7CAyVoqdhL3Sqa0=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="GSF.Security.dll" size="73312">
+      <assemblyIdentity name="GSF.Security" version="2.2.63.0" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>SgcjklYEx1EmOGanfpd0KgumCybqU9bphTi4ZD1ENsY=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="GSF.ServiceProcess.dll" size="139360">
+      <assemblyIdentity name="GSF.ServiceProcess" version="2.2.63.0" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>DcIEOKzpnaVvQr7A9V89+uSeYc1E7JAQZ6pR4Dit4aA=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -151,14 +211,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SSDQopenECA.exe" size="922056">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SSDQopenECA.exe" size="923592">
       <assemblyIdentity name="SSDQopenECA" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>vbJ9FIIGeYdmyyW+wUYdtuSW19kdG7Nix9RUasbGleo=</dsig:DigestValue>
+        <dsig:DigestValue>NXUtK5gTniSwmC+P/sslxdFX2jIp1lFPx1u/ckV2lKQ=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

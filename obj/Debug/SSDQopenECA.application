@@ -7,14 +7,14 @@
     <framework targetVersion="4.7.2" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="SSDQopenECA.exe.manifest" size="11993">
+    <dependentAssembly dependencyType="install" codebase="SSDQopenECA.exe.manifest" size="15321">
       <assemblyIdentity name="SSDQopenECA.exe" version="1.0.0.1" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>kFFBcuQ3+x6Rl/5AL8klYfcMf5PhoBui/UIjA6m/r2Q=</dsig:DigestValue>
+        <dsig:DigestValue>x1LIekdcU+is6EmX/9BfIhQUm+7TSSDiOiNHyQcJb98=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

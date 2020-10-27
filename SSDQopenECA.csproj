@@ -67,14 +67,17 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ECAClientFramework">
-      <HintPath>..\..\..\..\..\..\..\Program Files\openECA\Client\ECAClientFramework.dll</HintPath>
+    <Reference Include="ECAClientFramework, Version=1.2.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Dependencies\ECAClientFramework.dll</HintPath>
     </Reference>
-    <Reference Include="ECAClientUtilities">
-      <HintPath>..\..\..\..\..\..\..\Program Files\openECA\Client\ECAClientUtilities.dll</HintPath>
+    <Reference Include="ECAClientUtilities, Version=1.2.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Dependencies\ECAClientUtilities.dll</HintPath>
     </Reference>
-    <Reference Include="ECACommonUtilities">
-      <HintPath>..\..\..\..\..\..\..\Program Files\openECA\Server\ECACommonUtilities.dll</HintPath>
+    <Reference Include="ECACommonUtilities, Version=1.2.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Dependencies\ECACommonUtilities.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.6.3.0\lib\net45\EntityFramework.dll</HintPath>
@@ -84,15 +87,26 @@
     </Reference>
     <Reference Include="GSF.Communication, Version=2.2.63.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\ECA\GSF.Communication.dll</HintPath>
+      <HintPath>Dependencies\GSF.Communication.dll</HintPath>
     </Reference>
-    <Reference Include="GSF.Core, Version=2.2.63.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="GSF.Core, Version=2.3.4.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files\openECA\Client\GSF.Core.dll</HintPath>
+      <HintPath>Dependencies\GSF.Core.dll</HintPath>
     </Reference>
-    <Reference Include="GSF.TimeSeries, Version=2.2.63.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="GSF.PhasorProtocols">
+      <HintPath>Dependencies\GSF.PhasorProtocols.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.Security, Version=2.3.4.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files\openECA\Client\GSF.TimeSeries.dll</HintPath>
+      <HintPath>Dependencies\GSF.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.ServiceProcess, Version=2.3.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Dependencies\GSF.ServiceProcess.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.TimeSeries, Version=2.3.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Dependencies\GSF.TimeSeries.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics">
       <HintPath>..\MathNet.Numerics.dll</HintPath>
@@ -271,6 +285,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Dependencies\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

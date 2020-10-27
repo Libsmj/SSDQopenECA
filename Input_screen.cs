@@ -1126,6 +1126,7 @@ namespace SSDQopenECA
             catch (SQLiteException ex)
             {
                 MessageBox.Show(ex.ToString());
+                MessageBox.Show("Try restarting the program as an administrator");
             }
         }
 

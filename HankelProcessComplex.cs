@@ -27,20 +27,23 @@ namespace HankelRobustDataEstimation
     public class HankelProcessComplex
     {
         //keep the past L estimated data and observed data
-        private Matrix<Complex>  data_estimate;         // contain the past L estimations
-        private Matrix<Complex>  data_observed;         // contains the past L raw observations        
-        private Matrix<double>   flag_trusted;          // denote whether each entry is trusted
-        private Matrix<double>   flag_observed;         // denote whether each entry is observed
-        private Matrix<Complex>  data_updated;          // data_estimate of last window size of data for all the channels(introduced for openECA implementation)
+        private Matrix<Complex> data_estimate;         // contain the past L estimations
+        private Matrix<Complex> data_observed;         // contains the past L raw observations        
+        private Matrix<double> flag_trusted;          // denote whether each entry is trusted
+        private Matrix<double> flag_observed;         // denote whether each entry is observed
+        private Matrix<Complex> data_updated;          // data_estimate of last window size of data for all the channels(introduced for openECA implementation)
         private Matrix<double>[] data_updated_real = new Matrix<double>[2];
 
-        private int window_size;//= 10;
+        private int window_size;// = 10;
         private int Hankel_k;// = 6;
+        private int event_rank = 10;
+        private double approx_error_t = 2;
         private double ratio_approx_error;// = 1.2;
         private int tau_a;// = 6;
         private int tau_b;// = 30;
 
-        private double[] threshold = new double[2];
+        private Vector<double>[] threshold = new Vector<double>[2];
+        private Vector<double> Event_channel_index;
         private double decaying_factor = 50;
         private int instant = -300;
         private int event_instant = 0;
@@ -49,9 +52,12 @@ namespace HankelRobustDataEstimation
         private int flag_event = 0;
         private int bad_data_duration = 5;
 
+        private double weight_0 = 0.10;
+        private double weight_1 = 0.15;
+
         private int flag_output = 0;
         private int recalculate_count = 0;  // for recalculate
-        private int recalculate_threshold;  //= 2000;
+        private int recalculate_threshold = 500;
         private bool Init_flag = false;     //check whether correct first window data
 
         private int num_channel;
@@ -61,18 +67,7 @@ namespace HankelRobustDataEstimation
             //Initialize each object based upon the type of measurement to facilitate simultaneous execution of SSDQ algorithm.
             window_size = ParameterForm.L;
             Hankel_k = ParameterForm.k;
-            threshold[0] = 0.0015;
-            threshold[0] = 0.0052;
             ratio_approx_error = ParameterForm.n;
-
-
-
-
-
-
-
-
-
 
             recalculate_threshold = ParameterForm.r;
 
@@ -81,6 +76,9 @@ namespace HankelRobustDataEstimation
 
             num_channel = Convert.ToInt32(Algorithm.SSDQ_config.NumChannelList[Meas]);
 
+            threshold[0] = Vector<double>.Build.Dense(num_channel);
+            threshold[1] = Vector<double>.Build.Dense(num_channel);
+
             data_estimate = Matrix<Complex>.Build.Dense(Convert.ToInt32(num_channel), window_size + 1);
             data_updated = Matrix<Complex>.Build.Dense(Convert.ToInt32(num_channel), window_size);
             data_observed = Matrix<Complex>.Build.Dense(Convert.ToInt32(num_channel), window_size + 1);
@@ -88,6 +86,7 @@ namespace HankelRobustDataEstimation
             flag_observed = Matrix<double>.Build.Dense(Convert.ToInt32(num_channel), window_size + 1);
             Init_flag = false;
             instant = -300;
+            Event_channel_index = Vector<double>.Build.Dense(num_channel);
 
             data_updated_real[0] = Matrix<double>.Build.Dense(Convert.ToInt32(num_channel), window_size);
             data_updated_real[1] = Matrix<double>.Build.Dense(Convert.ToInt32(num_channel), window_size);
@@ -104,11 +103,11 @@ namespace HankelRobustDataEstimation
 
             int num_untrusted = 0;
             double tau_t = Math.Max(tau_a, tau_b * Math.Exp(-(numberOfFrame - instant) / decaying_factor));
+            Vector<double> Channel_tau = Vector<double>.Build.Dense(num_channel, tau_a);
 
             // Step 1: get the incoming data
             for (int i = 0; i < num_channel; i++)
             {
-                Console.WriteLine(Current_data[0][i] + " " + Current_data[1][i]);
                 ctvector[i] = Complex.FromPolarCoordinates(Current_data[0][i], Current_data[1][i]);
                 if (ctvector[i].Magnitude > double.Epsilon)
                 {
@@ -117,6 +116,11 @@ namespace HankelRobustDataEstimation
                 else
                 {
                     ctvector[i] = Complex.Zero;
+                }
+
+                if (Event_channel_index[i] != 0)
+                {
+                    Channel_tau[i] = tau_t;
                 }
             }
 
@@ -131,11 +135,11 @@ namespace HankelRobustDataEstimation
             // Till the first window size (L) data is retrieved , the code will not enter the following subsections and will keep getting data
 
             // Add by Hongyun and Lin, Initialize the window
-            if (!Init_flag && numberOfFrame > window_size)
+            if (!Init_flag && numberOfFrame >= window_size)
             {
-                Matrix<Complex> corrected = Programe.SAP(data_estimate.SubMatrix(0, num_channel, 0, window_size), Hankel_k, 1, Math.Pow(10, -3)); //correct data is provided in form of a "corrected matrix"
+                Matrix<Complex> corrected = Programe.SAP(data_estimate.SubMatrix(0, num_channel, 1, window_size), Hankel_k, event_rank, Math.Pow(10, -3)); //correct data is provided in form of a "corrected matrix"
 
-                data_estimate.SetSubMatrix(0, 0, corrected);
+                data_estimate.SetSubMatrix(0, 1, corrected);
                 data_updated.SetSubMatrix(0, 0, corrected);
 
                 Matrix<double> estimated_mag = Matrix_Magnitude(data_updated);
@@ -144,18 +148,16 @@ namespace HankelRobustDataEstimation
                 Vector<double> std = Vector<double>.Build.Dense(num_channel);
                 for (int i = 0; i < num_channel; i++)
                 {
-                    std[i] = ArrayStatistics.StandardDeviation(estimated_mag.Row(i).ToArray());
+                    threshold[0][i] = Math.Max(ArrayStatistics.StandardDeviation(estimated_mag.Row(i).ToArray()), 0.001);
                 }
-                threshold[0] = Math.Max(std.Max(), 0.001);
 
                 Matrix<Complex> diff = estimated_ang.SubMatrix(0, num_channel, 0, window_size - 1) - estimated_ang.SubMatrix(0, num_channel, 1, window_size - 1);
                 Matrix<double> temp = Matrix_Magnitude(diff);
                 Vector<double> mean = Vector<double>.Build.Dense(num_channel);
                 for (int i = 0; i < num_channel; i++)
                 {
-                    mean[i] = ArrayStatistics.Mean(temp.Row(i).ToArray());
+                    threshold[1][i] = ArrayStatistics.Mean(temp.Row(i).ToArray());
                 }
-                threshold[1] = ArrayStatistics.Mean(mean.ToArray());
 
                 //Init_flag has been set to true here and hereafter won't enter this section of code
                 Init_flag = true;
@@ -193,20 +195,24 @@ namespace HankelRobustDataEstimation
                 // Magnitude
                 // estimate the underlying subspace basis
                 Svd<double> svd_mag = Hankel_matrix_mag.Svd();
-                Vector<double> singularvalue = svd_mag.S;
-                Matrix<double> U_mag = svd_mag.U;
+                Vector<double> S = svd_mag.S.SubVector(0, 2);
+                Matrix<double> U_mag = svd_mag.U.SubMatrix(0, num_channel * Hankel_k, 0, 2);
+                int L = S.Count;
 
-                int L = singularvalue.Count;
+                double energy = Math.Pow(Hankel_matrix_mag.FrobeniusNorm(), 2);
                 int rank_mag = 1;
-
-                // estimate the rank of the underlying subspace 
-                for (int i = 1; i < L; i++)
+                int flag_rank = 0;
+                for (rank_mag = 1; rank_mag < L; rank_mag++)
                 {
-                    if (singularvalue[i] >= 0.01 * singularvalue[0])
+                    if (Math.Sqrt(1 - Math.Pow(S.SubVector(0, rank_mag).L2Norm(), 2) / energy) <= approx_error_t / 100.0)
                     {
-                        rank_mag++;
+                        flag_rank = 1;
+                        break;
                     }
-                    else { break; }
+                }
+                if (flag_rank == 0)
+                {
+                    rank_mag = S.Count;
                 }
                 // only keep the r basis
                 U_mag = U_mag.SubMatrix(0, num_channel * Hankel_k, 0, rank_mag);
@@ -216,23 +222,27 @@ namespace HankelRobustDataEstimation
                     U_mag.TransposeThisAndMultiply(Diag_kvectors) * ct_kvectors_mag;
                 Matrix<double> estimated_ctvector_mag = U_mag.SubMatrix(num_channel * (Hankel_k - 1), num_channel, 0, rank_mag) * coeff_mag;
 
-
                 // Phase
                 Svd<Complex> svd_ang = Hankel_matrix_ang.Svd();
-                singularvalue = svd_ang.S.Real();
-                Matrix<Complex> U_ang = svd_ang.U;
+                S = svd_ang.S.Real().SubVector(0, 2);
+                Matrix<Complex> U_ang = svd_ang.U.SubMatrix(0, num_channel * Hankel_k, 0, 2);
 
-                L = singularvalue.Count;
+                L = S.Count;
+
+                energy = Math.Pow(Hankel_matrix_ang.FrobeniusNorm(), 2);
                 int rank_ang = 1;
-
-                // estimate the rank of the underlying subspace 
-                for (int i = 1; i < L; i++)
+                flag_rank = 0;
+                for (rank_ang = 1; rank_ang < L; rank_ang++)
                 {
-                    if (singularvalue[i] >= 0.01 * singularvalue[0])
+                    if (Math.Sqrt(1 - Math.Pow(S.SubVector(0, rank_ang).L2Norm(), 2) / energy) <= approx_error_t / 100.0)
                     {
-                        rank_ang++;
+                        flag_rank = 1;
+                        break;
                     }
-                    else { break; }
+                }
+                if (flag_rank == 0)
+                {
+                    rank_ang = S.Count;
                 }
                 // only keep the r basis
                 U_ang = U_ang.SubMatrix(0, num_channel * Hankel_k, 0, rank_ang);
@@ -242,12 +252,11 @@ namespace HankelRobustDataEstimation
                 Matrix<Complex> estimated_ctvector_ang = U_ang.SubMatrix(num_channel * (Hankel_k - 1), num_channel, 0, rank_ang) * coeff_ang;
                 estimated_ctvector_ang = Matrix_Phase(estimated_ctvector_ang);
 
-
                 // Step 5: determine the trusted and untrusted entries, and re-estimate the untrusted entries
                 for (int i = 0; i < num_channel; i++)
                 {
-                    if (Math.Abs(estimated_ctvector_mag.At(i, 0) - ctvector[i].Magnitude) <= tau_t * threshold[0] &&
-                        Complex.Abs(estimated_ctvector_ang.At(i, 0) - (ctvector[i] / (ctvector[i].Magnitude + double.Epsilon))) <= tau_t * threshold[1])
+                    if (Math.Abs(estimated_ctvector_mag.At(i, 0) - ctvector[i].Magnitude) <= Channel_tau[i] * threshold[0][i] &&
+                        Complex.Abs(estimated_ctvector_ang.At(i, 0) - (ctvector[i] / (ctvector[i].Magnitude + double.Epsilon))) <= Channel_tau[i] * threshold[1][i])
                     {
                         flag_ct_kvectors[i + (Hankel_k - 1) * num_channel] = 1;
                         flag_ctvector[i] = 1;
@@ -277,13 +286,12 @@ namespace HankelRobustDataEstimation
                         if (flag_ctvector[i] == 0)
                         {
                             ctvector[i] = estimated_ctvector_mag.At(i, 0) * estimated_ctvector_ang.At(i, 0);
-                            flag_ctvector[i] = 0.1;
+                            flag_ctvector[i] = weight_0;
                         }
                     }
                 }
                 data_estimate.SetColumn(window_size, ctvector);
                 flag_trusted.SetColumn(window_size, flag_ctvector);
-
 
                 // Step 6: update the matrices
                 // update the data_estimate, data_observed, flag_trusted, flag_observed
@@ -295,7 +303,7 @@ namespace HankelRobustDataEstimation
                 // Step 7: differentiate the event data from bad data
                 if (flag_event == 0)
                 {
-                    if (num_untrusted >= num_channel * channel_threshold)
+                    if ((num_channel - num_untrusted) <= Math.Ceiling(num_channel * (1 - channel_threshold)))
                     {
                         Vector<double> consecutive_untrusted = bad_data_duration - (flag_trusted.SubMatrix(0, num_channel, window_size - bad_data_duration, bad_data_duration)).RowSums();
                         Vector<double> consecutive_observed = flag_observed.SubMatrix(0, num_channel, window_size - bad_data_duration, bad_data_duration).RowSums();
@@ -335,34 +343,105 @@ namespace HankelRobustDataEstimation
                 }
                 else
                 {
-                    flag_event--;
-                    Matrix<Complex> window_data = data_observed.SubMatrix(0, num_channel, 0, window_size);
-                    Matrix<Complex> Hankel_matrix = ExtensionFunction.ExtensionFunction.Hankel(window_data, Hankel_k);
-                    double approx_error = Math.Sqrt(1 - Math.Pow(Hankel_matrix.L2Norm(), 2) / Math.Pow(Hankel_matrix.FrobeniusNorm(), 2));
-                    double rand_approx_error = 0;
-                    for (int i = 1; i <= 500; i++)
-                    {
-                        int[] random_index = Enumerable.Range(0, window_size).ToArray();
-                        var random = new Random();
-                        random_index = random_index.OrderBy(x => random.Next()).ToArray();
-                        Matrix<Complex> permute_matrix = window_data.Clone();
-                        for (int j = 0; j < window_size; j++)
-                        {
-                            permute_matrix.SetColumn(j, window_data.Column(random_index[j]));
-                        }
-                        Matrix<Complex> Hankel_permute = ExtensionFunction.ExtensionFunction.Hankel(permute_matrix, Hankel_k);
-                        rand_approx_error = Math.Max(rand_approx_error,
-                            Math.Sqrt(1 - Math.Pow(Hankel_permute.L2Norm(), 2) / Math.Pow(Hankel_permute.FrobeniusNorm(), 2)));
-                    }
 
-                    if (rand_approx_error / approx_error >= ratio_approx_error)
+                    flag_event--;
+                    Vector<double> consecutive_untrusted = bad_data_duration - (flag_trusted.SubMatrix(0, num_channel, window_size - bad_data_duration, bad_data_duration)).RowSums();
+                    Vector<double> event_channel = Vector<double>.Build.Dense(num_channel);
+                    for (int i = 0; i < num_channel; i++)
                     {
-                        instant = event_instant + window_size - 1;
-                        flag_trusted = flag_observed.Clone();
-                        flag_output = 1;
+                        if (consecutive_untrusted[i] >= Math.Ceiling(bad_data_duration / 2.0))
+                        {
+                            event_channel[i] = 1;
+                        }
+                    }
+                    int bad_channels = (int)event_channel.Sum();
+
+                    if (bad_channels != 0)
+                    {
+
+                        Matrix<Complex> window_data = Matrix<Complex>.Build.Dense(bad_channels, window_size);
+                        for (int i = 0, ii = 0; i < num_channel; i++)
+                        {
+                            if (event_channel[i] == 1)
+                                window_data.SetRow(ii++, data_observed.Row(i).SubVector(0, window_size));
+                        }
+                        Matrix<Complex> Hankel_matrix = ExtensionFunction.ExtensionFunction.Hankel(window_data, Hankel_k);
+
+                        int num_rows = Math.Min(bad_channels + 1, Hankel_matrix.RowCount / bad_channels);
+                        Vector<double> error_original = Vector<double>.Build.Dense(bad_channels);
+                        for (int jj = 0; jj < bad_channels; jj++)
+                        {
+                            Matrix<Complex> Hankel_chanel = Matrix<Complex>.Build.Dense(num_rows, Hankel_matrix.ColumnCount);
+                            for (int i = 0, ii = jj; i < Hankel_chanel.RowCount; i++, ii += num_channel)
+                            {
+                                Hankel_chanel.SetRow(i, Hankel_matrix.Row(ii));
+                            }
+
+                            error_original[jj] = Math.Sqrt(1 - Math.Pow(Hankel_chanel.L2Norm(), 2) / Math.Pow(Hankel_chanel.FrobeniusNorm(), 2));
+                        }
+
+
+
+                        int test_trail = 150;
+                        Vector<double> error_permutate = Vector<double>.Build.Dense(bad_channels);
+                        var random = new Random();
+                        for (int k = 0; k < test_trail; k++)
+                        {
+                            int[] random_index = Enumerable.Range(0, window_size).ToArray();
+                            random_index = random_index.OrderBy(x => random.Next()).ToArray();
+                            Matrix<Complex> permute_matrix = window_data.Clone();
+                            for (int j = 0; j < window_size; j++)
+                            {
+                                permute_matrix.SetColumn(j, window_data.Column(random_index[j]));
+                            }
+                            Matrix<Complex> Hankel_permute = ExtensionFunction.ExtensionFunction.Hankel(permute_matrix, Hankel_k);
+
+                            for (int jj = 0; jj < bad_channels; jj++)
+                            {
+                                Matrix<Complex> Hankel_chanel = Matrix<Complex>.Build.Dense(num_rows, Hankel_permute.ColumnCount);
+                                for (int i = 0, ii = jj; i < Hankel_chanel.RowCount; i++, ii += num_channel)
+                                {
+                                    Hankel_chanel.SetRow(i, Hankel_permute.Row(ii));
+                                }
+
+                                error_permutate[jj] = Math.Max(error_permutate[jj], Math.Sqrt(1 - Math.Pow(Hankel_chanel.L2Norm(), 2) / Math.Pow(Hankel_chanel.FrobeniusNorm(), 2)));
+                            }
+                        }
+
+
+                        int num_untrusted_channels = 0;
+                        Vector<double> event_data_channel = Vector<double>.Build.Dense(num_channel, 0);
+                        for (int i = 0, ii = 0; i < num_channel; i++)
+                        {
+                            if (event_channel[i] == 1)
+                            {
+                                if (error_permutate.PointwiseDivide(error_original)[ii++] >= ratio_approx_error)
+                                {
+                                    event_data_channel[i] = 1;
+                                    num_untrusted_channels++;
+                                }
+                            }
+                        }
+
+                        if (num_untrusted_channels > 0)
+                        {
+                            instant = event_instant + window_size - 1;
+                            flag_trusted = flag_observed.Clone();
+                            flag_output = 1;
+                        }
+
+                        for (int i = 0; i < num_channel; i++)
+                        {
+                            if (event_data_channel[i] == 0)
+                            {
+                                flag_trusted.SetRow(i, Vector<double>.Build.Dense(window_size + 1, Math.Min(1, weight_1)));
+                            }
+                        }
+                        Event_channel_index = event_data_channel.Clone();
                     }
                 }
             }
+            // Pre-Initialization
             else
             {
                 flag_ctvector = (Vector<double>.Build.Dense(num_channel)).Add(1);
@@ -386,7 +465,8 @@ namespace HankelRobustDataEstimation
                 {
                     flag_output = 0;
                     // Add by Hongyun and Lin, when event founded, correct the event data
-                    Matrix<Complex> corrected = Programe.SAP(data_observed.SubMatrix(0, num_channel, 0, window_size), Hankel_k, 3, Math.Pow(10, -3)); // correct data
+                    Matrix<Complex> corrected = Programe.SAP(data_observed.SubMatrix(0, num_channel, 0, window_size), Hankel_k, event_rank, Math.Pow(10, -3)); // correct data
+
                     data_estimate.SetSubMatrix(0, 0, corrected);
                     //Introduced for openECA implementation
                     data_updated.SetSubMatrix(0, 0, corrected);

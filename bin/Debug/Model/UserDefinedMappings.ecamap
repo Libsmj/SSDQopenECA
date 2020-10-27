@@ -1,28 +1,50 @@
 GPA In_Data In_Map {
-    In_Entry1: PMU_A:55 
-    In_Entry2: PMU_A:56 
-    In_Entry3: PMU_A:57 
-    In_Entry4: PMU_A:58 
-    In_Entry5: PMU_A:59 
-    In_Entry6: PMU_A:60 
-    In_Entry7: PMU_A:61 
-    In_Entry8: PMU_A:62 
-    In_Entry9: PMU_A:63 
-    In_Entry10: PMU_A:64 
-    In_Entry11: PMU_A:65 
+    In_Entry1: PMU_A:29 
+    In_Entry2: PMU_A:30 
+    In_Entry3: PMU_A:31 
+    In_Entry4: PMU_A:32 
+    In_Entry5: PMU_A:37 
+    In_Entry6: PMU_A:38 
+    In_Entry7: PMU_A:39 
+    In_Entry8: PMU_A:40 
+    In_Entry9: PMU_A:41 
+    In_Entry10: PMU_A:42 
+    In_Entry11: PMU_A:43 
+    In_Entry12: PMU_A:44 
+    In_Entry13: PMU_A:45 
+    In_Entry14: PMU_A:46 
+    In_Entry15: PMU_A:47 
+    In_Entry16: PMU_A:48 
+    In_Entry17: PMU_A:49 
+    In_Entry18: PMU_A:50 
+    In_Entry19: PMU_A:51 
+    In_Entry20: PMU_A:52 
+    In_Entry21: PMU_A:53 
+    In_Entry22: PMU_A:54 
 }
 
 GPA Out_Data Out_Map {
-    Out_Entry1: PMU_P:438 
-    Out_Entry2: PMU_P:439 
-    Out_Entry3: PMU_P:440 
-    Out_Entry4: PMU_P:441 
-    Out_Entry5: PMU_P:442 
-    Out_Entry6: PMU_P:443 
-    Out_Entry7: PMU_P:444 
-    Out_Entry8: PMU_P:445 
-    Out_Entry9: PMU_P:446 
-    Out_Entry10: PMU_P:447 
-    Out_Entry11: PMU_P:448 
+    Out_Entry1: PMU_A:55 
+    Out_Entry2: PMU_A:56 
+    Out_Entry3: PMU_A:57 
+    Out_Entry4: PMU_A:58 
+    Out_Entry5: PMU_A:59 
+    Out_Entry6: PMU_A:60 
+    Out_Entry7: PMU_A:61 
+    Out_Entry8: PMU_A:62 
+    Out_Entry9: PMU_A:63 
+    Out_Entry10: PMU_A:64 
+    Out_Entry11: PMU_A:65 
+    Out_Entry12: PMU_A:66 
+    Out_Entry13: PMU_A:67 
+    Out_Entry14: PMU_A:68 
+    Out_Entry15: PMU_A:69 
+    Out_Entry16: PMU_A:70 
+    Out_Entry17: PMU_A:71 
+    Out_Entry18: PMU_A:72 
+    Out_Entry19: PMU_A:73 
+    Out_Entry20: PMU_A:74 
+    Out_Entry21: PMU_A:75 
+    Out_Entry22: PMU_A:76 
 }
 

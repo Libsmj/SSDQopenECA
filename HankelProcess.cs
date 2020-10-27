@@ -288,10 +288,10 @@ namespace HankelRobustDataEstimation
                     Hankel_matrix = ExtensionFunction.ExtensionFunction.Hankel(window_data, Hankel_k);
                     double approx_error = Math.Sqrt(1 - Math.Pow(Hankel_matrix.L2Norm(), 2) / Math.Pow(Hankel_matrix.FrobeniusNorm(), 2));
                     double rand_approx_error = 0;
-                    for (int i = 1; i <= 500; i++)
+                    var random = new Random();
+                    for (int i = 1; i <= 150; i++)
                     {
                         int[] random_index = Enumerable.Range(0, window_size).ToArray();
-                        var random = new Random();
                         random_index = random_index.OrderBy(x => random.Next()).ToArray();
                         Matrix<double> permute_matrix = window_data.Clone();
                         for (int j = 0; j < window_size; j++)
