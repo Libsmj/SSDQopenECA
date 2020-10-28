@@ -211,14 +211,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SSDQopenECA.exe" size="925640">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SSDQopenECA.exe" size="925128">
       <assemblyIdentity name="SSDQopenECA" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>PDAGf81s6/P/Bi+SLEmHb6nH+hJAK5j122IVI92dLBY=</dsig:DigestValue>
+        <dsig:DigestValue>cscMcfjhE2TBp6K0UyMDl96TfWqOOuM3PMC5yW6k4Ig=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
