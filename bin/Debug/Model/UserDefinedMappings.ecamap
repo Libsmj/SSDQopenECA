@@ -24,27 +24,27 @@ GPA In_Data In_Map {
 }
 
 GPA Out_Data Out_Map {
-    Out_Entry1: PMU_A:55 
-    Out_Entry2: PMU_A:56 
-    Out_Entry3: PMU_A:57 
-    Out_Entry4: PMU_A:58 
-    Out_Entry5: PMU_A:59 
-    Out_Entry6: PMU_A:60 
-    Out_Entry7: PMU_A:61 
-    Out_Entry8: PMU_A:62 
-    Out_Entry9: PMU_A:63 
-    Out_Entry10: PMU_A:64 
-    Out_Entry11: PMU_A:65 
-    Out_Entry12: PMU_A:66 
-    Out_Entry13: PMU_A:67 
-    Out_Entry14: PMU_A:68 
-    Out_Entry15: PMU_A:69 
-    Out_Entry16: PMU_A:70 
-    Out_Entry17: PMU_A:71 
-    Out_Entry18: PMU_A:72 
-    Out_Entry19: PMU_A:73 
-    Out_Entry20: PMU_A:74 
-    Out_Entry21: PMU_A:75 
-    Out_Entry22: PMU_A:76 
+    Out_Entry1: PMU_O:55 
+    Out_Entry2: PMU_O:56 
+    Out_Entry3: PMU_O:57 
+    Out_Entry4: PMU_O:58 
+    Out_Entry5: PMU_O:59 
+    Out_Entry6: PMU_O:60 
+    Out_Entry7: PMU_O:61 
+    Out_Entry8: PMU_O:62 
+    Out_Entry9: PMU_O:63 
+    Out_Entry10: PMU_O:64 
+    Out_Entry11: PMU_O:65 
+    Out_Entry12: PMU_O:66 
+    Out_Entry13: PMU_O:67 
+    Out_Entry14: PMU_O:68 
+    Out_Entry15: PMU_O:69 
+    Out_Entry16: PMU_O:70 
+    Out_Entry17: PMU_O:71 
+    Out_Entry18: PMU_O:72 
+    Out_Entry19: PMU_O:73 
+    Out_Entry20: PMU_O:74 
+    Out_Entry21: PMU_O:75 
+    Out_Entry22: PMU_O:76 
 }
 

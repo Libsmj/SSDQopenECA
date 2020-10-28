@@ -4,8 +4,8 @@
 //Company- Electric Power Research Institute (EPRI)
 //Manager- Dr. Evangelos Farantatos
 //Algorithm & Code developed by-Rensselaer Polytechnic Institute
-//Modified by- Tapas Kumar Barik, Virginia Polytechnic & State University, EPRI Summer Intern 2019
-//File:HankelProcess.cs
+//Modified by- Jacob Libsman, Rensselaer Polytechnic Institute
+//File:HankelProcessComplex.cs
 //Description:This code segment implements the SSDQ algorithm using the current and past frame of measurements and the 
 //parameters provided by the user.
 //Inputs:Parameters from ParameterForm and Current_data from specified Input measurement channels metadata. 
@@ -123,7 +123,6 @@ namespace HankelRobustDataEstimation
                     Channel_tau[i] = tau_t;
                 }
             }
-
             recalculate_count++; //Add by Hongyun and Lin
 
             // Step 2: Construct Hankel matrix with past and current measurements
@@ -307,7 +306,6 @@ namespace HankelRobustDataEstimation
                     {
                         Vector<double> consecutive_untrusted = bad_data_duration - (flag_trusted.SubMatrix(0, num_channel, window_size - bad_data_duration, bad_data_duration)).RowSums();
                         Vector<double> consecutive_observed = flag_observed.SubMatrix(0, num_channel, window_size - bad_data_duration, bad_data_duration).RowSums();
-
                         int sum_channel = 0;
                         for (int i = 0; i < num_channel; i++)
                         {   // check the number of channels that are consecutively observed and identified as untrusted
@@ -367,7 +365,8 @@ namespace HankelRobustDataEstimation
                         }
                         Matrix<Complex> Hankel_matrix = ExtensionFunction.ExtensionFunction.Hankel(window_data, Hankel_k);
 
-                        int num_rows = Math.Min(bad_channels + 1, Hankel_matrix.RowCount / bad_channels);
+                        int num_rows = (Hankel_matrix.RowCount - bad_channels) / num_channel + 1;
+
                         Vector<double> error_original = Vector<double>.Build.Dense(bad_channels);
                         for (int jj = 0; jj < bad_channels; jj++)
                         {
@@ -439,6 +438,7 @@ namespace HankelRobustDataEstimation
                         }
                         Event_channel_index = event_data_channel.Clone();
                     }
+                    //
                 }
             }
             // Pre-Initialization
