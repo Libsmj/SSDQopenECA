@@ -4,7 +4,7 @@
 //Company- Electric Power Research Institute (EPRI)
 //Manager- Dr. Evangelos Farantatos
 //Algorithm & Code developed by-Rensselaer Polytechnic Institute
-//Modified by- Jacob Libsman, Rensselaer Polytechnic Institute
+//Modified by- Jacob Libsman, Rensselaer Polytechnic Institute 2020
 //File:HankelProcessComplex.cs
 //Description:This code segment implements the SSDQ algorithm using the current and past frame of measurements and the 
 //parameters provided by the user.

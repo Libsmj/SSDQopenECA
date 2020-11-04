@@ -285,7 +285,6 @@ namespace SSDQopenECA
         {
             while (incomingDataStarted && Plot_started)
             {
-
                 if (ProcessedDataChart.IsHandleCreated)
                 {
                     this.Invoke((MethodInvoker)delegate { UpdateProcessedgraph(); });
@@ -325,6 +324,11 @@ namespace SSDQopenECA
                 InputmeasThread.Abort();
                 ProcmeasThread.Abort();
             }
+        }
+
+        private void PlotFigure_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

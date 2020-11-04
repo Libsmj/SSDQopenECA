@@ -23,8 +23,8 @@ namespace SSDQopenECA
         private void Terms_Load(object sender, EventArgs e)
         {
             //Load the form with the text as shown below
-            label1.Text = " Streaming Synchrophasor Data Quality (SSDQ) openECA Version 1.0 \n Electric Power Research Institute (EPRI) \n 3420 Hillview Ave. \n Palo Alto,CA 94304";
-            label2.Text = " Copyright © 2019 Electric Power Research Institute, Inc. All rights reserved.";
+            label1.Text = " Streaming Synchrophasor Data Quality (SSDQ) openECA Version 2.0 \n Electric Power Research Institute (EPRI) \n 3420 Hillview Ave. \n Palo Alto,CA 94304";
+            label2.Text = " Copyright © 2020 Electric Power Research Institute, Inc. All rights reserved.";
             label3.Text = " As a user of this EPRI preproduction software, you accept and acknowledge that: \n" +
                 "\u2022 This software is a preproduction version which may have problems that could potentially harm your system. \n" +
                 "\u2022 To satisfy the terms and conditions of the Master License Agreement or Preproduction License Agreement between EPRI and your company, you \n" +

@@ -123,6 +123,7 @@
             this.Name = "PlotFigure";
             this.Text = "Figure";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Plot_FormClosing);
+            this.Load += new System.EventHandler(this.PlotFigure_Load);
             ((System.ComponentModel.ISupportInitialize)(this.InputDataChart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ProcessedDataChart)).EndInit();
             this.ResumeLayout(false);

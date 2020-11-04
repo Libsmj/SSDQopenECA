@@ -4,6 +4,7 @@
 //Company- Electric Power Research Institute (EPRI)
 //Manager- Dr. Evangelos Farantatos
 //Developer-Tapas Kumar Barik, Virginia Polytechnic & State University, EPRI Summer Intern 2019
+//         -Jacob Libsman, Rensselaer Polytechnic Institute 2020
 //File:Input_screen.cs
 //Description: This Code segment uses the openECA.db database file in order to populate necessaery input devices
 //and consequently the input measurement channels and creates and adds required output channels to the database.
